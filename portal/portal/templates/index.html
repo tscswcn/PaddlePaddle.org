@@ -1,0 +1,111 @@
+{% extends "_base.html" %}
+
+{% block head %}
+{{ block.super }}
+<link href="static/stylesheets/home.css" media="screen, projection" rel="stylesheet" type="text/css" />
+{% endblock %}
+
+{% block content %}
+<section class="head-banner">
+    <div class="row banner">
+        <h1>PArallel Distributed Deep LEarning</h1>
+        <p>An Easy-to-use, Efficient, Flexible and Scalable Deep Learning Platform</p>
+        <div>
+            <a class="quick-start" href="http://book.paddlepaddle.org/index.html" target="_blank">Quick Start</a>
+        </div>
+
+    </div>
+</section>
+<section class="services">
+    <div class="row">
+        <h2><span>Diverse Application Scenarios</span></h2>
+        <p class="sub-title">PaddlePaddle powers hundreds of Baidu's and its partners' products.</p>
+    </div>
+    <div class="row">
+        <div>
+            <img class="service-icon" src="/static/images/service-1.png">
+        </div>
+        <div>
+            <div class="service-desc">
+                <h3>Computer Vision</h3>
+                <p>Using a Convolutional Neural Network (CNN) for Image Recognition and Object Detection.</p>
+                <div>
+                    <a role="button" class="view-more" href="http://book.paddlepaddle.org/03.image_classification/index.html" target="_blank">Read more ></a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div>
+            <div class="service-desc">
+                <h3>Natural Language Understanding</h3>
+                <p>Using a Recurrent Neural Network (RNN) for Sentiment Analysis.</p>
+                <div>
+                    <a role="button" class="view-more" href="http://book.paddlepaddle.org/06.understand_sentiment/index.html" target="_blank">Read more ></a>
+                </div>
+            </div>
+        </div>
+        <div>
+            <img class="service-icon" src="/static/images/service-2.png">
+        </div>
+    </div>
+    <div class="row">
+        <div>
+            <img class="service-icon" src="/static/images/service-3.png">
+        </div>
+        <div>
+            <div class="service-desc">
+                <h3>Recommender System</h3>
+                <p>Using Deep Learning on Recommendation Systems to Help Users Find Interests.</p>
+                <div>
+                    <a role="button" class="view-more" href="http://book.paddlepaddle.org/05.recommender_system/index.html" target="_blank">Read more ></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="features">
+    <div class="row">
+        <h2><span>Technical Features</span></h2>
+    </div>
+    <div class="row">
+        <div class="feature-desc">
+            <div class="feature-icon">
+                <img src="/static/images/feature-1.png">
+            </div>
+            <h3>Ease of use</h3>
+            <p>PaddlePaddle provides an intuitive and flexible interface for loading data and specifying model structures.</p>
+        </div>
+        <div class="feature-desc">
+            <div class="feature-icon">
+                <img src="/static/images/feature-2.png">
+            </div>
+            <h3>Flexibility</h3>
+            <p>It supports CNN, RNN and various variants and configures complicated deep models easily.</p>
+        </div>
+        <div class="feature-desc">
+            <div class="feature-icon">
+                <img src="/static/images/feature-3.png">
+            </div>
+            <h3>Efficiency</h3>
+            <p>It also provides extremely optimized operations, memory recycling, and network communication.</p>
+        </div>
+        <div class="feature-desc">
+            <div class="feature-icon">
+                <img src="/static/images/feature-4.png">
+            </div>
+            <h3>Scalability</h3>
+            <p>PaddlePaddle makes it easy to scale heterogeneous computing resources and storage to accelerate the training process.</p>
+        </div>
+    </div>
+</section>
+<section class="get-started">
+    <div class="row">
+        <h2>PaddlePaddle</h2>
+        <p>An Easy-to-use, Efficient, Flexible and Scalable Deep Learning Platform</p>
+        <div>
+            <a role="button" class="quick-start" href="http://book.paddlepaddle.org/index.html" target="_blank">Quick Start</a>
+        </div>
+    </div>
+</section>
+{% endblock %}
