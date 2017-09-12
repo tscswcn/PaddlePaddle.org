@@ -98,18 +98,8 @@ USE_L10N = True
 
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/1.8/howto/static-files/
-#
-STATICFILES_FINDERS = (
-    'django.contrib.staticfiles.finders.FileSystemFinder',
-    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-    # 'compressor.finders.CompressorFinder',
-)
-
-# STATIC_ROOT = os.path.join(BASE_DIR, "portal/static/")
 STATICFILES_DIRS = (
   os.path.join(BASE_DIR, 'portal/static/'),
 )
+
 STATIC_URL = '/static/'
