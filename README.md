@@ -1,1 +1,47 @@
 # paddlepaddle-portal
+
+## Setup
+
+### 1) Clone repo
+```
+git clone git@github.svail.baidu.com:baidu-research/paddlepaddle-portal.git
+```
+
+### 2) Install compass
+```
+gem update --system
+gem install compass
+```
+
+### 3) Setup virtual environment and install requirements
+```
+cd paddlepaddle-portal
+virtualenv venv
+```
+
+### 4) Add environment variables in venv/bin/activate
+```
+export ENV="development"
+export EXTERNAL_TEMPLATE_DIR="<dir where external templates reside>"
+```
+
+### 5) Source virtualenv
+```
+source venv/bin/activate
+```
+
+### 5)  Install requirements
+```
+pip install -r requirements.txt
+```
+
+### 5) Startup server
+```
+python manage.py runserver
+```
+
+### 6) Open up another terminal and run compass (to rebuild css files)
+```
+cd <project-dir>
+compass watch portal/static/
+```
