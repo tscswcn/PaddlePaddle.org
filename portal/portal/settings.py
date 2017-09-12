@@ -53,7 +53,7 @@ MIDDLEWARE_CLASSES = (
 ROOT_URLCONF = 'portal.urls'
 
 TEMPLATE_DIR = os.path.join(BASE_DIR, 'portal/templates')
-EXTERNAL_TEMPLATE_DIR = os.environ['EXTERNAL_TEMPLATE_DIR']
+EXTERNAL_TEMPLATE_DIR = os.environ.get('EXTERNAL_TEMPLATE_DIR', None)
 
 TEMPLATES = [
     {
