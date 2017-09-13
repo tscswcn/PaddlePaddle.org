@@ -22,6 +22,7 @@ virtualenv venv
 ### 4) Add environment variables in venv/bin/activate
 ```
 export ENV="development"
+export SECRET_KEY="<secret_key>"
 export EXTERNAL_TEMPLATE_DIR="<dir where external templates reside>"
 ```
 
@@ -44,4 +45,27 @@ python manage.py runserver
 ```
 cd <project-dir>
 compass watch portal/static/
+```
+
+## Docker
+
+### Building Image
+
+```
+cd <project-dir>
+docker build -t paddlepaddle-portal .
+```
+
+### Run Docker Image
+
+#### 1) Create portal.env file with the following variables
+
+```
+ENV=development
+SECRET_KEY=<secret_key>
+```
+
+#### 2) Run Docker Image
+```
+docker run -d -p 8000:8000 --env-file portal.env -v <external_template_dir>:/templates paddlepaddle-portal:latest
 ```
