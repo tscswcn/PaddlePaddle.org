@@ -4,7 +4,7 @@
 # https://medium.com/@rohitkhatana/deploying-django-app-on-aws-ecs-using-docker-gunicorn-nginx-c90834f76e21
 ############################################################
 # Set the base image to use to Ubuntu
-FROM ubuntu:14.04
+FROM ubuntu:16.04
 
 # Set the file maintainer (your name - the file's author)
 MAINTAINER Thuan Nguyen
@@ -12,19 +12,12 @@ MAINTAINER Thuan Nguyen
 ENV EXTERNAL_TEMPLATE_DIR=/templates
 
 # Update the default application repository sources list
-RUN apt-get update && apt-get -y upgrade
-RUN apt-get install -y python python-pip
-RUN apt-get install -y python-dev
-RUN apt-get install -y libmysqlclient-dev
-RUN apt-get install -y git
-RUN apt-get install -y vim
-RUN apt-get install -y mysql-server
-RUN apt-get install -y nginx
+RUN apt-get update && apt-get -y upgrade && \
+    apt-get install -y python python-pip \
+    python-dev \
+    nginx
 
 # Create application subdirectories
-WORKDIR /var
-RUN mkdir www logs
-
 WORKDIR /var/www
 COPY portal .
 
