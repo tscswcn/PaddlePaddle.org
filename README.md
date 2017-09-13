@@ -45,3 +45,18 @@ python manage.py runserver
 cd <project-dir>
 compass watch portal/static/
 ```
+
+## Docker
+
+### Building Image
+
+```
+cd <project-dir>
+docker build -t paddlepaddle-portal .
+```
+
+### Run Docker Image
+
+```
+docker run -d -p 8000:8000 -e ENV=development -v <external_template_dir>:/templates paddlepaddle-portal:latest
+```

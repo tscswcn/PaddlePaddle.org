@@ -23,10 +23,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'fju$&xajpkb!i(ct^84bcn(prvzjp4o%&o+)vwb+@=6q$4ips5'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True if os.environ['ENV'] == 'development' else False
+DEBUG = True if os.environ.get('ENV', None) == 'development' else False
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ["*"]
 
 # Application definition
 
@@ -102,4 +101,5 @@ STATICFILES_DIRS = (
   os.path.join(BASE_DIR, 'portal/static/'),
 )
 
+STATIC_ROOT ='static/'
 STATIC_URL = '/static/'
