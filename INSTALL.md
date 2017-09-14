@@ -4,7 +4,7 @@
 
 ##### Clone repo
 ```
-git clone git@github.svail.baidu.com:baidu-research/paddlepaddle-portal.git
+git clone https://github.com/PaddlePaddle/PaddlePaddle.org.git
 ```
 
 ##### Building Image
@@ -32,7 +32,7 @@ docker run -d -p 8000:8000 --env-file portal.env -v <external_template_dir>:/tem
 
 ##### Clone repo
 ```
-git clone git@github.svail.baidu.com:baidu-research/paddlepaddle-portal.git
+git clone https://github.com/PaddlePaddle/PaddlePaddle.org.git
 ```
 
 ##### Install compass
