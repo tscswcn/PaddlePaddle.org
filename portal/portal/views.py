@@ -40,11 +40,11 @@ def book_root(request):
     path = settings.EXTERNAL_TEMPLATE_DIR + "/book/index.html"
     static_content_template = get_template(path)
     static_content = static_content_template.render()
-    return render(request, '_base_nav.html', {'static_content': static_content})
+    return render(request, '_tutorial.html', {'static_content': static_content})
 
 def tutorial_root(request):
     print "Tutorial ROOT"
-    path = 'tutorial.html'
+    path = '_tutorial.html'
     return render(request, path)
 
 def blog_root(request):
@@ -59,7 +59,7 @@ def documentation_root(request, language):
     path = "%s/documentation/%s/html/index.html" % (settings.EXTERNAL_TEMPLATE_DIR, language)
     static_content_template = get_template(path)
     static_content = static_content_template.render()
-    return render(request, '_base_nav.html', {'static_content': static_content})
+    return render(request, 'documentation.html', {'static_content': static_content})
 
 def static_file_handler(request, path, extension, insecure=False, **kwargs):
     """

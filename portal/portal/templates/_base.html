@@ -9,8 +9,13 @@
     </head>
 
     <body>
+        {% block pre_content %}{% endblock %}
+
         <div id="content">
             {% block content %}{{ static_content|safe }}{% endblock %}
         </div>
+
+        {% block post_content %}{% endblock %}
     </body>
+
 </html>
