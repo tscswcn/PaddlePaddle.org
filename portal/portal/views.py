@@ -54,6 +54,13 @@ def blog_root(request):
     static_content = static_content_template.render()
     return render(request, 'blog.html', {'static_content': static_content})
 
+def blog_sub_path(request, path):
+    print "BLOG SUBPATH"
+    file_path = "%s/blog/%s" % (settings.EXTERNAL_TEMPLATE_DIR, path)
+    static_content_template = get_template(file_path)
+    static_content = static_content_template.render()
+    return render(request, 'blog.html', {'static_content': static_content})
+
 def documentation_root(request, language):
     print "DOCUMENTATION ROOT"
     path = "%s/documentation/%s/html/index.html" % (settings.EXTERNAL_TEMPLATE_DIR, language)

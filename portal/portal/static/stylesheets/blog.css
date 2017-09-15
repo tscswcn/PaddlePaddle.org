@@ -8,3 +8,8 @@
 #content .site-header {
   display: none;
 }
+
+/* line 12, ../sass/blog.scss */
+.post-header::before {
+  all: unset;
+}
