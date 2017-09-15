@@ -61,6 +61,13 @@ def documentation_root(request, language):
     static_content = static_content_template.render()
     return render(request, 'documentation.html', {'static_content': static_content})
 
+def documentation_sub_path(request, language, path=None):
+    print "DOCUMENTATION SUBPATH"
+    path = "%s/documentation/%s/html/%s" % (settings.EXTERNAL_TEMPLATE_DIR, language, path)
+    static_content_template = get_template(path)
+    static_content = static_content_template.render()
+    return render(request, 'documentation.html', {'static_content': static_content})
+
 def static_file_handler(request, path, extension, insecure=False, **kwargs):
     """
     Serve static files below a given point in the directory structure or
