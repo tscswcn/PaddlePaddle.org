@@ -31,7 +31,9 @@ import views
 urlpatterns = [
     url(r'^$', TemplateView.as_view(template_name='index.html'), name='home'),
     url(r'^blog/$', views.blog_root, name='blog_root'),
+    url(r'^tutorial/$', views.tutorial_root),
+    url(r'^book/$', views.book_root, name='book_root'),
     url(r'^documentation/(?P<language>.*)/html/$', views.documentation_root),
-    url(r'^(?P<path>.*)\.(?P<extension>((?!html).)+)$', views.static_file_handler),
+    url(r'^(?P<path>.*)\.(?P<extension>((?!(htm|html)).)+)$', views.static_file_handler),
     url(r'^(?P<path>.+)?$', views.catch_all_handler),
 ]

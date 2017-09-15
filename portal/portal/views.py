@@ -14,7 +14,14 @@ from django.http import Http404
 from django.views import static
 
 def catch_all_handler(request, path=None):
+    print "Catch All %s" % path
+
+    base_template = '_base_nav.html'
+    if request.GET.get("iframe", '0') == '1':
+        base_template = '_base.html'
+
     # Resolve path based on template.
+
     if path:
         # if '/' in path:
         #     return render(request, settings.CONTENT_DIR + '/' + path + '.html', {
@@ -25,21 +32,34 @@ def catch_all_handler(request, path=None):
 
         # TODO: Test nested paths to make sure they pull correctly
         static_content_template = get_template(path)
-        return render(request, '_base.html', {'static_content': static_content_template.render()})
+
+        return render(request, base_template, {'static_content': static_content_template.render()})
+
+def book_root(request):
+    print "Book ROOT"
+    path = settings.EXTERNAL_TEMPLATE_DIR + "/book/index.html"
+    static_content_template = get_template(path)
+    static_content = static_content_template.render()
+    return render(request, '_base_nav.html', {'static_content': static_content})
+
+def tutorial_root(request):
+    print "Tutorial ROOT"
+    path = 'tutorial.html'
+    return render(request, path)
 
 def blog_root(request):
     print "BLOG ROOT"
     path = settings.EXTERNAL_TEMPLATE_DIR + "/blog/index.html"
     static_content_template = get_template(path)
     static_content = static_content_template.render()
-    return render(request, '_base.html', {'static_content': static_content})
+    return render(request, '_base_nav.html', {'static_content': static_content})
 
 def documentation_root(request, language):
     print "DOCUMENTATION ROOT"
     path = "%s/documentation/%s/html/index.html" % (settings.EXTERNAL_TEMPLATE_DIR, language)
     static_content_template = get_template(path)
     static_content = static_content_template.render()
-    return render(request, '_base.html', {'static_content': static_content})
+    return render(request, '_base_nav.html', {'static_content': static_content})
 
 def static_file_handler(request, path, extension, insecure=False, **kwargs):
     """
