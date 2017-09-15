@@ -11,9 +11,15 @@
     <body>
         {% block pre_content %}{% endblock %}
 
-        <div id="content">
-            {% block content %}{{ static_content|safe }}{% endblock %}
-        </div>
+        {% block content_root %}
+            <div id="content_root">
+            {% block content %}
+                <div id="content">
+                    {{ static_content|safe }}
+                </div>
+            {% endblock %}
+            </div>
+        {% endblock %}
 
         {% block post_content %}{% endblock %}
     </body>
