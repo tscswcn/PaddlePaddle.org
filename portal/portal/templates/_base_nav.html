@@ -1,0 +1,44 @@
+{% extends "_base.html" %}
+
+{% block content %}
+    <body>
+        <header class="site-header">
+            <nav class="row">
+                <a class="logo" href="{% url 'home' %}"><img src="/static/images/logo.png"></a>
+                {% block header %}
+                <nav class="top-nav">
+                    <ul class="site-links">
+                        <li><a href="/tutorial/">Tutorial</a></li>
+                        <li><a href="/documentation/en/html/">Documentation</a></li>
+                        <li><a href="{% url 'blog_root' %}">Blog</a></li>
+                    </ul>
+                </nav>
+                <nav class="right-nav">
+                    <div class="language-switcher">
+                        <a href="/">中文</a>
+                    </div>
+                    <div class="github-fork">
+                        <a href="https://github.com/PaddlePaddle/Paddle" target="_blank">
+                            <i class="fa fa-github" aria-hidden="true"></i>
+                            <span>Github</span>
+                        </a>
+                    </div>
+                </nav>
+                {% endblock %}
+            </nav>
+            {% block sub_header %}{% endblock %}
+        </header>
+
+        <div id="content_nav">
+            {% block content_nav %}{{ static_content|safe }}{% endblock %}
+        </div>
+
+        <footer class="footer-nav">
+            {% block footer %}
+            <div class="row">
+                <p class="copyright">&copy;Copyright&nbsp;2017,&nbsp;PaddlePaddle&nbsp;developers.</p>
+            </div>
+            {% endblock %}
+        </footer>
+    </body>
+{% endblock %}

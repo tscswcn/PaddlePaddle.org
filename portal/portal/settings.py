@@ -84,8 +84,10 @@ USE_L10N = True
 
 USE_TZ = True
 
+APPEND_SLASH = True
+
 STATICFILES_DIRS = (
-  os.path.join(BASE_DIR, 'portal/static/'),
+    os.path.join(BASE_DIR, 'portal/static/'),
 )
 
 STATIC_ROOT ='static/'
