@@ -3,8 +3,8 @@
 
     <head>
         {% block head %}
-        <link href="static/stylesheets/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css" />
-        <link href="static/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css" />
+        <link href="/static/stylesheets/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css" />
+        <link href="/static/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css" />
         {% endblock %}
     </head>
 
@@ -15,9 +15,9 @@
                 {% block header %}
                 <nav class="top-nav">
                     <ul class="site-links">
-                        <li><a href="/tutorial">Tutorial</a></li>
-                        <li><a href="/documentation">Documentation</a></li>
-                        <li><a href="/blog">Blog</a></li>
+                        <li><a href="{% url 'home' %}l">Tutorial</a></li>
+                        <li><a href="/documentation/en/html/">Documentation</a></li>
+                        <li><a href="{% url 'blog_root' %}">Blog</a></li>
                     </ul>
                 </nav>
                 <nav class="right-nav">
