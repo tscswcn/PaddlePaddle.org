@@ -1,0 +1,15 @@
+/* line 1, ../sass/blog.scss */
+.site-header {
+  border-top: 0px;
+  border-bottom: 0px;
+}
+
+/* line 7, ../sass/blog.scss */
+#content .site-header {
+  display: none;
+}
+
+/* line 12, ../sass/blog.scss */
+.post-header::before {
+  all: unset;
+}

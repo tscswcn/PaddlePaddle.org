@@ -36,33 +36,34 @@ def catch_all_handler(request, path=None):
         return render(request, base_template, {'static_content': static_content_template.render()})
 
 def book_root(request):
-    print "Book ROOT"
     path = settings.EXTERNAL_TEMPLATE_DIR + "/book/index.html"
     static_content_template = get_template(path)
     static_content = static_content_template.render()
     return render(request, '_tutorial.html', {'static_content': static_content})
 
 def tutorial_root(request):
-    print "Tutorial ROOT"
     path = '_tutorial.html'
     return render(request, path)
 
 def blog_root(request):
-    print "BLOG ROOT"
     path = settings.EXTERNAL_TEMPLATE_DIR + "/blog/index.html"
     static_content_template = get_template(path)
     static_content = static_content_template.render()
-    return render(request, '_base_nav.html', {'static_content': static_content})
+    return render(request, 'blog.html', {'static_content': static_content})
+
+def blog_sub_path(request, path):
+    file_path = "%s/blog/%s" % (settings.EXTERNAL_TEMPLATE_DIR, path)
+    static_content_template = get_template(file_path)
+    static_content = static_content_template.render()
+    return render(request, 'blog.html', {'static_content': static_content})
 
 def documentation_root(request, language):
-    print "DOCUMENTATION ROOT"
     path = "%s/documentation/%s/html/index.html" % (settings.EXTERNAL_TEMPLATE_DIR, language)
     static_content_template = get_template(path)
     static_content = static_content_template.render()
     return render(request, 'documentation.html', {'static_content': static_content})
 
 def documentation_sub_path(request, language, path=None):
-    print "DOCUMENTATION SUBPATH"
     path = "%s/documentation/%s/html/%s" % (settings.EXTERNAL_TEMPLATE_DIR, language, path)
     static_content_template = get_template(path)
     static_content = static_content_template.render()
