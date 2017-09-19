@@ -38,8 +38,7 @@ def catch_all_handler(request, path=None):
 
 def home_root(request):
     current_lang_code = request.LANGUAGE_CODE
-    lang_def = {
-    }
+    lang_def = {}
     if current_lang_code:
         if current_lang_code == "en":
             lang_def['label'] = u"中文"
