@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import os
 import posixpath
 
@@ -36,7 +37,18 @@ def catch_all_handler(request, path=None):
         return render(request, base_template, {'static_content': static_content_template.render()})
 
 def home_root(request):
-    return render(request, 'index.html')
+    current_lang_code = request.LANGUAGE_CODE
+    lang_def = {
+    }
+    if current_lang_code:
+        if current_lang_code == "en":
+            lang_def['label'] = u"中文"
+            lang_def['link'] = "/zh/"
+        else:
+            lang_def['label'] = "English"
+            lang_def['link'] = "/en/"
+
+    return render(request, 'index.html', {'lang_def': lang_def})
 
 def book_root(request):
     path = settings.EXTERNAL_TEMPLATE_DIR + "/book/index.html"
