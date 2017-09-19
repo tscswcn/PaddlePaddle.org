@@ -30,6 +30,7 @@ import views
 #     return static(None, view=views.css_handler)
 
 urlpatterns = [
+    url(r'^i18n/', include('django.conf.urls.i18n')),
     url(r'^(?P<path>.*)\.(?P<extension>((?!(htm|html)).)+)$', views.static_file_handler),
     url(r'^blog/$', views.blog_root, name='blog_root'),
     url(r'^blog/(?P<path>.+html)$', views.blog_sub_path),
