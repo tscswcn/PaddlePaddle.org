@@ -18,6 +18,8 @@ from django.conf import settings
 
 from django.conf.urls.static import static
 
+from django.conf.urls.i18n import i18n_patterns
+
 import views
 
 # def staticfiles_urlpatterns(prefix=None):
@@ -30,7 +32,6 @@ import views
 
 urlpatterns = [
     url(r'^(?P<path>.*)\.(?P<extension>((?!(htm|html)).)+)$', views.static_file_handler),
-    url(r'^$', TemplateView.as_view(template_name='index.html'), name='home'),
     url(r'^blog/$', views.blog_root, name='blog_root'),
     url(r'^blog/(?P<path>.+html)$', views.blog_sub_path),
 
@@ -38,5 +39,10 @@ urlpatterns = [
     url(r'^book/$', views.book_root, name='book_root'),
     url(r'^documentation/(?P<language>.*)/html/$', views.documentation_root),
     url(r'^documentation/(?P<language>.*)/html/(?P<path>.*)$', views.documentation_sub_path),
-    url(r'^(?P<path>.+)?$', views.catch_all_handler),
+    # url(r'^(?P<path>.+)?$', views.catch_all_handler),
 ]
+
+urlpatterns += i18n_patterns(
+    url(r'^$', views.home_root, name='home'),
+)
+

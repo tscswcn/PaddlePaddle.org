@@ -1,0 +1,135 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-09-19 17:44+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: portal/settings.py:82
+msgid "English"
+msgstr ""
+
+#: portal/settings.py:83
+msgid "Chinese"
+msgstr ""
+
+#: portal/templates/_base_nav.html:14
+msgid "Tutorial"
+msgstr "教程"
+
+#: portal/templates/_base_nav.html:15
+msgid "Documentation"
+msgstr "文档中心"
+
+#: portal/templates/_base_nav.html:16
+msgid "Blog"
+msgstr "博客文章"
+
+#: portal/templates/index.html:13
+msgid "PArallel Distributed Deep LEarning"
+msgstr "易学易用的分布式深度学习平台"
+
+#: portal/templates/index.html:14 portal/templates/index.html.py:108
+msgid "An Easy-to-use, Efficient, Flexible and Scalable Deep Learning Platform"
+msgstr "正在为100+项产品提供深度学习算法支持"
+
+#: portal/templates/index.html:17 portal/templates/index.html.py:110
+msgid "Quick Start"
+msgstr "快速入门"
+
+#: portal/templates/index.html:24
+msgid "Diverse Application Scenarios"
+msgstr "丰富的算法服务"
+
+#: portal/templates/index.html:25
+msgid "PaddlePaddle powers hundreds of Baidu's and its partners' products."
+msgstr "易用、高效、灵活、扩展性好"
+
+#: portal/templates/index.html:33
+msgid "Computer Vision"
+msgstr "机器视觉"
+
+#: portal/templates/index.html:34
+msgid ""
+"Using a Convolutional Neural Network (CNN) for Image Recognition and Object "
+"Detection."
+msgstr "卷积神经网络可以识别图像中的主要对象，并输出分类结果"
+
+#: portal/templates/index.html:36 portal/templates/index.html.py:47
+#: portal/templates/index.html:64
+msgid "Read more >"
+msgstr "查看更多 >"
+
+#: portal/templates/index.html:44
+msgid "Natural Language Understanding"
+msgstr "自然语言理解"
+
+#: portal/templates/index.html:45
+msgid "Using a Recurrent Neural Network (RNN) for Sentiment Analysis."
+msgstr "利用LSTM网络从IMDB电影评论的中分析出评论者情绪的正面和负面"
+
+#: portal/templates/index.html:61
+msgid "Recommender System"
+msgstr "推荐系统"
+
+#: portal/templates/index.html:62
+msgid ""
+"Using Deep Learning on Recommendation Systems to Help Users Find Interests."
+msgstr "分析用户特征、电影特征、点评分数，预测新用户对不同电影的打分"
+
+#: portal/templates/index.html:72
+msgid "Technical Features"
+msgstr "技术和服务优势"
+
+#: portal/templates/index.html:79
+msgid "Ease of use"
+msgstr "易用性"
+
+#: portal/templates/index.html:80
+msgid ""
+"PaddlePaddle provides an intuitive and flexible interface for loading data "
+"and specifying model structures."
+msgstr "为用户提供了直观、灵活的数据接口和模型配置接口"
+
+#: portal/templates/index.html:86
+msgid "Flexibility"
+msgstr "灵活性"
+
+#: portal/templates/index.html:87
+msgid ""
+"It supports CNN, RNN and various variants and configures complicated deep "
+"models easily."
+msgstr ""
+"支持CNN、RNN等多种神经网络结构和优化算法。简单书写配置文件即可实现复杂模型"
+
+#: portal/templates/index.html:93
+msgid "Efficiency"
+msgstr "高效性"
+
+#: portal/templates/index.html:94
+msgid ""
+"It also provides extremely optimized operations, memory recycling, and "
+"network communication."
+msgstr "在计算、存储、通信、架构等方面都做了高效优化，充分发挥各种资源的性能"
+
+#: portal/templates/index.html:100
+msgid "Scalability"
+msgstr "扩展性"
+
+#: portal/templates/index.html:101
+msgid ""
+"PaddlePaddle makes it easy to scale heterogeneous computing resources and "
+"storage to accelerate the training process."
+msgstr "全面支持多核、多GPU、多机环境。轻松应对大规模训练需求"

@@ -1,4 +1,5 @@
 {% extends "_base.html" %}
+{% load i18n %}
 
 {% block content_root %}
     <div class="skeleton primary-navbar">
@@ -10,9 +11,9 @@
                 {% block nav %}
                 <div class="six columns">
                     <ul>
-                        <li><a href="/book/">Tutorial</a></li>
-                        <li><a href="/documentation/en/html/">Documentation</a></li>
-                        <li><a href="{% url 'blog_root' %}">Blog</a></li>
+                        <li><a href="/book/">{% trans "Tutorial" %}</a></li>
+                        <li><a href="/documentation/en/html/">{% trans "Documentation"%}</a></li>
+                        <li><a href="/blog">{% trans "Blog"%}</a></li>
                     </ul>
                 </div>
                 <div class="four columns">
