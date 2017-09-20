@@ -34,11 +34,11 @@ urlpatterns = [
     url(r'^(?P<path>.*)\.(?P<extension>((?!(htm|html)).)+)$', views.static_file_handler),
     url(r'^blog/$', views.blog_root, name='blog_root'),
     url(r'^blog/(?P<path>.+html)$', views.blog_sub_path),
-
     url(r'^tutorial/$', views.tutorial_root),
     url(r'^book/$', views.book_root, name='book_root'),
-    url(r'^documentation/(?P<language>.*)/html/$', views.documentation_root),
-    url(r'^documentation/(?P<language>.*)/html/(?P<path>.*)$', views.documentation_sub_path),
+    url(r'^documentation/(?P<version>.*)/(?P<language>.*)/html/$', views.documentation_root),
+    url(r'^documentation/(?P<version>.*)/(?P<language>.*)/html/(?P<path>.*)$', views.documentation_sub_path),
+    url(r'^models/(?P<version>.*)/$', views.models_root),
     url(r'^(?P<path>.+(html|htm))', views.catch_all_handler),
 ]
 
