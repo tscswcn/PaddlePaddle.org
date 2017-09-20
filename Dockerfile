@@ -16,7 +16,8 @@ ENV EXTERNAL_TEMPLATE_DIR=$EXTERNAL_TEMPLATE_DIR_ARG
 RUN apt-get update && apt-get -y upgrade && \
     apt-get install -y python python-pip \
     python-dev \
-    nginx
+    nginx \
+    gettext
 
 # Create application subdirectories
 WORKDIR $EXTERNAL_TEMPLATE_DIR_ARG

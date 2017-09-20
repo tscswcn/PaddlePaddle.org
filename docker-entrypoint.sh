@@ -1,6 +1,7 @@
 #!/bin/bash
 
 python manage.py collectstatic --noinput  # collect static files
+python manage.py compilemessages -l zh    # compile chinese messages
 
 # Prepare log files and start outputting logs to stdout
 touch /var/log/gunicorn.log
