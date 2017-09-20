@@ -60,8 +60,21 @@ source venv/bin/activate
 ```
 
 ##### Install requirements
+
+###### Install gettext
+```
+[macOS]: brew install gettext
+[Ubuntu]: apt-get install gettext
+```
+
 ```
 pip install -r requirements.txt
+```
+
+#### Build localization files
+
+```
+python manage.py compilemessages -l zh
 ```
 
 ##### Startup server
