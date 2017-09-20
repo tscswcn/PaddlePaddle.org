@@ -71,17 +71,27 @@ def blog_sub_path(request, path):
     static_content = static_content_template.render()
     return render(request, 'blog.html', {'static_content': static_content})
 
-def documentation_root(request, language):
-    path = "%s/documentation/%s/html/index.html" % (settings.EXTERNAL_TEMPLATE_DIR, language)
+def documentation_root(request, version, language):
+    path = "%s/documentation/%s/%s/html/index.html" % (settings.EXTERNAL_TEMPLATE_DIR, version, language)
     static_content_template = get_template(path)
     static_content = static_content_template.render()
-    return render(request, 'documentation.html', {'static_content': static_content})
+    return render(request, 'tutorial.html', {'static_content': static_content})
 
-def documentation_sub_path(request, language, path=None):
-    path = "%s/documentation/%s/html/%s" % (settings.EXTERNAL_TEMPLATE_DIR, language, path)
+def documentation_sub_path(request, version,  language, path=None):
+    path = "%s/documentation/%s/%s/html/%s" % (settings.EXTERNAL_TEMPLATE_DIR, version, language, path)
     static_content_template = get_template(path)
     static_content = static_content_template.render()
-    return render(request, 'documentation.html', {'static_content': static_content})
+
+    template = 'documentation.html'     # TODO[thuan]: do this in a less hacky way
+    if '/api/' not in path:
+        template = 'tutorial.html'
+    return render(request, template, {'static_content': static_content, 'version': version})
+
+def models_root(request, version):
+    path = "%s/models/index/index.html" % (settings.EXTERNAL_TEMPLATE_DIR)
+    static_content_template = get_template(path)
+    static_content = static_content_template.render()
+    return render(request, 'documentation.html', {'static_content': static_content, 'version': version})
 
 def static_file_handler(request, path, extension, insecure=False, **kwargs):
     """
@@ -95,16 +105,13 @@ def static_file_handler(request, path, extension, insecure=False, **kwargs):
     """
     append_path = ""
 
-    print "CSS HANDLER! %s, %s" % (path, extension)
     if not settings.DEBUG and not insecure:
         raise Http404
 
     normalized_path = posixpath.normpath(unquote(path)).lstrip('/')
-    print "normalized_path ROOT: %s" %(normalized_path)
 
     # absolute_path = finders.find(normalized_path)
     absolute_path = settings.EXTERNAL_TEMPLATE_DIR + "/" + append_path + normalized_path + "." + extension
-    print "ABS ROOT: %s" %(absolute_path)
     if not absolute_path:
         if path.endswith('/') or path == '':
             raise Http404("Directory indexes are not allowed here.")
