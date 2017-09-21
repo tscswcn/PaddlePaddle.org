@@ -9,15 +9,18 @@ FROM ubuntu:16.04
 # Set the file maintainer (your name - the file's author)
 MAINTAINER Thuan Nguyen
 
-ENV EXTERNAL_TEMPLATE_DIR=/templates
+ARG EXTERNAL_TEMPLATE_DIR_ARG=/var/content
+ENV EXTERNAL_TEMPLATE_DIR=$EXTERNAL_TEMPLATE_DIR_ARG
 
 # Update the default application repository sources list
 RUN apt-get update && apt-get -y upgrade && \
     apt-get install -y python python-pip \
     python-dev \
-    nginx
+    nginx \
+    gettext
 
 # Create application subdirectories
+WORKDIR $EXTERNAL_TEMPLATE_DIR_ARG
 WORKDIR /var/www
 COPY portal .
 

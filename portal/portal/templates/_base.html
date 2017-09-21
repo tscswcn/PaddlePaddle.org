@@ -3,48 +3,27 @@
 
     <head>
         {% block head %}
-        <link href="static/stylesheets/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css" />
-        <link href="static/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css" />
+        <link href="/static/stylesheets/reset.css" media="screen, projection" rel="stylesheet" type="text/css" />
+        <link href="/static/stylesheets/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css" />
+        <link href="/static/stylesheets/skeleton.css" media="screen, projection" rel="stylesheet" type="text/css" />
         {% endblock %}
     </head>
 
     <body>
-        <header class="site-header">
-            <nav class="row">
-                <a class="logo" href="{% url 'home' %}"><img src="/static/images/logo.png"></a>
-                {% block header %}
-                <nav class="top-nav">
-                    <ul class="site-links">
-                        <li><a href="/tutorial">Tutorial</a></li>
-                        <li><a href="/documentation">Documentation</a></li>
-                        <li><a href="/blog">Blog</a></li>
-                    </ul>
-                </nav>
-                <nav class="right-nav">
-                    <div class="language-switcher">
-                        <a href="/">中文</a>
-                    </div>
-                    <div class="github-fork">
-                        <a href="https://github.com/PaddlePaddle/Paddle" target="_blank">
-                            <i class="fa fa-github" aria-hidden="true"></i>
-                            <span>Github</span>
-                        </a>
-                    </div>
-                </nav>
-                {% endblock %}
-            </nav>
-        </header>
+        {% block pre_content %}{% endblock %}
 
-        <div id="content">
-            {% block content %}{{ static_content|safe }}{% endblock %}
-        </div>
-
-        <footer class="footer-nav">
-            {% block footer %}
-            <div class="row">
-                <p class="copyright">&copy;Copyright&nbsp;2017,&nbsp;PaddlePaddle&nbsp;developers.</p>
-            </div>
+        {% block content_root %}
+            <div id="content_root">
+            {% block content %}
+                <div id="content">
+                    {{ static_content|safe }}
+                </div>
             {% endblock %}
-        </footer>
+            </div>
+        {% endblock %}
+
+        <link href="/static/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css" />
+        {% block post_content %}{% endblock %}
     </body>
+
 </html>
