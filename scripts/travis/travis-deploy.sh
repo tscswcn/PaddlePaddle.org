@@ -3,9 +3,9 @@ set -e
 
 export DEC_PASSWD="1234"
 
-if [ "$TRAVIS_BRANCH" != "master" ]; then
-    exit
-fi
+# if [ "$TRAVIS_BRANCH" != "develop" ]; then
+#     exit
+# fi
 
 # deploy to remote server
 openssl aes-256-cbc -d -a -in $TRAVIS_BUILD_DIR/scripts/travis/ubuntu.pem.enc -out ubuntu.pem -k $DEC_PASSWD
