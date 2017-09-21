@@ -1,0 +1,19 @@
+language: python
+sudo: required
+dist: trusty
+os:
+  - linux
+addons:
+  apt:
+    packages:
+      - git
+      - build-essential
+  ssh_known_hosts: 52.76.173.135
+before_install:
+  - chmod +x scripts/travis/travis-deploy.sh scripts/travis/ubuntu-docker-deploy.sh
+script:
+  - ./scripts/travis/travis-deploy.sh
+notifications:
+  email:
+    on_success: change
+    on_failure: always
