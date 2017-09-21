@@ -23,8 +23,8 @@ export TRAVIS_BUILD_DIR="<LOCAL_PADDLEPADDLE_ORG_SRC_DIR>"
 export SKIP_INSTALL="1"
 ```
 
-##### Execute deploy script
+##### From <PaddlePaddle_org_dir> (where Dockerfile is), Execute deploy script
 
 ```
-sh <PaddlePaddle_org_dir>/scripts/deploy.sh
+sh ./scripts/deploy.sh
 ```
