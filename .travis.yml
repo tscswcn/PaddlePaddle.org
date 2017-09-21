@@ -4,6 +4,8 @@ dist: trusty
 branches:
   only:
     - develop
+    - master
+    - /^release.*$/
 os:
   - linux
 services:
@@ -15,16 +17,11 @@ addons:
       - build-essential
   ssh_known_hosts: 52.76.173.135
 before_install:
-  - chmod +x scripts/travis/travis-deploy.sh scripts/travis/ubuntu-docker-deploy.sh
+  - chmod +x scripts/travis/build-docker.sh scripts/travis/deploy-image.sh
 script:
-  - docker --version  # document the version travis is using
-  - pip install --user awscli # install aws cli w/o sudo
-  - export PATH=$PATH:$HOME/.local/bin # put aws in the path
-  - eval $(aws ecr get-login --no-include-email --region ap-southeast-1) #needs AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY envvars
-  - docker build -t paddlepaddle.org .
-  - docker tag paddlepaddle.org:latest 330323714104.dkr.ecr.ap-southeast-1.amazonaws.com/paddlepaddle.org:latest
-  - docker push 330323714104.dkr.ecr.ap-southeast-1.amazonaws.com/paddlepaddle.org:latest
-  - ./scripts/travis/travis-deploy.sh
+  - ./scripts/travis/build-docker.sh
+before_deploy:
+  - ./scripts/travis/deploy-image.sh
 notifications:
   email:
     on_success: change
