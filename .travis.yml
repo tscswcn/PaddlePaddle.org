@@ -20,7 +20,6 @@ before_install:
   - chmod +x scripts/travis/build-docker.sh scripts/travis/deploy-image.sh
 script:
   - ./scripts/travis/build-docker.sh
-before_deploy:
   - ./scripts/travis/deploy-image.sh
 notifications:
   email:

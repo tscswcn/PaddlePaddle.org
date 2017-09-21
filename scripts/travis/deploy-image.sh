@@ -5,18 +5,21 @@ if [ "$TRAVIS_BRANCH" == "master" ]
 then
     # Production Deploy
     export DOCKER_IMAGE_TAG="latest"
+    export DOCKER_CONTAINER_NAME="paddlepaddle.org"
     export PORT=80
     export ENV=release
 elif [ "$TRAVIS_BRANCH" == ^release* ]
 then
     # Staging Deploy
     export DOCKER_IMAGE_TAG="staging"
+    export DOCKER_CONTAINER_NAME="staging.paddlepaddle.org"
     export PORT=81
     export ENV=release
 elif [ "$TRAVIS_BRANCH" == "develop" ]
 then
     # Development Deploy
     export DOCKER_IMAGE_TAG="develop"
+    export DOCKER_CONTAINER_NAME="develop.paddlepaddle.org"
     export PORT=82
     export ENV=development
 else
@@ -52,9 +55,9 @@ ssh -i ~/.ssh/ubuntu.pem ubuntu@$STAGE_DEPLOY_IP << EOF
   sudo bash
   eval $(aws ecr get-login --no-include-email --region ap-southeast-1)
   docker pull 330323714104.dkr.ecr.ap-southeast-1.amazonaws.com/paddlepaddle.org:${DOCKER_IMAGE_TAG}
-  docker stop paddlepaddle.org
-  docker rm paddlepaddle.org
-  docker run --name=paddlepaddle.org -d -p $PORT:8000 -e ENV=$ENV -e SECRET_KEY=$SECRET_KEY -v /var/content:/var/content 330323714104.dkr.ecr.ap-southeast-1.amazonaws.com/paddlepaddle.org:$DOCKER_IMAGE_TAG
+  docker stop $DOCKER_CONTAINER_NAME
+  docker rm $DOCKER_CONTAINER_NAME
+  docker run --name=$DOCKER_CONTAINER_NAME -d -p $PORT:8000 -e ENV=$ENV -e SECRET_KEY=$SECRET_KEY -v /var/content:/var/content 330323714104.dkr.ecr.ap-southeast-1.amazonaws.com/paddlepaddle.org:$DOCKER_IMAGE_TAG
 EOF
 
 chmod 644 ubuntu.pem
