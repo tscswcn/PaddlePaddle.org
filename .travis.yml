@@ -1,0 +1,27 @@
+language: ruby
+sudo: required
+dist: trusty
+branches:
+  only:
+    - develop
+    - master
+    - /^release.*$/
+os:
+  - linux
+services:
+  - docker
+addons:
+  apt:
+    packages:
+      - git
+      - build-essential
+  ssh_known_hosts: 52.76.173.135
+before_install:
+  - chmod +x scripts/travis/build-docker.sh scripts/travis/deploy-image.sh
+script:
+  - ./scripts/travis/build-docker.sh
+  - ./scripts/travis/deploy-image.sh
+notifications:
+  email:
+    on_success: change
+    on_failure: always

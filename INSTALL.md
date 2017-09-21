@@ -15,13 +15,13 @@ docker build -t paddlepaddle.org .
 ```
 
 ##### Run Docker Image
-**Note:**  Please contact product team (Varun, Jeff, Daming, Thuan) for the secret_key and external_template_dir
+**Note:**  Please contact product team (Varun, Jeff, Daming, Thuan) for the external_template_dir
 
 ###### Create portal.env file with the following variables
 
 ```
 ENV=development
-SECRET_KEY=<secret_key>
+SECRET_KEY="my_secret_key"
 ```
 
 ###### Run Docker Image
@@ -51,7 +51,7 @@ virtualenv venv
 ##### Add environment variables in venv/bin/activate
 ```
 export ENV="development"
-export SECRET_KEY="<secret_key>"
+export SECRET_KEY="my_secret_key"
 export EXTERNAL_TEMPLATE_DIR="<dir where external templates reside>"
 ```
 
@@ -89,44 +89,3 @@ cd <project-dir>/portal
 compass watch ./static/
 ```
 
-#### Manual Deployment
-
-##### Generate temporary login for AWS ECR
-
-```
-aws ecr get-login --no-include-email --region ap-southeast-1
-```
-
-##### Login to AWS registry from Docker CLI
-
-```
-docker login -u AWS -p <AWS_PASSWORD> https://330323714104.dkr.ecr.ap-southeast-1.amazonaws.com
-```
-
-##### Build, tag, and push image
-
-```
-cd <project-dir>
-docker build -t paddlepaddle.org .
-docker tag paddlepaddle.org:latest 330323714104.dkr.ecr.ap-southeast-1.amazonaws.com/paddlepaddle.org:latest
-docker push 330323714104.dkr.ecr.ap-southeast-1.amazonaws.com/paddlepaddle.org:latest
-``` 
-
-##### Login to VM
-
-```
-ssh -i ubuntu.pem ubuntu@52.76.173.135
-```
-
-##### From VM, login to AWS Registry from Docker CLI, then pull latest image
-
-```
-docker login -u AWS -p <AWS_PASSWORD> https://330323714104.dkr.ecr.ap-southeast-1.amazonaws.com
-docker pull 330323714104.dkr.ecr.ap-southeast-1.amazonaws.com/paddlepaddle.org:latest
-```
-
-##### Deploy Docker image from within VM
-
-```
-docker run -d -p 80:8000 --env-file portal.env -v /var/content:/var/content 330323714104.dkr.ecr.ap-southeast-1.amazonaws.com/paddlepaddle.org:latest
-```
