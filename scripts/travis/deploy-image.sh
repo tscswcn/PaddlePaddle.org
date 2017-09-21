@@ -49,7 +49,7 @@ chmod 400 ubuntu.pem
 
 ssh-add ubuntu.pem
 
-ssh -i ~/.ssh/ubuntu.pem ubuntu@$STAGE_DEPLOY_IP << EOF
+ssh -i ubuntu.pem ubuntu@$STAGE_DEPLOY_IP << EOF
   set -e
 
   sudo bash
