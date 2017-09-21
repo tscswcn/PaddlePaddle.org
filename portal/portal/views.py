@@ -3,19 +3,13 @@ import os
 import posixpath
 
 from django.template.loader import get_template
-from django.template.loader import render_to_string
-from django.http import HttpResponse
-from django.http import JsonResponse
 from django.shortcuts import render
 from django.conf import settings
 from django.utils.six.moves.urllib.parse import unquote
-from django.contrib.staticfiles import finders
-
 from django.http import Http404
 from django.views import static
-
-
 from django.template import TemplateDoesNotExist
+
 
 # Search the path and render the content
 # Return Page not found if the template is missing.
@@ -25,6 +19,7 @@ def _get_static_content_from_template(path):
         return static_content_template.render()
     except TemplateDoesNotExist:
         return "Page not found"
+
 
 def catch_all_handler(request, path=None):
     print "Catch All %s" % path
@@ -48,6 +43,7 @@ def catch_all_handler(request, path=None):
 
         return render(request, base_template, {'static_content': static_content_template.render()})
 
+
 def home_root(request):
     current_lang_code = request.LANGUAGE_CODE
     lang_def = {}
@@ -61,29 +57,35 @@ def home_root(request):
 
     return render(request, 'index.html', {'lang_def': lang_def})
 
+
 def book_root(request):
     path = settings.EXTERNAL_TEMPLATE_DIR + "/book/index.html"
     static_content = _get_static_content_from_template(path)
     return render(request, 'tutorial.html', {'static_content': static_content})
 
+
 def tutorial_root(request):
     path = 'tutorial.html'
     return render(request, path)
+
 
 def blog_root(request):
     path = settings.EXTERNAL_TEMPLATE_DIR + "/blog/index.html"
     static_content = _get_static_content_from_template(path)
     return render(request, 'blog.html', {'static_content': static_content})
 
+
 def blog_sub_path(request, path):
-    file_path = "%s/blog/%s" % (settings.EXTERNAL_TEMPLATE_DIR, path)
+    path = "%s/blog/%s" % (settings.EXTERNAL_TEMPLATE_DIR, path)
     static_content = _get_static_content_from_template(path)
     return render(request, 'blog.html', {'static_content': static_content})
+
 
 def documentation_root(request, version, language):
     path = "%s/documentation/%s/%s/html/index.html" % (settings.EXTERNAL_TEMPLATE_DIR, version, language)
     static_content = _get_static_content_from_template(path)
     return render(request, 'tutorial.html', {'static_content': static_content})
+
 
 def documentation_sub_path(request, version,  language, path=None):
     path = "%s/documentation/%s/%s/html/%s" % (settings.EXTERNAL_TEMPLATE_DIR, version, language, path)
@@ -94,10 +96,12 @@ def documentation_sub_path(request, version,  language, path=None):
         template = 'tutorial.html'
     return render(request, template, {'static_content': static_content, 'version': version})
 
+
 def models_root(request, version):
-    path = "%s/models/index/index.html" % (settings.EXTERNAL_TEMPLATE_DIR)
+    path = "%s/models/index/index.html" % settings.EXTERNAL_TEMPLATE_DIR
     static_content = _get_static_content_from_template(path)
     return render(request, 'documentation.html', {'static_content': static_content, 'version': version})
+
 
 def static_file_handler(request, path, extension, insecure=False, **kwargs):
     """
