@@ -32,6 +32,6 @@ PaddlePaddle.org integrates with Travis-CI to provide continuous deployments on 
 
 | Environment | Push to branch/tag | Docker Image | Deploys to |
 | ----------- |:------------------:|:------------:| ----------:|
-Development | develop | <DOCKER_REPO>/paddlepaddle.org:develop | staging.paddlepaddle.org |
+Development | develop | <DOCKER_REPO>/paddlepaddle.org:develop | staging.paddlepaddle.org:82 |
 Staging | release.\* | <DOCKER_REPO>/paddlepaddle.org:staging | staging.paddlepaddle.org:81 |
-Production | ^v\d+\.\d+(\.\d+)?(-\S\*)?$ | <DOCKER_REPO>/paddlepaddle.org:(latest/\<TAG\>) | staging.paddlepaddle.org |
+Production | ^v\d+\.\d+(\.\d+)?(-\S\*)?$ (i.e: v1.0) | <DOCKER_REPO>/paddlepaddle.org:(latest/\<TAG\>) | staging.paddlepaddle.org |
