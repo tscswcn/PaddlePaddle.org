@@ -39,7 +39,7 @@ eval $(aws ecr get-login --no-include-email --region ap-southeast-1) #needs AWS_
 docker tag paddlepaddle.org:"$DOCKER_IMAGE_TAG" 330323714104.dkr.ecr.ap-southeast-1.amazonaws.com/paddlepaddle.org:"$DOCKER_IMAGE_TAG"
 docker push 330323714104.dkr.ecr.ap-southeast-1.amazonaws.com/paddlepaddle.org:"$DOCKER_IMAGE_TAG"
 
-if [[ ! -z BUILD_TAG ]]
+if [[ ! -z $BUILD_TAG ]]
 then
 # For production builds, we also tag version, in case we need to revert
 docker tag paddlepaddle.org:"$DOCKER_IMAGE_TAG" 330323714104.dkr.ecr.ap-southeast-1.amazonaws.com/paddlepaddle.org:"$BUILD_TAG"
