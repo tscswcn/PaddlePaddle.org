@@ -4,7 +4,7 @@ dist: trusty
 branches:
   only:
     - develop
-    - master
+    - /^v\d+\.\d+(\.\d+)?(-\S*)?$/
     - /^release.*$/
 os:
   - linux
@@ -17,6 +17,8 @@ addons:
       - build-essential
   ssh_known_hosts: 52.76.173.135
 before_install:
+  - pip install --user awscli # install aws cli w/o sudo
+  - export PATH=$PATH:$HOME/.local/bin # put aws in the path
   - chmod +x scripts/travis/build-docker.sh scripts/travis/deploy-image.sh
 script:
   - ./scripts/travis/build-docker.sh
