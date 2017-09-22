@@ -1,4 +1,4 @@
-## Deployment Instructions
+## Manual Deployment Instructions
 
 **DEPENDENCIES:** 
 * Make sure your local build machine has Docker and AWS CLI installed.  
@@ -18,9 +18,6 @@ export SECRET_KEY="<SERVER_SECRET>"
 # THESE VARIABLES ARE GIVEN BY TRAVIS CI DURING BUILD
 export TRAVIS_BRANCH="develop"  # options are master (prod), develop (development), release (staging)
 export TRAVIS_BUILD_DIR="<LOCAL_PADDLEPADDLE_ORG_SRC_DIR>"
-
-# SET THIS TO 1 if you want to skip awscli install
-export SKIP_INSTALL="1"
 ```
 
 ##### From <PaddlePaddle_org_dir> (where Dockerfile is), Execute deploy script
@@ -28,3 +25,13 @@ export SKIP_INSTALL="1"
 ```
 sh ./scripts/deploy.sh
 ```
+
+## Continuous Integration using Travis-CI
+
+PaddlePaddle.org integrates with Travis-CI to provide continuous deployments on commits to **"develop"**, **"release.\*"**, and tags with pattern **"^v\d+\.\d+(\.\d+)?(-\S\*)?$"**
+
+| Environment | Push to branch/tag | Docker Image | Deploys to |
+| ----------- |:------------------:|:------------:| ----------:|
+Development | develop | <DOCKER_REPO>/paddlepaddle.org:develop | staging.paddlepaddle.org |
+Staging | release.\* | <DOCKER_REPO>/paddlepaddle.org:staging | staging.paddlepaddle.org:81 |
+Production | ^v\d+\.\d+(\.\d+)?(-\S\*)?$ | <DOCKER_REPO>/paddlepaddle.org:(latest/\<TAG\>) | staging.paddlepaddle.org |

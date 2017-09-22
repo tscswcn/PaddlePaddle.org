@@ -13,8 +13,5 @@ export SECRET_KEY="<SERVER_SECRET>"
 export TRAVIS_BRANCH="develop"  # options are master (prod), develop (development), release (staging)
 export TRAVIS_BUILD_DIR="<LOCAL_PADDLEPADDLE_ORG_SRC_DIR>"
 
-# SET THIS TO 1 if you want to skip awscli install
-export SKIP_INSTALL="1"
-
 ./scripts/travis/build-docker.sh
 ./scripts/travis/deploy-image.sh
