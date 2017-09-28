@@ -10,9 +10,13 @@ def load_all_sections():
     all_sections = {}
     for dir_path in file_dir_list:
         file_path = "%s/%s/site.json" % (settings.EXTERNAL_TEMPLATE_DIR, dir_path)
-        json_data = open(file_path).read()
-        data = json.loads(json_data)
-        all_sections.update(data)
+        try:
+            json_data = open(file_path).read()
+            data = json.loads(json_data)
+            all_sections.update(data)
+        except:
+            print "Missing site.json from %s" % file_path
+            pass
 
     return all_sections
 
