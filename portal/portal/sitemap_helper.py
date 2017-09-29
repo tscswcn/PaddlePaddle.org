@@ -2,8 +2,25 @@ import json
 from django.conf import settings
 
 
+
+SITEMAP_TEMLATE = {
+    "books": [
+        {
+            "id": "tutorial",
+            "name": "Tutorial",
+            "chapters": ["getting_started", "tutorial", "advanced"]
+        },
+        {
+            "id": "documentation",
+            "name": "Documentation",
+            "chapters": ["api", "advanced"]
+        }
+    ]
+}
+
+
 # Merge all site.json files
-def load_all_sections(lang=None):
+def _load_all_sections(lang=None):
     # Load from the external_drive
     lang_file_modifier = ""
     if lang == "zh":
@@ -24,39 +41,55 @@ def load_all_sections(lang=None):
     return all_sections
 
 
-# From all the sections, out a json file with all the tutorial related sections
-def load_tutorial_book(lang=None):
-    if lang == "zh":
-        sitemap_file_path = "tutorial_cn.json"
-    else:
-        sitemap_file_path = "tutorial.json"
+def _get_sitemap_file_path(lang):
+    return "sitemap.%s.json" % (lang)
 
+
+def _generate_sitemap(lang):
+    all_sections = _load_all_sections(lang)
+
+    sitemap = {}
+    for book in SITEMAP_TEMLATE["books"]:
+        book_map = {
+            "id": book["id"],
+            "name": book["name"],
+            "chapters": []
+        }
+
+        for chapter_id in book["chapters"]:
+            chapter_ref_map = all_sections.get(chapter_id, None)
+
+            if chapter_ref_map:
+                chapter_map = {
+                    "id": chapter_id
+                }
+                chapter_map.update(chapter_ref_map)
+                book_map["chapters"].append(chapter_map)
+
+                if 'sections' in chapter_ref_map:
+                    sections = chapter_ref_map['sections']
+                    if sections and "root_url" not in book_map :
+                        book_map["root_url"] = sections[0]["link"]
+
+        sitemap[book["id"]] = book_map
+
+
+    file_path = "%s/sitemap.%s.json" % (settings.EXTERNAL_TEMPLATE_DIR, lang)
+    with open(file_path, 'w') as fp:
+        json.dump(sitemap, fp)
+
+    return sitemap
+
+
+def get_root_navigation(lang):
     try:
-        # Check if there is an existing tutorial.json file already
-        # Reuse if possible
-        with open(sitemap_file_path) as json_data:
+        with open(_get_sitemap_file_path(lang)) as json_data:
             data = json.load(json_data)
             return data
     except IOError:
-        # tutorial.json is missing. Create a new one
-        chapters = ["getting_started", "tutorial", "advanced"]
-        tutorial_dict = {
-            "id": "tutorial",
-            "title": "Tutorial",
-        }
-
-        all_sections = load_all_sections(lang)
-        sections = []
-        for chapter_id in chapters:
-            if chapter_id in all_sections:
-                sections.append(all_sections[chapter_id])
-
-        tutorial_dict["chapters"] = sections
-
-        # NOTE! Only output the json file when we have elements in sections.
-        if sections:
-            with open(sitemap_file_path, 'w') as fp:
-                json.dump(tutorial_dict, fp)
+        return _generate_sitemap(lang)
 
 
-        return tutorial_dict
+def get_book_navigation(book_id, lang):
+    root_nav = get_root_navigation(lang)
+    return root_nav.get(book_id, None)

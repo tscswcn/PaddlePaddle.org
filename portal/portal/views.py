@@ -88,8 +88,8 @@ def blog_sub_path(request, path):
     return render(request, 'blog.html', context)
 
 
-def documentation_root(request, version, language):
-    path = "%s/documentation/%s/%s/html/index.html" % (settings.EXTERNAL_TEMPLATE_DIR, version, language)
+def documentation_root(request, language):
+    path = "%s/documentation/%s/html/index.html" % (settings.EXTERNAL_TEMPLATE_DIR, language)
 
     context = {
         'static_content': _get_static_content_from_template(path),
@@ -98,12 +98,11 @@ def documentation_root(request, version, language):
     return render(request, 'tutorial.html', context)
 
 
-def documentation_sub_path(request, version,  language, path=None):
-    path = "%s/documentation/%s/%s/html/%s" % (settings.EXTERNAL_TEMPLATE_DIR, version, language, path)
+def documentation_sub_path(request,  language, path=None):
+    path = "%s/documentation/%s/html/%s" % (settings.EXTERNAL_TEMPLATE_DIR, language, path)
 
     context = {
-        'static_content': _get_static_content_from_template(path),
-        'version': version,
+        'static_content': _get_static_content_from_template(path)
     }
 
     template = 'documentation.html'     # TODO[thuan]: do this in a less hacky way
