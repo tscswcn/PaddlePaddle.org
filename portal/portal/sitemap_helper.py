@@ -3,13 +3,16 @@ from django.conf import settings
 
 
 # Merge all site.json files
-def load_all_sections():
+def load_all_sections(lang=None):
     # Load from the external_drive
+    lang_file_modifier = ""
+    if lang == "zh":
+        lang_file_modifier = "_cn"
     file_dir_list = ["book", "blog", "documentation"]
 
     all_sections = {}
     for dir_path in file_dir_list:
-        file_path = "%s/%s/site.json" % (settings.EXTERNAL_TEMPLATE_DIR, dir_path)
+        file_path = "%s/%s/site%s.json" % (settings.EXTERNAL_TEMPLATE_DIR, dir_path, lang_file_modifier)
         try:
             json_data = open(file_path).read()
             data = json.loads(json_data)
@@ -22,11 +25,16 @@ def load_all_sections():
 
 
 # From all the sections, out a json file with all the tutorial related sections
-def load_tutorial_book():
+def load_tutorial_book(lang=None):
+    if lang == "zh":
+        sitemap_file_path = "tutorial_cn.json"
+    else:
+        sitemap_file_path = "tutorial.json"
+
     try:
         # Check if there is an existing tutorial.json file already
         # Reuse if possible
-        with open('tutorial.json') as json_data:
+        with open(sitemap_file_path) as json_data:
             data = json.load(json_data)
             return data
     except IOError:
@@ -37,14 +45,18 @@ def load_tutorial_book():
             "title": "Tutorial",
         }
 
-        all_sections = load_all_sections()
+        all_sections = load_all_sections(lang)
         sections = []
         for chapter_id in chapters:
             if chapter_id in all_sections:
                 sections.append(all_sections[chapter_id])
 
         tutorial_dict["chapters"] = sections
-        with open('tutorial.json', 'w') as fp:
-            json.dump(tutorial_dict, fp)
+
+        # NOTE! Only output the json file when we have elements in sections.
+        if sections:
+            with open(sitemap_file_path, 'w') as fp:
+                json.dump(tutorial_dict, fp)
+
 
         return tutorial_dict
