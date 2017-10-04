@@ -120,3 +120,20 @@ def content_links(context, book_id):
         'request': context.request,
         'side_nav_content': tutorial_nav_data
     }
+
+@register.inclusion_tag('_version_links.html', takes_context=True)
+def version_links(context, book_id):
+    versions = sitemap_helper.get_available_versions()
+    preferred_version = sitemap_helper.get_preferred_version(context.request)
+
+    is_hidden = True
+    if context.template and (context.template.name == 'tutorial.html' or context.template.name == 'documentation.html'):
+        is_hidden = False
+
+    return {
+        'request': context.request,
+        'version_list': versions,
+        'current_version': preferred_version,
+        'is_hidden': is_hidden
+    }
+

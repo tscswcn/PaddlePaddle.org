@@ -1,0 +1,13 @@
+{% load app_tags %}
+
+<form action="{% url 'set_version' %}" {% if is_hidden %} style=display:none; {% endif %} method="post">{% csrf_token %}
+    <input name="next" type="hidden" value="{{ redirect_to }}" />
+    <select name="preferred_version">
+        {% for version in version_list %}
+            <option value="{{ version }}"{% if version == current_version %} selected{% endif %}>
+                {{ version }}
+            </option>
+        {% endfor %}
+    </select>
+    <input type="submit" value="Go" />
+</form>

@@ -1,7 +1,7 @@
 import os
 
 import json
-
+import os
 from django.conf import settings
 from django.core.cache import cache
 
@@ -132,6 +132,7 @@ def get_book_navigation(book_id, version):
 def get_doc_subpath(version):
     return "docs/%s/" % version
 
+
 def _get_book_path(version):
     return "%s/%ssite.json" % (settings.EXTERNAL_TEMPLATE_DIR, get_doc_subpath(version))
 
@@ -142,3 +143,10 @@ def _get_sitemap_path(version):
 
 def _get_chapter_path(version, module):
     return "%s/%s%s/site.json" % (settings.EXTERNAL_TEMPLATE_DIR, get_doc_subpath(version), module)
+
+
+def get_available_versions():
+    path = '%s/docs' % settings.EXTERNAL_TEMPLATE_DIR
+    for root, dirs, files in os.walk(path):
+        if root == path:
+            return dirs

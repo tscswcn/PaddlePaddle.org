@@ -50,7 +50,7 @@ def book_sub_path(request, version, path):
     return render(request, 'tutorial.html', context)
 
 def change_version(request):
-    preferred_version = request.GET.get('preferred_version', settings.DEFAULT_DOC_VERSION)
+    preferred_version = request.POST.get('preferred_version', settings.DEFAULT_DOC_VERSION)
     sitemap_helper.set_preferred_version(request, preferred_version)
     return tutorial_root(request)
 
