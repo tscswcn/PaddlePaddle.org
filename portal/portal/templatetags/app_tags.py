@@ -1,5 +1,6 @@
 from django import template
 from portal import sitemap_helper
+from django.conf import settings
 
 # TODO[Thuan]: Move to external file
 TUTORIAL_NAV_DATA = {
@@ -99,18 +100,23 @@ def apply_class_if_template(context, template_file_name, class_name):
 
 @register.inclusion_tag('_nav_bar.html', takes_context=True)
 def nav_bar(context):
-    #TODO[thuan]: Load content links for book with id
-    root_navigation = sitemap_helper.get_root_navigation('en')
+    root_navigation = sitemap_helper.get_sitemap(
+        sitemap_helper.get_preferred_version(context.request)
+    )
     return {
         'request': context.request,
         'template': context.template,
-        'root_nav': root_navigation
+        'root_nav': root_navigation,
+        'doc_mode': settings.DOC_MODE
     }
 
 @register.inclusion_tag('_content_links.html', takes_context=True)
 def content_links(context, book_id):
-    #TODO[thuan]: Load content links for book with id
-    tutorial_nav_data = sitemap_helper.get_book_navigation('tutorial', 'en')
+    # import pdb; pdb.set_trace()
+    tutorial_nav_data = sitemap_helper.get_book_navigation(
+        book_id,
+        sitemap_helper.get_preferred_version(context.request)
+    )
     return {
         'request': context.request,
         'side_nav_content': tutorial_nav_data

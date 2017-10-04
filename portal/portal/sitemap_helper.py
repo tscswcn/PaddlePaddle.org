@@ -1,95 +1,144 @@
+import os
+
 import json
+
 from django.conf import settings
+from django.core.cache import cache
 
 
+def get_sitemap(version):
+    cache_key = 'sitemap.%s' % version
+    sitemap_cache = cache.get(cache_key, None)
 
-SITEMAP_TEMLATE = {
-    "books": [
-        {
-            "id": "tutorial",
-            "name": "Tutorial",
-            "chapters": ["getting_started", "tutorial", "advanced"]
-        },
-        {
-            "id": "documentation",
-            "name": "Documentation",
-            "chapters": ["api", "advanced"]
-        }
-    ]
-}
+    if not sitemap_cache:
+        sitemap_cache = _load_sitemap_from_file(version)
+
+        if sitemap_cache:
+            timeout = 5 if settings.DEBUG else 60
+            cache.set(cache_key, sitemap_cache, timeout)
+
+    return sitemap_cache
 
 
-# Merge all site.json files
-def _load_all_sections(lang=None):
-    # Load from the external_drive
-    lang_file_modifier = ""
-    if lang == "zh":
-        lang_file_modifier = "_cn"
-    file_dir_list = ["book", "blog", "documentation"]
+def _load_sitemap_from_file(version):
+    sitemap = None
 
-    all_sections = {}
-    for dir_path in file_dir_list:
-        file_path = "%s/%s/site%s.json" % (settings.EXTERNAL_TEMPLATE_DIR, dir_path, lang_file_modifier)
+    file_path = _get_sitemap_path(version)
+
+    if os.path.isfile(file_path):
+        # Sitemap file exists, lets load it
         try:
+            print "Loading sitemap from %s" % file_path
             json_data = open(file_path).read()
-            data = json.loads(json_data)
-            all_sections.update(data)
-        except:
-            print "Missing site.json from %s" % file_path
-            pass
-
-    return all_sections
-
-
-def _get_sitemap_file_path(lang):
-    return "sitemap.%s.json" % (lang)
-
-
-def _generate_sitemap(lang):
-    all_sections = _load_all_sections(lang)
-
-    sitemap = {}
-    for book in SITEMAP_TEMLATE["books"]:
-        book_map = {
-            "id": book["id"],
-            "name": book["name"],
-            "chapters": []
-        }
-
-        for chapter_id in book["chapters"]:
-            chapter_ref_map = all_sections.get(chapter_id, None)
-
-            if chapter_ref_map:
-                chapter_map = {
-                    "id": chapter_id
-                }
-                chapter_map.update(chapter_ref_map)
-                book_map["chapters"].append(chapter_map)
-
-                if 'sections' in chapter_ref_map:
-                    sections = chapter_ref_map['sections']
-                    if sections and "root_url" not in book_map :
-                        book_map["root_url"] = sections[0]["link"]
-
-        sitemap[book["id"]] = book_map
-
-
-    file_path = "%s/sitemap.%s.json" % (settings.EXTERNAL_TEMPLATE_DIR, lang)
-    with open(file_path, 'w') as fp:
-        json.dump(sitemap, fp)
+            sitemap = json.loads(json_data)
+        except Exception as e:
+            print "Cannot load sitemap from file %s: %s" % (file_path, e.message)
+    else:
+        sitemap = generate_sitemap(version)
 
     return sitemap
 
 
-def get_root_navigation(lang):
+def get_preferred_version(request):
+    preferred_version = settings.DEFAULT_DOC_VERSION
+    if request and 'preferred_version' in request.session:
+        preferred_version = request.session['preferred_version']
+
+    return preferred_version
+
+
+def set_preferred_version(request, preferred_version):
+    if request and preferred_version:
+        request.session['preferred_version'] = preferred_version
+
+
+def generate_sitemap(version):
+    book_template_path = _get_book_path(version)
     try:
-        with open(_get_sitemap_file_path(lang)) as json_data:
-            data = json.load(json_data)
-            return data
-    except IOError:
-        return _generate_sitemap(lang)
+        print "Generating sitemap from %s" % book_template_path
+        book_template_str = open(book_template_path).read()
+        book_template = json.loads(book_template_str)
+
+        sitemap = {}
+        all_sections = _load_all_sections(version)
+        for book in book_template["books"]:
+            book_map = {
+                "id": book["id"],
+                "name": book["name"],
+                "chapters": []
+            }
+
+            for chapter_id in book["chapters"]:
+                chapter_ref_map = all_sections.get(chapter_id, None)
+
+                if chapter_ref_map:
+                    chapter_map = {
+                        "id": chapter_id
+                    }
+                    chapter_map.update(chapter_ref_map)
+                    book_map["chapters"].append(chapter_map)
+
+                    if 'sections' in chapter_ref_map:
+                        sections = chapter_ref_map['sections']
+
+                        for section in sections:
+                            if "link" in section:
+                                section["link"] = "/%s%s" % (get_doc_subpath(version), section["link"].strip("/"))
+                                if "root_url" not in book_map:
+                                    book_map["root_url"] = section["link"]
+
+            sitemap[book["id"]] = book_map
+
+        sitemap_path = _get_sitemap_path(version)
+        with open(sitemap_path, 'w') as fp:
+            json.dump(sitemap, fp)
+
+        return sitemap
+    except Exception as e:
+        print "Cannot generate sitemap: %s" % e
+        return None
 
 
-def get_book_navigation(book_id, lang):
-    root_nav = get_root_navigation(lang)
+# Merge all site.json files
+def _load_all_sections(version):
+    # Load from the externalTemplates
+    module_list = ["book", "documentation"]
+
+    all_sections = {}
+    for module_name in module_list:
+        chapter_path = _get_chapter_path(version, module_name)
+        try:
+            chapter_data = open(chapter_path).read()
+            chapter = json.loads(chapter_data)
+
+            for key, value in chapter.iteritems():
+                all_sections["%s.%s" % (module_name, key)] = value
+        except:
+            print "Missing site.json from %s" % chapter_path
+
+    return all_sections
+
+
+def get_book_navigation(book_id, version):
+    root_nav = get_sitemap(version)
     return root_nav.get(book_id, None)
+
+
+def get_doc_subpath(version):
+    return "docs/%s/" % version
+
+def _get_book_path(version):
+    return "%s/%ssite.json" % (settings.EXTERNAL_TEMPLATE_DIR, get_doc_subpath(version))
+
+
+def _get_sitemap_path(version):
+    return "%s/%ssitemap.json" % (settings.EXTERNAL_TEMPLATE_DIR, get_doc_subpath(version))
+
+
+def _get_chapter_path(version, module):
+    return "%s/%s%s/site.json" % (settings.EXTERNAL_TEMPLATE_DIR, get_doc_subpath(version), module)
+
+
+if settings.DOC_MODE:
+    # Re-generate sitemap on startup if in documentation mode
+    generate_sitemap(settings.DEFAULT_DOC_VERSION)

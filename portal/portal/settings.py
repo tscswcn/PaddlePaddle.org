@@ -25,6 +25,8 @@ SECRET_KEY = os.environ['SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True if os.environ.get('ENV', None) == 'development' else False
+DOC_MODE = True if os.environ.get('DOC_MODE', '0') == '1' else False
+DEFAULT_DOC_VERSION = "develop" if not DOC_MODE else "doc_test"
 
 if DEBUG:
     ALLOWED_HOSTS = ['localhost', '127.0.0.1']
@@ -51,6 +53,8 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.security.SecurityMiddleware',
 )
 
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+
 ROOT_URLCONF = 'portal.urls'
 
 TEMPLATE_DIR = os.path.join(BASE_DIR, 'portal/templates')
@@ -72,6 +76,12 @@ TEMPLATES = [
         },
     },
 ]
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache'
+    }
+}
 
 WSGI_APPLICATION = 'portal.wsgi.application'
 
