@@ -3,8 +3,8 @@
 
 <form action="{% url 'set_version' %}" class="version-toggler{% if is_hidden %} invisible{% endif %}" method="post">{% csrf_token %}
     <div class="btn-group">
-        <button class="selected-version" type="button" data-toggle="dropdown">
-            <span class="selection">version: {{ current_version }}</span><span class="caret"></span>
+        <button class="selected-version btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            {{ current_version }}
         </button>
         <ul class="dropdown-menu" role="menu">
             {% for version in version_list %}
