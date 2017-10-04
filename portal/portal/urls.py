@@ -34,7 +34,7 @@ urlpatterns = [
     url(r'^docs/(?P<version>.*)/documentation/(?P<language>.*)/html/$', views.documentation_root),
     url(r'^docs/(?P<version>.*)/documentation/(?P<language>.*)/html/(?P<path>.*)$', views.documentation_sub_path),
     url(r'^models/(?P<version>.*)/$', views.models_root),
-    url(r'^change-version$', views.change_version)
+    url(r'^change-version$', views.change_version, name='set_version')
 ]
 
 urlpatterns += i18n_patterns(

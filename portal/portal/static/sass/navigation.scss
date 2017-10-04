@@ -38,6 +38,29 @@
        }
      }
   }
+
+  .version-toggler {
+    height: 100%;
+
+    .btn-group {
+      border: none;
+      height: 100%;
+
+      button {
+        border: 1px solid white;
+      }
+
+      .selected-version {
+        height: 100%;
+        color: white;
+        background-color: transparent;
+      }
+
+      .dropdown-toggle::after {
+        vertical-align: .1em;
+      }
+    }
+  }
 }
 
 body {
