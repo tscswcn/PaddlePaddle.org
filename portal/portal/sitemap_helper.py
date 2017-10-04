@@ -142,8 +142,3 @@ def _get_sitemap_path(version):
 
 def _get_chapter_path(version, module):
     return "%s/%s%s/site.json" % (settings.EXTERNAL_TEMPLATE_DIR, get_doc_subpath(version), module)
-
-
-if settings.DOC_MODE:
-    # Re-generate sitemap on startup if in documentation mode
-    generate_sitemap(settings.DEFAULT_DOC_VERSION)
