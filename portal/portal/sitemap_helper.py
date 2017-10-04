@@ -16,6 +16,8 @@ def get_sitemap(version):
         if sitemap_cache:
             timeout = 5 if settings.DEBUG else 60
             cache.set(cache_key, sitemap_cache, timeout)
+        else:
+            raise Exception("Cannot generate sitemap for version %s" % version)
 
     return sitemap_cache
 
@@ -81,6 +83,9 @@ def generate_sitemap(version):
                     if 'sections' in chapter_ref_map:
                         sections = chapter_ref_map['sections']
 
+                        # Go through each section link and prepend a /docs/version.  This allow relative links in the
+                        # corresponding site.json to be mapped correctly to the local directory structure.
+                        # Also set the root_url (which is the first section's link) on each book.
                         for section in sections:
                             if "link" in section:
                                 section["link"] = "/%s%s" % (get_doc_subpath(version), section["link"].strip("/"))

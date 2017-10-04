@@ -112,7 +112,6 @@ def nav_bar(context):
 
 @register.inclusion_tag('_content_links.html', takes_context=True)
 def content_links(context, book_id):
-    # import pdb; pdb.set_trace()
     tutorial_nav_data = sitemap_helper.get_book_navigation(
         book_id,
         sitemap_helper.get_preferred_version(context.request)
