@@ -10,6 +10,8 @@ from django.http import Http404
 from django.views import static
 from django.template import TemplateDoesNotExist
 
+from portal import sitemap_helper
+
 
 # Search the path and render the content
 # Return Page not found if the template is missing.
@@ -18,47 +20,27 @@ def _get_static_content_from_template(path):
         static_content_template = get_template(path)
         return static_content_template.render()
     except TemplateDoesNotExist:
-        return "Page not found"
-
-
-def catch_all_handler(request, path=None):
-    print "Catch All %s" % path
-
-    base_template = '_base_nav.html'
-    if request.GET.get("iframe", '0') == '1':
-        base_template = '_base.html'
-
-    # Resolve path based on template.
-
-    if path:
-        # if '/' in path:
-        #     return render(request, settings.CONTENT_DIR + '/' + path + '.html', {
-        #         'path': path
-        #     })
-        # else:
-        # Return the index of the app's documentation.
-
-        # TODO: Test nested paths to make sure they pull correctly
-        static_content_template = get_template(path)
-
-        return render(request, base_template, {'static_content': static_content_template.render()})
+        return "Page not found: %s" % path
 
 
 def home_root(request):
-    current_lang_code = request.LANGUAGE_CODE
-    lang_def = {}
-    if current_lang_code:
-        if current_lang_code == "en":
-            lang_def['label'] = u"中文"
-            lang_def['link'] = "/zh/"
-        else:
-            lang_def['label'] = "English"
-            lang_def['link'] = "/en/"
+    if settings.DOC_MODE:
+        return tutorial_root(request)
+    else:
+        current_lang_code = request.LANGUAGE_CODE
+        lang_def = {}
+        if current_lang_code:
+            if current_lang_code == "en":
+                lang_def['label'] = u"中文"
+                lang_def['link'] = "/zh/"
+            else:
+                lang_def['label'] = "English"
+                lang_def['link'] = "/en/"
 
-    return render(request, 'index.html', {'lang_def': lang_def})
+        return render(request, 'index.html', {'lang_def': lang_def})
 
-def book_sub_path(request, path):
-    path = "%s/book/%s" % (settings.EXTERNAL_TEMPLATE_DIR, path)
+def book_sub_path(request, version, path):
+    path = "%s/%sbook/%s" % (settings.EXTERNAL_TEMPLATE_DIR, sitemap_helper.get_doc_subpath(version), path)
     static_content = _get_static_content_from_template(path)
 
     context = {
@@ -67,8 +49,17 @@ def book_sub_path(request, path):
 
     return render(request, 'tutorial.html', context)
 
+def change_version(request):
+    preferred_version = request.GET.get('preferred_version', settings.DEFAULT_DOC_VERSION)
+    sitemap_helper.set_preferred_version(request, preferred_version)
+    return tutorial_root(request)
+
+
 def tutorial_root(request):
-    return redirect('/documentation/develop/en/html/getstarted/index_en.html')
+    root_navigation = sitemap_helper.get_sitemap(sitemap_helper.get_preferred_version(request))
+    tutorial_nav = root_navigation['tutorial']['root_url']
+    return redirect(tutorial_nav)
+
 
 def blog_root(request):
     path = settings.EXTERNAL_TEMPLATE_DIR + "/blog/index.html"
@@ -89,7 +80,8 @@ def blog_sub_path(request, path):
 
 
 def documentation_root(request, version, language):
-    path = "%s/documentation/%s/%s/html/index.html" % (settings.EXTERNAL_TEMPLATE_DIR, version, language)
+    path = "%s/%sdocumentation/%s/html/index.html" % \
+           (settings.EXTERNAL_TEMPLATE_DIR, sitemap_helper.get_doc_subpath(version), language)
 
     context = {
         'static_content': _get_static_content_from_template(path),
@@ -98,12 +90,12 @@ def documentation_root(request, version, language):
     return render(request, 'tutorial.html', context)
 
 
-def documentation_sub_path(request, version,  language, path=None):
-    path = "%s/documentation/%s/%s/html/%s" % (settings.EXTERNAL_TEMPLATE_DIR, version, language, path)
+def documentation_sub_path(request, version, language, path=None):
+    path = "%s/%sdocumentation/%s/html/%s" % \
+           (settings.EXTERNAL_TEMPLATE_DIR, sitemap_helper.get_doc_subpath(version), language, path)
 
     context = {
-        'static_content': _get_static_content_from_template(path),
-        'version': version,
+        'static_content': _get_static_content_from_template(path)
     }
 
     template = 'documentation.html'     # TODO[thuan]: do this in a less hacky way
