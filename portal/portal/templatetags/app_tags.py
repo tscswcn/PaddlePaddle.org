@@ -79,6 +79,27 @@ TUTORIAL_NAV_DATA = {
 
 register = template.Library()
 
+# The leaf node of the sitemap.json could be a dictionary of a string
+# When encountering a dictionary leaf node, load the value associated with the current language code
+@register.simple_tag(takes_context=True)
+def translation(context, leaf_node):
+    result = None
+
+    if isinstance(leaf_node, basestring):
+        result = leaf_node
+    elif isinstance(leaf_node, dict):
+        current_lang_code = context.request.LANGUAGE_CODE
+
+        if current_lang_code in leaf_node:
+            result = leaf_node[current_lang_code]
+
+    return result
+
+
+@register.assignment_tag(takes_context=True)
+def translation_assignment(context, leaf_node):
+    return translation(context, leaf_node)
+
 
 @register.filter(name='links')
 def links(chapter):
