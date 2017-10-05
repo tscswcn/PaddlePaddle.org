@@ -20,7 +20,7 @@
 
                 {% if not doc_mode %}
                 <li class="nav-item{% apply_class_if_template 'blog.html' ' active' %}">
-                    <a class="nav-link" href="{% url 'blog_root' %}">Blog</a>
+                    <a class="nav-link" href="{% url 'blog_root' %}">{% trans "Blog" %}</a>
                 </li>
                 <li class="nav-divider"></li>
                 </li>
