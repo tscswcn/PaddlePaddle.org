@@ -6,10 +6,11 @@
         <button class="selected-version btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             {{ current_version }}
         </button>
-        <ul class="dropdown-menu" role="menu">
+
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
             {% for version in version_list %}
-            <li><a href="{% url 'set_version' %}?preferred_version={{ version }}">{{ version }}</a></li>
+            <a class="dropdown-item" href="{% url 'set_version' %}?preferred_version={{ version }}">{{ version }}</a>
             {% endfor %}
-        </ul>
+        </div>
     </div>
 </form>
