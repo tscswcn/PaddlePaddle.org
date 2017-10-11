@@ -1,0 +1,144 @@
+{
+  "tutorial": {
+    "getting_started": {
+      "title": {
+        "en": "Getting Started",
+        "zh": "新手入门"
+      },
+      "sections": [
+        {
+          "title": {
+            "en": "Installation",
+            "zh": "安装与编译"
+          },
+          "link": {
+            "en": "/documentation/en/getstarted/build_and_install/index_en.html",
+            "zh": "/documentation/cn/getstarted/build_and_install/index_cn.html"
+          }
+        }
+      ]
+    },
+    "Learn": {
+      "title": {
+        "en": "Learn",
+        "zh": "学习"
+      },
+      "sections": [
+        {
+          "title": {
+            "en": "Writing a layer",
+            "zh": "实现新的网络层"
+          },
+          "link": {
+            "en": "/documentation/en/howto/dev/new_layer_en.html",
+            "zh": "/documentation/cn/howto/dev/new_layer_cn.html"
+          }
+        },
+        {
+          "title": {
+            "en": "application",
+            "zh": "????"
+          },
+          "sections": [
+            {
+              "title": {
+                "en": "temp",
+                "zh": "????"
+              },
+              "link": {
+                "en": "/documentation/en/howto/dev/new_layer_en.html",
+                "zh": "/documentation/en/howto/dev/new_layer_cn.html"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "advanced": {
+      "title": {
+        "en": "Advanced",
+        "zh": "进阶指南"
+      },
+      "sections": [
+        {
+          "title": {
+            "en": "Building from source",
+            "zh": "安装与编译"
+          },
+          "link": {
+            "en": "/documentation/en/getstarted/build_and_install/build_from_source_en.html",
+            "zh": "/documentation/cn/getstarted/build_and_install/build_from_source_cn.html"
+          }
+        },
+        {
+          "title": {
+            "en": "Distributed Training on Kubernetes",
+            "zh": "Kubernetes分布式训练"
+          },
+          "link": {
+            "en": "/documentation/en/howto/usage/k8s/k8s_en.html",
+            "zh": "/documentation/cn/howto/usage/k8s/k8s_cn.html"
+          }
+        },
+        {
+          "title": {
+            "en": "GPU Optimization",
+            "zh": "GPU性能分析与调优"
+          },
+          "link": {
+            "en": "/documentation/en/howto/optimization/gpu_profiling_en.html",
+            "zh": "/documentation/cn/howto/optimization/gpu_profiling_cn.html"
+          }
+        }
+      ]
+    },
+    "Contribute": {
+      "title": {
+        "en": "Contribute",
+        "zh": "如何贡献代码"
+      },
+      "link": {
+        "en": "/documentation/en/howto/dev/contribute_to_paddle_en.html",
+        "zh": "/documentation/cn/howto/dev/contribute_to_paddle_cn.html"
+      }
+    }
+  },
+  "documentation": {
+    "api": {
+      "title": {
+        "en": "API",
+        "zh": "API"
+      },
+      "sections": [
+        {
+          "title": {
+            "en": "API",
+            "zh": "API"
+          },
+          "link": {
+            "en": "/documentation/en/api/index_en.html",
+            "zh": "/documentation/cn/api/index_cn.html"
+          }
+        }
+      ]
+    },
+    "models": {
+      "title": {
+        "en": "Models",
+        "zh": "模型"
+      },
+      "sections": [
+        {
+          "title": {
+            "en": "Models",
+            "zh": "模型"
+          },
+          "link": {
+            "en": "/models/index/index.html",
+            "zh": "/models/index/index.html"
+          }
+        }
+      ]
+    }
+  }
+}
