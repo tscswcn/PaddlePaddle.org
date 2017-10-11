@@ -21,18 +21,16 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         book_repo_path = 'git@github.com:PaddlePaddle/book.git'
         models_repo_path = 'git@github.com:PaddlePaddle/models.git'
+        blog_repo_path = 'git@github.com:PaddlePaddle/blog.git'
+        documentations_repo_path = 'git@github.com:PaddlePaddle/Paddle.git'
 
         temp_dir = '%s/tmp_repo' % tempfile.gettempdir()
         book_dir = '%s/book' % temp_dir
         models_dir = '%s/models' % temp_dir
+        documentations_dir = '%s/documentations' % temp_dir
 
         print 'Temp working dir: %s' % temp_dir
         try:
-            # Clone Repos
-            print "Pulling repos"
-            Repo.clone_from(book_repo_path, book_dir)
-            Repo.clone_from(models_repo_path, models_dir)
-
             # Set dest_dict
             dest_dir_list = options['dest_dir']
             dest_dir = dest_dir_list[0] if dest_dir_list else None
@@ -42,8 +40,30 @@ class Command(BaseCommand):
             else:
                 print "Destination: %s" % dest_dir
 
+            # Clone Repos
+            print "Clone Book repo"
+            Repo.clone_from(book_repo_path, book_dir)
+
+            print "Clone Models repo"
+            Repo.clone_from(models_repo_path, models_dir)
+
+            print "Clone Documentations repo"
+            Repo.clone_from(documentations_repo_path, documentations_dir)
+
+            # Blog is not versioned. Pull the master branch to update contents.
+            blog_dir = '%s/blog' % dest_dir
+            if os.path.exists(blog_dir):
+                print "Update existing Blog repo"
+                blog_repo = Repo(blog_dir)
+                blog_repo.git.checkout('master')
+                blog_repo.git.pull()
+            else:
+                print "Clone Blog repo"
+                Repo.clone_from(blog_repo_path, blog_dir)
+
             book_repo = Repo(book_dir)
             models_repo = Repo(models_dir)
+            documentations_repo = Repo(documentations_dir)
 
             if 'version' in options:
                 for version in options['version']:
@@ -62,6 +82,9 @@ class Command(BaseCommand):
 
                     models_doc_dest = '%s/models' % version_dir
                     self._copy_content(models_repo, version, models_dir, models_doc_dest, 'Models')
+
+                    documentations_doc_dest = '%s/documentation' % version_dir
+                    self._copy_content(documentations_repo, version, documentations_dir, documentations_doc_dest, 'Documentations')
 
         except Exception as e:
             print 'Unexpected error cloning repos: %s' % e
