@@ -95,12 +95,28 @@
     "Contribute": {
       "title": {
         "en": "Contribute",
-        "zh": "如何贡献代码"
+        "zh": "如何贡献"
       },
-      "link": {
-        "en": "/documentation/en/howto/dev/contribute_to_paddle_en.html",
-        "zh": "/documentation/cn/howto/dev/contribute_to_paddle_cn.html"
-      }
+      "sections": [
+        {
+          "title": {
+            "zh": "如何贡献/修改文档"
+          },
+          "link": {
+            "zh": "/documentation/cn/howto/dev/write_docs_cn.html"
+          }
+        },
+        {
+          "title": {
+            "en": "Contribute Code",
+            "zh": "如何贡献代码"
+          },
+          "link": {
+            "en": "/documentation/en/howto/dev/contribute_to_paddle_en.html",
+            "zh": "/documentation/cn/howto/dev/contribute_to_paddle_cn.html"
+          }
+        }
+      ]
     }
   },
   "documentation": {
