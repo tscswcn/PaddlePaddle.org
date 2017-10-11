@@ -11,7 +11,7 @@ from git.exc import GitCommandError
 # The class must be named Command, and subclass BaseCommand
 class Command(BaseCommand):
     # Show this when the user types help
-    help = "Usage: python manage.py pull_docs <version>"
+    help = "Usage: python manage.py pull_docs <version> <dest_dir>"
 
     def add_arguments(self, parser):
         parser.add_argument('version', nargs='+')
@@ -57,38 +57,29 @@ class Command(BaseCommand):
 
                     print "Start copying version: %s into dest dir" % version
 
-                    try:
-                        book_repo.git.checkout(version)
-                        book_doc_dest = '%s/book' % version_dir
-                        print "Copy Book data to %s" % book_doc_dest
-                        shutil.copytree(book_dir, book_doc_dest, symlinks=True)
-                    except GitCommandError:
-                        print "Skip Book content. Unable to checkout %s branch on Book repo!" % version
-                    except OSError:
-                        print "Skip Book content. Content exists already"
-                    except Exception as e:
-                        print e
-                        print "Skip Book content. Unknown exception"
+                    book_doc_dest = '%s/book' % version_dir
+                    self._copy_content(book_repo, version, book_dir, book_doc_dest, 'Book')
 
-                    try:
-                        models_repo.git.checkout(version)
-                        models_doc_dest = '%s/models' % version_dir
-                        print "Copy Models data to %s" % models_doc_dest
-                        shutil.copytree(models_dir, models_doc_dest, symlinks=True)
-                    except GitCommandError:
-                        print "Skip Models content. Unable to checkout %s branch on Models repo!" % version
-                    except OSError:
-                        print "Skip Models content. Content exists already"
-                    except Exception as e:
-                        print e
-                        print "Skip Models content. Unknown exception"
+                    models_doc_dest = '%s/models' % version_dir
+                    self._copy_content(models_repo, version, models_dir, models_doc_dest, 'Models')
 
         except Exception as e:
-            print e.__class__
-            print e
+            print 'Unexpected error cloning repos: %s' % e
         finally:
             # Clean up the temp folder
             if os.path.exists(temp_dir):
                 print 'Remove temp content dir'
                 shutil.rmtree(temp_dir)
             print "BYE"
+
+    def _copy_content(self, repo, version, doc_src, doc_dest, name):
+        try:
+            repo.git.checkout(version)
+            print "Copy %s data to %s" % (name, doc_dest)
+            shutil.copytree(doc_src, doc_dest, symlinks=True)
+        except GitCommandError as e:
+            print "Skip %s content. Unable to checkout %s branch! Exception: %s" % (name, version, e)
+        except OSError as e:
+            print "Skip %s content. Content exists already. Exception: %s" % (name, e)
+        except Exception as e:
+            print "Skip %s Content. Exception: %s" % (name, e)
