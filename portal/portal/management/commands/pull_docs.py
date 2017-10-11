@@ -21,6 +21,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         book_repo_path = 'git@github.com:PaddlePaddle/book.git'
         models_repo_path = 'git@github.com:PaddlePaddle/models.git'
+        blog_repo_path = 'git@github.com:PaddlePaddle/blog.git'
 
         temp_dir = '%s/tmp_repo' % tempfile.gettempdir()
         book_dir = '%s/book' % temp_dir
@@ -28,11 +29,6 @@ class Command(BaseCommand):
 
         print 'Temp working dir: %s' % temp_dir
         try:
-            # Clone Repos
-            print "Pulling repos"
-            Repo.clone_from(book_repo_path, book_dir)
-            Repo.clone_from(models_repo_path, models_dir)
-
             # Set dest_dict
             dest_dir_list = options['dest_dir']
             dest_dir = dest_dir_list[0] if dest_dir_list else None
@@ -41,6 +37,24 @@ class Command(BaseCommand):
                 raise "No dest_dir specified"
             else:
                 print "Destination: %s" % dest_dir
+
+            # Clone Repos
+            print "Clone Book repo"
+            Repo.clone_from(book_repo_path, book_dir)
+
+            print "Clone Models repo"
+            Repo.clone_from(models_repo_path, models_dir)
+
+            # Blog is not versioned. Pull the master branch to update contents.
+            blog_dir = '%s/blog' % dest_dir
+            if os.path.exists(blog_dir):
+                print "Update existing Blog repo"
+                blog_repo = Repo(blog_dir)
+                blog_repo.git.checkout('master')
+                blog_repo.git.pull()
+            else:
+                print "Clone Blog repo"
+                Repo.clone_from(blog_repo_path, blog_dir)
 
             book_repo = Repo(book_dir)
             models_repo = Repo(models_dir)
