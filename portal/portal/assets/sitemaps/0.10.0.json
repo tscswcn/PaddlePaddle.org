@@ -36,20 +36,91 @@
         },
         {
           "title": {
-            "en": "application",
-            "zh": "????"
+            "en": "Popular application",
+            "zh": "常見应用"
           },
-          "sections": [
-            {
-              "title": {
-                "en": "temp",
-                "zh": "????"
+          "sub_sections": [
+
+              {
+                "link": {
+                  "en": "/book/01.fit_a_line/index.html",
+                  "zh": "/book/01.fit_a_line/index.cn.html"
+                },
+                "title": {
+                  "en": "fit a line",
+                  "zh": "新手入门"
+                }
               },
-              "link": {
-                "en": "/documentation/en/howto/dev/new_layer_en.html",
-                "zh": "/documentation/en/howto/dev/new_layer_cn.html"
+              {
+                "link": {
+                  "en": "/book/02.recognize_digits/index.html",
+                  "zh": "/book/02.recognize_digits/index.cn.html"
+                },
+                "title": {
+                  "en": "recognize digits",
+                  "zh": "识别数字"
+                }
+              },
+              {
+                "link": {
+                  "en": "/book/03.image_classification/index.html",
+                  "zh": "/book/03.image_classification/index.cn.html"
+                },
+                "title": {
+                  "en": "recognize digits",
+                  "zh": "图像分类"
+                }
+              },
+              {
+                "link": {
+                  "en": "/book/04.word2vec/index.html",
+                  "zh": "/book/04.word2vec/index.cn.html"
+                },
+                "title": {
+                  "en": "word2vec",
+                  "zh": "词向量"
+                }
+              },
+              {
+                "link": {
+                  "en": "/book/05.recommender_system/index.html",
+                  "zh": "/book/05.recommender_system/index.cn.html"
+                },
+                "title": {
+                  "en": "recommender system",
+                  "zh": "个性化推荐"
+                }
+              },
+              {
+                "link": {
+                  "en": "/book/06.understand_sentiment/index.html",
+                  "zh": "/book/06.understand_sentiment/index.cn.html"
+                },
+                "title": {
+                  "en": "understand sentiment",
+                  "zh": "情感分析"
+                }
+              },
+              {
+                "link": {
+                  "en": "/book/07.label_semantic_roles/index.html",
+                  "zh": "/book/07.label_semantic_roles/index.cn.html"
+                },
+                "title": {
+                  "en": "label semantic roles",
+                  "zh": "语义角色标注"
+                }
+              },
+              {
+                "link": {
+                  "en": "/book/08.machine_translation/index.html",
+                  "zh": "/book/08.machine_translation/index.cn.html"
+                },
+                "title": {
+                  "en": "machine translation",
+                  "zh": "机器翻译"
+                }
               }
-            }
           ]
         }
       ]
