@@ -3,7 +3,10 @@
 <nav class="sidebar collapse" id="sidebar-nav">
     {% for chapter_id, chapter in side_nav_content.items %}
     <ol class="chapter">
+        {% translation_assignment chapter.title as chapter_title %}
+        {% if chapter_title != None %}
         <li>
+
             <h3{% if request.path in chapter|links %} class="active"{% endif %}>{% translation chapter.title %}</h3>
             <ol class="section">
                 {% for section in chapter.sections %}
@@ -35,6 +38,7 @@
                 {% endfor %}
             </ol>
         </li>
+        {% endif %}
     </ol>
     {% endfor %}
 </nav>
