@@ -26,7 +26,7 @@
       "sections": [
         {
           "title": {
-            "en": "Writing a layer",
+            "en": "Write New Layers",
             "zh": "实现新的网络层"
           },
           "link": {
