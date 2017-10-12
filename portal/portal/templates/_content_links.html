@@ -11,9 +11,9 @@
                     {% translation_assignment section.title as section_title %}
                     {% translation_assignment section.link as section_link %}
 
-                    {% if section_link != None and section_link != "" %}
+                    {% if section_title != None and section_link != "" %}
                     <a href="{{ section_link }}" {% if request.path == section_link %} class="active" {% endif %}>{{ section_title }}</a>
-                    {% else %}
+                    {% elif section_title != None and section.sub_sections != None %}
 
                     <p>{{ section_title }}</p>
                     <ol class="sub-section">
