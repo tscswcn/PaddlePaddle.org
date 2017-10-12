@@ -134,12 +134,50 @@
         {
           "title": {
             "en": "Building from source",
-            "zh": "安装与编译"
+            "zh": "编译"
           },
           "link": {
             "en": "/documentation/en/getstarted/build_and_install/build_from_source_en.html",
-            "zh": "/documentation/cn/getstarted/build_and_install/build_from_source_cn.html"
+            "zh": "/documentation/cn/getstarted/build_and_install/cmake/build_from_source_cn.html"
           }
+        },
+        {
+          "title": {
+            "en": "Set Command-line Parameters",
+            "zh": "设置命令行参数"
+          },
+          "sub_sections": [
+            {
+              "title": {
+                "en": "Use Case",
+                "zh": "使用案例"
+              },
+              "link": {
+                "en": "/documentation/en/howto/usage/cmd_parameter/use_case_en.html",
+                "zh": "/documentation/cn/howto/usage/cmd_parameter/use_case_cn.html"
+              }
+            },
+            {
+              "title": {
+                "en": "Argument Outline",
+                "zh": "参数概述"
+              },
+              "link": {
+                "en": "/documentation/en/howto/usage/cmd_parameter/arguments_en.html",
+                "zh": "/documentation/cn/howto/usage/cmd_parameter/arguments_cn.html"
+              }
+            },
+            {
+              "title": {
+                "en": "Detail Description",
+                "zh": "细节描述"
+              },
+              "link": {
+                "en": "/documentation/en/howto/usage/cmd_parameter/detail_introduction_en.html",
+                "zh": "/documentation/cn/howto/usage/cmd_parameter/detail_introduction_cn.html"
+              }
+            }
+          ]
         },
         {
           "title": {
