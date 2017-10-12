@@ -101,7 +101,7 @@ def version_links(context, book_id):
     versions = sitemap_helper.get_available_versions()
 
     is_hidden = True
-    if context.template and (context.template.name == 'tutorial.html' or context.template.name == 'documentation.html'):
+    if context.template and (book_id == 'tutorial' or book_id == 'documentation'):
         is_hidden = False
 
     return _common_context(context, {
