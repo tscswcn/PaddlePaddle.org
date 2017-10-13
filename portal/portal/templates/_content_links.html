@@ -6,8 +6,7 @@
         {% translation_assignment chapter.title as chapter_title %}
         {% if chapter_title != None %}
         <li>
-
-            <h3{% if request.path in chapter|links %} class="active"{% endif %}>{% translation chapter.title %}</h3>
+            <h3{% if request.path in chapter.all_links %} class="active"{% endif %}>{% translation chapter.title %}</h3>
             <ol class="section">
                 {% for section in chapter.sections %}
                 <li>
@@ -20,7 +19,7 @@
 
                     <a class="collapsed" data-toggle="collapse" href="#collapse{{ forloop.parentloop.counter }}{{ forloop.counter}}">{{ section_title }}<span class="dropdown-toggle"></span></a>
                     <div id="collapse{{ forloop.parentloop.counter }}{{ forloop.counter}}"
-                         class="panel-collapse collapse {% if request.path in section|links_within_section %}show{% endif %}">
+                         class="panel-collapse collapse {% if request.path in section.all_links %}show{% endif %}">
                     <ol class="sub-section">
                         {% for sub_section in section.sub_sections %}
                         {% translation_assignment sub_section.title as sub_section_title %}
