@@ -112,6 +112,19 @@ body
                     color: $accent-color
                     font-weight: $font-bold
 
+                &.collapsed
+                    .dropdown-toggle
+                        transform: rotate(0deg)
+
+                .dropdown-toggle
+                    width: 8px
+                    right: 0px
+                    transform: rotate(180deg)
+
+                    &::after
+                        vertical-align: .1em
+                        border-top: .5em solid
+
         .section
             .dropdown-toggle
                 float: right
