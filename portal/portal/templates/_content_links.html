@@ -18,7 +18,7 @@
                     <a href="{{ section_link }}" {% if request.path == section_link %} class="active" {% endif %}>{{ section_title }}</a>
                     {% elif section_title != None and section.sub_sections != None %}
 
-                    <a class="dropdown-toggle" data-toggle="collapse" href="#collapse{{ forloop.parentloop.counter }}{{ forloop.counter}}">{{ section_title }}</a>
+                    <a data-toggle="collapse" href="#collapse{{ forloop.parentloop.counter }}{{ forloop.counter}}">{{ section_title }}</a><span class="dropdown-toggle"></span>
                     <div id="collapse{{ forloop.parentloop.counter }}{{ forloop.counter}}"
                          class="panel-collapse collapse {% if request.path in section|links_within_section %}show{% endif %}">
                     <ol class="sub-section">

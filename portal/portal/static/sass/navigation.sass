@@ -102,6 +102,8 @@ body
 
             a
                 color: $primary-text-color
+                width: 100%
+                padding-right: 16px
 
                 &:hover, &:active
                     color: $accent-color
@@ -111,9 +113,15 @@ body
                     font-weight: $font-bold
 
         .section
-            .dropdown-toggle::after
-                vertical-align: .1em
-                border-top: .5em solid
+            .dropdown-toggle
+                float: right
+                width: 8px
+                right: 0px
+
+                &::after
+                    vertical-align: .1em
+                    border-top: .5em solid
+
 
         .sub-section
             li
