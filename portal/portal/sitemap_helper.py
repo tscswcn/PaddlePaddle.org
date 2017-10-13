@@ -83,18 +83,27 @@ def _transform_urls(version, sitemap):
         for _, book in sitemap.items():
             for _, chapter in book.items():
                 if 'sections' in chapter:
+                    all_links = []
                     for section in chapter['sections']:
                         if 'link' in section:
                             link = section['link']
                             for lang, url in link.items():
                                 link[lang] = url_helper.append_prefix_to_path(version, link[lang])
+                                all_links.append(link[lang])
 
                         if 'sub_sections' in section:
+                            all_sub_section_links = []
                             for subsection in section['sub_sections']:
                                 if 'link' in subsection:
                                     link = subsection['link']
                                     for lang, url in link.items():
                                         link[lang] = url_helper.append_prefix_to_path(version, link[lang])
+                                        all_links.append(link[lang])
+                                        all_sub_section_links.append(link[lang])
+
+                            section['all_sub_section_links'] = all_sub_section_links
+
+                    chapter['all_links'] = all_links
 
 
 # Merge all site.json files
