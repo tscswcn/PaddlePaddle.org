@@ -106,6 +106,8 @@ body
 
             a
                 color: $primary-text-color
+                width: 100%
+                padding-right: 16px
 
                 &:hover, &:active
                     color: $accent-color
@@ -113,6 +115,23 @@ body
                 &.active
                     color: $accent-color
                     font-weight: $font-bold
+
+                &.collapsed
+                    .dropdown-toggle
+                        transform: rotate(0deg)
+
+                .dropdown-toggle
+                    width: 8px
+                    right: 0px
+                    transform: rotate(180deg)
+
+                    &::after
+                        vertical-align: .1em
+                        border-top: .5em solid
+
+        .sub-section
+            li
+                padding-left: 8px
 
         .panel-content
             padding-left: 0px
