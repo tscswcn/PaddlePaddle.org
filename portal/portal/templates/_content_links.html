@@ -18,7 +18,8 @@
                     <a href="{{ section_link }}" {% if request.path == section_link %} class="active" {% endif %}>{{ section_title }}</a>
                     {% elif section_title != None and section.sub_sections != None %}
 
-                    <p>{{ section_title }}</p>
+                    <a class="dropdown-toggle" data-toggle="collapse" href="#collapse{{ forloop.parentloop.counter }}{{ forloop.counter}}">{{ section_title }}</a>
+                    <div id="collapse{{ forloop.parentloop.counter }}{{ forloop.counter}}" class="panel-collapse collapse">
                     <ol class="sub-section">
                         {% for sub_section in section.sub_sections %}
                         {% translation_assignment sub_section.title as sub_section_title %}
@@ -29,9 +30,9 @@
                             <a href="{{ sub_section_link }}" {% if request.path == sub_section_link %} class="active" {% endif %}>{{ sub_section_title }}</a>
                         </li>
                         {% endif %}
-
                         {% endfor %}
                     </ol>
+                    </div>
                     {% endif %}
 
                 </li>
