@@ -31,10 +31,36 @@ def translation_assignment(context, leaf_node):
     return translation(context, leaf_node)
 
 
+def _flatten_links(link):
+    result = []
+    if isinstance(link, basestring):
+        result.append(link)
+    elif isinstance(link, dict):
+        result = result + link.values()
+
+    return result
+
 @register.filter(name='links')
 def links(chapter):
-    return map(lambda s: s['link'], chapter['sections'])
+    result = []
+    for section in chapter['sections']:
+        if 'sub_sections' in section:
+            sub_sections = section['sub_sections']
+            for sub_section in sub_sections:
+                result = result + _flatten_links(sub_section['link'])
 
+        elif 'link' in section:
+            result = result + _flatten_links(section['link'])
+
+    return result
+
+@register.filter(name='links_within_section')
+def links_within_section(section):
+    result = []
+    for sub_section in section['sub_sections']:
+        result = result + _flatten_links(sub_section['link'])
+
+    return result
 
 @register.filter(name='css_for_content_src')
 def css_for_content_src(content_src):

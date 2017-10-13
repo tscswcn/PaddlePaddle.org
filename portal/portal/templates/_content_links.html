@@ -19,7 +19,8 @@
                     {% elif section_title != None and section.sub_sections != None %}
 
                     <a class="dropdown-toggle" data-toggle="collapse" href="#collapse{{ forloop.parentloop.counter }}{{ forloop.counter}}">{{ section_title }}</a>
-                    <div id="collapse{{ forloop.parentloop.counter }}{{ forloop.counter}}" class="panel-collapse collapse">
+                    <div id="collapse{{ forloop.parentloop.counter }}{{ forloop.counter}}"
+                         class="panel-collapse collapse {% if request.path in section|links_within_section %}show{% endif %}">
                     <ol class="sub-section">
                         {% for sub_section in section.sub_sections %}
                         {% translation_assignment sub_section.title as sub_section_title %}
