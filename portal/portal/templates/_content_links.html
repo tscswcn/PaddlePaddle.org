@@ -4,9 +4,15 @@
     {% for chapter_id, chapter in side_nav_content.items %}
     <ol class="chapter">
         {% translation_assignment chapter.title as chapter_title %}
+        {% translation_assignment chapter.link as chapter_link %}
         {% if chapter_title != None %}
         <li>
-            <h3{% if request.path in chapter.all_links %} class="active"{% endif %}>{% translation chapter.title %}</h3>
+            {% if chapter_link != None and chapter_link != "" %}
+                <h3><a href="{{ chapter_link }}" {% if request.path == chapter_link %} class="active" {% endif %}>{% translation chapter.title %}</a></h3>
+            {% else %}
+                <h3{% if request.path in chapter.all_links %} class="active"{% endif %}>{% translation chapter.title %}</h3>
+            {% endif %}
+
             <ol class="section">
                 {% for section in chapter.sections %}
                 <li>

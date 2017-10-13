@@ -82,6 +82,11 @@ def _transform_urls(version, sitemap):
     if sitemap:
         for _, book in sitemap.items():
             for _, chapter in book.items():
+                if 'link' in chapter:
+                    link = chapter['link']
+                    for lang, url in link.items():
+                        link[lang] = url_helper.append_prefix_to_path(version, link[lang])
+
                 if 'sections' in chapter:
                     all_links = []
                     for section in chapter['sections']:
