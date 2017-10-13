@@ -101,7 +101,7 @@ def _transform_urls(version, sitemap):
                                         all_links.append(link[lang])
                                         all_sub_section_links.append(link[lang])
 
-                            section['all_sub_section_links'] = all_sub_section_links
+                            section['all_links'] = all_sub_section_links
 
                     chapter['all_links'] = all_links
 
