@@ -20,8 +20,18 @@ def sphinx(original_documentation_dir, version, destination_documentation_dir):
     headers, and body.
     """
     new_path_map = {
-        '/en/html/': '/%s/en/' % version,
-        '/cn/html/': '/%s/cn/' % version
+        'develop': {
+            '/en/html/': '/%s/documentation/en/' % version,
+            '/cn/html/': '/%s/documentation/cn/' % version,
+        },
+        '0.10.0': {
+            '/doc/':    '/%s/documentation/doc/' % version,
+            '/doc_cn/': '/%s/documentation/doc_cn/' % version,
+        },
+        '0.9.0': {
+            '/doc/':    '/%s/documentation/doc/' % version,
+            '/doc_cn/': '/%s/documentation/doc_cn/' % version,
+        }
     }
 
     # Go through each file, and if it is a .html, extract the .document object
@@ -30,31 +40,40 @@ def sphinx(original_documentation_dir, version, destination_documentation_dir):
         for file in all_files:
             subpath = os.path.join(subdir, file)[len(
                 original_documentation_dir):]
-            subpath_language_dir = subpath[:9]
+            subpath_language_dir = None
+            if version in new_path_map:
+                new_path_map_prefixes = new_path_map[version].keys()
+                subpath_language_dirs = [new_path_map_prefixes[0], new_path_map_prefixes[1]]
 
-            # If this is in one of the language dirs we were reading.
-            if subpath_language_dir in new_path_map:
-                new_path = destination_documentation_dir + (
-                    new_path_map[subpath_language_dir] + subpath[9:])
+                if subpath.startswith(subpath_language_dirs[0]):
+                    subpath_language_dir = subpath_language_dirs[0]
+                elif subpath.startswith(subpath_language_dirs[1]):
+                    subpath_language_dir = subpath_language_dirs[1]
 
-                if '.html' in file or '_images' in subpath:
-                    if not os.path.exists(os.path.dirname(new_path)):
-                        os.makedirs(os.path.dirname(new_path))
+                if subpath_language_dir:
+                    new_path = destination_documentation_dir + (
+                        new_path_map[version][subpath_language_dir]
+                        + subpath[len(subpath_language_dir):])
 
-                if '.html' in file:
-                    # Soup the body of the HTML file.
-                    with open(os.path.join(subdir, file)) as original_html_file:
-                        soup = BeautifulSoup(original_html_file, 'html.parser')
+                    if '.html' in file or '_images' in subpath or '.txt' in file:
+                        if not os.path.exists(os.path.dirname(new_path)):
+                            os.makedirs(os.path.dirname(new_path))
 
-                    # Find the .document element.
-                    document = soup.select('div.document')[0]
+                    if '.html' in file:
+                        # Soup the body of the HTML file.
+                        with open(os.path.join(subdir, file)) as original_html_file:
+                            soup = BeautifulSoup(original_html_file, 'html.parser')
 
-                    with open(new_path, 'w') as new_html_partial:
-                        new_html_partial.write(document.encode("utf-8"))
+                        # Find the .document element.
+                        document = soup.select('div.document')[0]
 
-                elif '_images' in subpath:
-                    # Copy to images directory.
-                    copyfile(os.path.join(subdir, file), new_path)
+                        with open(new_path, 'w') as new_html_partial:
+                            new_html_partial.write(document.encode("utf-8"))
+                    elif '_images' in subpath or '.txt' in file:
+                        # Copy to images directory.
+                        copyfile(os.path.join(subdir, file), new_path)
+                    elif 'searchindex.js' in subpath:
+                        copyfile(os.path.join(subdir, file), new_path)
 
 
 def book(original_documentation_dir, version, destination_documentation_dir):
