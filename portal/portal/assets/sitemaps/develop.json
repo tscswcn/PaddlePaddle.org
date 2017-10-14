@@ -303,6 +303,14 @@
           }
         }
       ]
+    },
+    "FAQ": {
+      "title": {
+        "zh": "FAQ"
+      },
+      "link": {
+        "zh": "/documentation/cn/faq/index_cn.html"
+      }
     }
   },
   "documentation": {
