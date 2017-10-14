@@ -12,8 +12,8 @@
             "zh": "安装与编译"
           },
           "link": {
-            "en": "/documentation/en/getstarted/build_and_install/index_en.html",
-            "zh": "/documentation/cn/getstarted/build_and_install/index_cn.html"
+            "en": "/documentation/doc/getstarted/build_and_install/index_en.html",
+            "zh": "/documentation/doc_cn/getstarted/build_and_install/index_cn.html"
           }
         }
       ]
@@ -30,8 +30,8 @@
             "zh": "实现新的网络层"
           },
           "link": {
-            "en": "/documentation/en/howto/dev/new_layer_en.html",
-            "zh": "/documentation/cn/howto/dev/new_layer_cn.html"
+            "en": "/documentation/doc/howto/dev/new_layer_en.html",
+            "zh": "/documentation/doc_cn/howto/dev/new_layer_cn.html"
           }
         },
         {
@@ -137,8 +137,8 @@
             "zh": "编译"
           },
           "link": {
-            "en": "/documentation/en/getstarted/build_and_install/build_from_source_en.html",
-            "zh": "/documentation/cn/getstarted/build_and_install/cmake/build_from_source_cn.html"
+            "en": "/documentation/doc/getstarted/build_and_install/build_from_source_en.html",
+            "zh": "/documentation/doc_cn/getstarted/build_and_install/cmake/build_from_source_cn.html"
           }
         },
         {
@@ -153,8 +153,8 @@
                 "zh": "使用案例"
               },
               "link": {
-                "en": "/documentation/en/howto/usage/cmd_parameter/use_case_en.html",
-                "zh": "/documentation/cn/howto/usage/cmd_parameter/use_case_cn.html"
+                "en": "/documentation/doc/howto/usage/cmd_parameter/use_case_en.html",
+                "zh": "/documentation/doc_cn/howto/usage/cmd_parameter/use_case_cn.html"
               }
             },
             {
@@ -163,8 +163,8 @@
                 "zh": "参数概述"
               },
               "link": {
-                "en": "/documentation/en/howto/usage/cmd_parameter/arguments_en.html",
-                "zh": "/documentation/cn/howto/usage/cmd_parameter/arguments_cn.html"
+                "en": "/documentation/doc/howto/usage/cmd_parameter/arguments_en.html",
+                "zh": "/documentation/doc_cn/howto/usage/cmd_parameter/arguments_cn.html"
               }
             },
             {
@@ -173,8 +173,8 @@
                 "zh": "细节描述"
               },
               "link": {
-                "en": "/documentation/en/howto/usage/cmd_parameter/detail_introduction_en.html",
-                "zh": "/documentation/cn/howto/usage/cmd_parameter/detail_introduction_cn.html"
+                "en": "/documentation/doc/howto/usage/cmd_parameter/detail_introduction_en.html",
+                "zh": "/documentation/doc_cn/howto/usage/cmd_parameter/detail_introduction_cn.html"
               }
             }
           ]
@@ -185,8 +185,8 @@
             "zh": "运行分布式训练"
           },
           "link": {
-            "en": "/documentation/en/howto/usage/cluster/cluster_train_en.html",
-            "zh": "/documentation/cn/howto/usage/cluster/cluster_train_cn.html"
+            "en": "/documentation/doc/howto/usage/cluster/cluster_train_en.html",
+            "zh": "/documentation/doc_cn/howto/usage/cluster/cluster_train_cn.html"
           }
         },
         {
@@ -194,7 +194,7 @@
             "zh": "Kubernetes 简介"
           },
           "link": {
-            "zh": "/documentation/cn/howto/usage/k8s/k8s_basis_cn.html"
+            "zh": "/documentation/doc_cn/howto/usage/k8s/k8s_basis_cn.html"
           }
         },
         {
@@ -203,8 +203,8 @@
             "zh": "Kubernetes单机训练"
           },
           "link": {
-            "en": "/documentation/en/howto/usage/k8s/k8s_en.html",
-            "zh": "/documentation/cn/howto/usage/k8s/k8s_cn.html"
+            "en": "/documentation/doc/howto/usage/k8s/k8s_en.html",
+            "zh": "/documentation/doc_cn/howto/usage/k8s/k8s_cn.html"
           }
         },
         {
@@ -213,8 +213,8 @@
             "zh": "Kubernetes分布式训练"
           },
           "link": {
-            "en": "/documentation/en/howto/usage/k8s/k8s_aws_en.html",
-            "zh": "/documentation/cn/howto/usage/k8s/k8s_distributed_cn.html"
+            "en": "/documentation/doc/howto/usage/k8s/k8s_aws_en.html",
+            "zh": "/documentation/doc_cn/howto/usage/k8s/k8s_distributed_cn.html"
           }
         },
         {
@@ -223,8 +223,8 @@
             "zh": "GPU性能分析与调优"
           },
           "link": {
-            "en": "/documentation/en/howto/optimization/gpu_profiling_en.html",
-            "zh": "/documentation/cn/howto/optimization/gpu_profiling_cn.html"
+            "en": "/documentation/doc/howto/optimization/gpu_profiling_en.html",
+            "zh": "/documentation/doc_cn/howto/optimization/gpu_profiling_cn.html"
           }
         },
         {
@@ -233,8 +233,8 @@
             "zh": "GPU性能分析与调优"
           },
           "link": {
-            "en": "/documentation/en/howto/deep_model/rnn/rnn_config_en.html",
-            "zh": "/documentation/cn/howto/optimization/gpu_profiling_cn.html"
+            "en": "/documentation/doc/howto/deep_model/rnn/rnn_config_en.html",
+            "zh": "/documentation/doc_cn/howto/optimization/gpu_profiling_cn.html"
           }
         },
         {
@@ -247,7 +247,7 @@
                 "zh": "Recurrent Group教程"
               },
               "link": {
-                "zh": "/documentation/cn/howto/deep_model/rnn/recurrent_group_cn.html"
+                "zh": "/documentation/doc_cn/howto/deep_model/rnn/recurrent_group_cn.html"
               }
             },
             {
@@ -255,7 +255,7 @@
                 "zh": "支持双层序列作为输入的Layer"
               },
               "link": {
-                "zh": "/documentation/cn/howto/deep_model/rnn/hierarchical_layer_cn.html"
+                "zh": "/documentation/doc_cn/howto/deep_model/rnn/hierarchical_layer_cn.html"
               }
             },
             {
@@ -263,7 +263,7 @@
                 "zh": "单双层RNN API对比介绍"
               },
               "link": {
-                "zh": "/documentation/cn/howto/deep_model/rnn/hrnn_rnn_api_compare_cn.html"
+                "zh": "/documentation/doc_cn/howto/deep_model/rnn/hrnn_rnn_api_compare_cn.html"
               }
             }
           ]
@@ -281,7 +281,7 @@
             "zh": "如何贡献/修改文档"
           },
           "link": {
-            "zh": "/documentation/cn/howto/dev/write_docs_cn.html"
+            "zh": "/documentation/doc_cn/howto/dev/write_docs_cn.html"
           }
         },
         {
@@ -290,8 +290,8 @@
             "zh": "如何贡献代码"
           },
           "link": {
-            "en": "/documentation/en/howto/dev/contribute_to_paddle_en.html",
-            "zh": "/documentation/cn/howto/dev/contribute_to_paddle_cn.html"
+            "en": "/documentation/doc/howto/dev/contribute_to_paddle_en.html",
+            "zh": "/documentation/doc_cn/howto/dev/contribute_to_paddle_cn.html"
           }
         }
       ]
@@ -301,7 +301,7 @@
         "zh": "FAQ"
       },
       "link": {
-        "zh": "/documentation/cn/faq/index_cn.html"
+        "zh": "/documentation/doc_cn/faq/index_cn.html"
       }
     }
   },
@@ -318,8 +318,8 @@
             "zh": "训练与应用"
           },
           "link": {
-            "en": "/documentation/en/api/v2/run_logic.html",
-            "zh": "/documentation/cn/api/v2/run_logic.html"
+            "en": "/documentation/doc/api/v2/run_logic.html",
+            "zh": "/documentation/doc_cn/api/v2/run_logic.html"
           }
         },
         {
@@ -328,8 +328,8 @@
             "zh": "数据访问"
           },
           "link": {
-            "en": "/documentation/en/api/v2/data.html",
-            "zh": "/documentation/cn/api/v2/data.html"
+            "en": "/documentation/doc/api/v2/data.html",
+            "zh": "/documentation/doc_cn/api/v2/data.html"
           }
         },
         {
@@ -338,8 +338,8 @@
             "zh": "Activation"
           },
           "link": {
-            "en": "/documentation/en/api/v2/config/activation.html",
-            "zh": "/documentation/cn/api/v2/config/activation.html"
+            "en": "/documentation/doc/api/v2/config/activation.html",
+            "zh": "/documentation/doc_cn/api/v2/config/activation.html"
           }
         },
         {
@@ -348,8 +348,8 @@
             "zh": "Layers"
           },
           "link": {
-            "en": "/documentation/en/api/v2/config/layer.html",
-            "zh": "/documentation/cn/api/v2/config/layer.html"
+            "en": "/documentation/doc/api/v2/config/layer.html",
+            "zh": "/documentation/doc_cn/api/v2/config/layer.html"
           }
         },
         {
@@ -358,8 +358,8 @@
             "zh": "Networks"
           },
           "link": {
-            "en": "/documentation/en/api/v2/config/networks.html",
-            "zh": "/documentation/cn/api/v2/config/networks.html"
+            "en": "/documentation/doc/api/v2/config/networks.html",
+            "zh": "/documentation/doc_cn/api/v2/config/networks.html"
           }
         },
         {
@@ -368,8 +368,8 @@
             "zh": "Optimizer"
           },
           "link": {
-            "en": "/documentation/en/api/v2/config/optimizer.html",
-            "zh": "/documentation/cn/api/v2/config/optimizer.html"
+            "en": "/documentation/doc/api/v2/config/optimizer.html",
+            "zh": "/documentation/doc_cn/api/v2/config/optimizer.html"
           }
         },
         {
@@ -378,8 +378,8 @@
             "zh": "Pooling"
           },
           "link": {
-            "en": "/documentation/en/api/v2/config/pooling.html",
-            "zh": "/documentation/cn/api/v2/config/pooling.html"
+            "en": "/documentation/doc/api/v2/config/pooling.html",
+            "zh": "/documentation/doc_cn/api/v2/config/pooling.html"
           }
         },
         {
@@ -388,8 +388,8 @@
             "zh": "Parameter Attribute"
           },
           "link": {
-            "en": "/documentation/en/api/v2/config/attr.html",
-            "zh": "/documentation/cn/api/v2/config/attr.html"
+            "en": "/documentation/doc/api/v2/config/attr.html",
+            "zh": "/documentation/doc_cn/api/v2/config/attr.html"
           }
         }
       ]
