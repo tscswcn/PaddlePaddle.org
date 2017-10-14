@@ -26,6 +26,7 @@ def transform(source_dir, version, output_dir):
 
     if 'documentation' in source_dir:
         convertor = strip.sphinx
+        extracted_source_dir = source_dir
 
     elif 'book' in source_dir:
         convertor = strip.book
