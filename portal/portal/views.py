@@ -91,10 +91,9 @@ def documentation_path(request, version, path=None):
         template = 'tutorial'
         allow_search = False
 
+    search_url = None
     if allow_search:
         # TODO[thuan]: Implement proper full text search
-        search_url = None
-
         if version == 'develop':
             if lang == 'en':
                 search_url = 'en/search.html'
