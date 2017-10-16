@@ -87,7 +87,8 @@ def documentation_path(request, version, path=None):
     template = 'documentation'     # TODO[thuan]: do this in a less hacky way
     allow_search = True
 
-    if '/api/' not in path and not path.endswith('search.html'):
+    # Note: The Source section in 0.9.0 also applies to the "Documentation" book
+    if ('/api/' not in path and not path.endswith('search.html')) and ('/source/' not in path and not path.endswith('search.html')):
         template = 'tutorial'
         allow_search = False
 
