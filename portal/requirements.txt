@@ -5,3 +5,4 @@ GitPython==2.1.7
 beautifulsoup4==4.6.0
 markdown==2.6.9
 requests==2.18.4
+lxml==4.1.0
