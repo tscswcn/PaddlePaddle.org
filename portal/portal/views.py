@@ -34,7 +34,7 @@ def home_root(request):
 
 
 def change_version(request):
-    preferred_version = request.GET.get('preferred_version', settings.DEFAULT_DOC_VERSION)
+    preferred_version = request.GET.get('preferred_version', settings.DEFAULT_DOCS_VERSION)
     portal_helper.set_preferred_version(request, preferred_version)
 
     return tutorial_root(request, preferred_version)
