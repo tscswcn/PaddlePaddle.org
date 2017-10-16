@@ -657,27 +657,32 @@ a, a:focus, a:hover, a:visited {
 }
 
 /* line 484, ../sass/_docs.sass */
+.body {
+  padding: 30px;
+}
+
+/* line 487, ../sass/_docs.sass */
 #search-results h2 {
   font-size: 24px;
   margin: 20px 0 10px 0;
 }
 
-/* line 488, ../sass/_docs.sass */
+/* line 491, ../sass/_docs.sass */
 #search-results p {
   color: #a7adbd;
 }
 
-/* line 491, ../sass/_docs.sass */
+/* line 494, ../sass/_docs.sass */
 #search-results ul.search > li {
   border-bottom: none;
 }
 
-/* line 494, ../sass/_docs.sass */
+/* line 497, ../sass/_docs.sass */
 #search-results ul.search > li > a {
   color: #597cf1;
 }
 
-/* line 497, ../sass/_docs.sass */
+/* line 500, ../sass/_docs.sass */
 .rst-content .highlighted {
   background-color: transparent;
   color: #ff9711;
