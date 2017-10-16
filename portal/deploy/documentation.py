@@ -39,5 +39,9 @@ def transform(source_dir, version, output_dir):
         convertor = strip.models
 
     if convertor:
-        # convertor(extracted_source_dir, version, settings.EXTERNAL_TEMPLATE_DIR)
-        convertor(extracted_source_dir, version, output_dir)
+        if output_dir:
+            convertor(extracted_source_dir, version, output_dir)
+        elif settings.EXTERNAL_TEMPLATE_DIR:
+            convertor(extracted_source_dir, version, settings.EXTERNAL_TEMPLATE_DIR)
+        else:
+            return
