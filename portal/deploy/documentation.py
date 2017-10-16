@@ -8,11 +8,14 @@ def transform(source_dir, version, output_dir):
     convertor = None
     extracted_source_dir = None
 
+    # python manage.py deploy_documentation book v0.10.0 generated_contents/
+    # remove the heading 'v'
+    if version[0] == 'v':
+        version = version[1:]
+
     if source_dir in settings.GIT_REPO_MAP:
         git_repo = settings.GIT_REPO_MAP[source_dir]
         git_repo = git_repo + version + '.zip'
-        if version[0] == 'v':
-            version = version[1:]
         extracted_dir = source_dir + '-' + version
         response = requests.get(git_repo)
         tmp_zip_file = settings.TEMPORARY_DIR + source_dir + '.zip'
@@ -23,10 +26,11 @@ def transform(source_dir, version, output_dir):
         with zipfile.ZipFile(tmp_zip_file, "r") as zip_ref:
             zip_ref.extractall(settings.TEMPORARY_DIR)
             extracted_source_dir = settings.TEMPORARY_DIR + '/' + extracted_dir
+    else:
+        extracted_source_dir = source_dir
 
     if 'documentation' in source_dir:
         convertor = strip.sphinx
-        extracted_source_dir = source_dir
 
     elif 'book' in source_dir:
         convertor = strip.book
@@ -35,5 +39,9 @@ def transform(source_dir, version, output_dir):
         convertor = strip.models
 
     if convertor:
-        # convertor(extracted_source_dir, version, settings.EXTERNAL_TEMPLATE_DIR)
-        convertor(extracted_source_dir, version, output_dir)
+        if output_dir:
+            convertor(extracted_source_dir, version, output_dir)
+        elif settings.EXTERNAL_TEMPLATE_DIR:
+            convertor(extracted_source_dir, version, settings.EXTERNAL_TEMPLATE_DIR)
+        else:
+            return
