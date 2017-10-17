@@ -38,7 +38,6 @@ def transform(source_dir, version, output_dir, specified_source=None):
     elif 'models' in source_dir or specified_source == 'models':
         convertor = strip.models
 
-
     if convertor:
         if output_dir:
             convertor(extracted_source_dir, version, output_dir)
