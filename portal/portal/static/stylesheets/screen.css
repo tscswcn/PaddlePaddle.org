@@ -382,8 +382,9 @@ body.invert .footer-nav {
   width: 100%;
   text-align: center;
   padding: 20px 0 20px;
+  margin-bottom: 0px;
 }
-/* line 259, ../sass/navigation.sass */
+/* line 261, ../sass/navigation.sass */
 .footer-nav .copyright > a {
   color: #fff;
 }
