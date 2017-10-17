@@ -30,27 +30,19 @@ def transform(source_dir, version, output_dir, specified_source=None):
         extracted_source_dir = source_dir
 
     if 'documentation' in source_dir or specified_source == 'documentation':
-        print 'is documentation'
         convertor = strip.sphinx
 
     elif 'book' in source_dir or specified_source == 'book':
-        print 'is book'
         convertor = strip.book
 
     elif 'models' in source_dir or specified_source == 'models':
-        print 'is models'
         convertor = strip.models
 
-    print 'extracted_source_dir: ', extracted_source_dir
-    print 'version: ', version
-    print 'specified_source: ', specified_source
 
     if convertor:
         if output_dir:
-            print 'has output_dir'
             convertor(extracted_source_dir, version, output_dir)
         elif settings.EXTERNAL_TEMPLATE_DIR:
-            print 'has EXTERNAL_TEMPLATE_DIR'
             convertor(extracted_source_dir, version, settings.EXTERNAL_TEMPLATE_DIR)
         else:
             return
