@@ -62,10 +62,14 @@ def sphinx(original_documentation_dir, version, destination_documentation_dir):
                     if '.html' in file:
                         # Soup the body of the HTML file.
                         with open(os.path.join(subdir, file)) as original_html_file:
-                            soup = BeautifulSoup(original_html_file, 'html.parser')
+                            soup = BeautifulSoup(original_html_file, 'lxml')
 
+                        document = None
                         # Find the .document element.
-                        document = soup.select('div.document')[0]
+                        if version == '0.9.0':
+                            document = soup.select('div.body')[0]
+                        else:
+                            document = soup.select('div.document')[0]
 
                         with open(new_path, 'w') as new_html_partial:
                             new_html_partial.write(document.encode("utf-8"))
