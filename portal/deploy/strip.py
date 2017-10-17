@@ -34,6 +34,10 @@ def sphinx(original_documentation_dir, version, destination_documentation_dir):
         }
     }
 
+    # if the version is not supported, fall back to 'develop'
+    if version not in new_path_map:
+        version = 'develop'
+
     # Go through each file, and if it is a .html, extract the .document object
     #   contents
     for subdir, dirs, all_files in os.walk(original_documentation_dir):
