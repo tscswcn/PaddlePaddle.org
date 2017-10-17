@@ -4,7 +4,7 @@ import requests
 import zipfile
 
 
-def transform(source_dir, version, output_dir):
+def transform(source_dir, version, output_dir, specified_source=None):
     convertor = None
     extracted_source_dir = None
 
@@ -29,13 +29,13 @@ def transform(source_dir, version, output_dir):
     else:
         extracted_source_dir = source_dir
 
-    if 'documentation' in source_dir:
+    if 'documentation' in source_dir or specified_source == 'documentation':
         convertor = strip.sphinx
 
-    elif 'book' in source_dir:
+    elif 'book' in source_dir or specified_source == 'book':
         convertor = strip.book
 
-    elif 'models' in source_dir:
+    elif 'models' in source_dir or specified_source == 'models':
         convertor = strip.models
 
     if convertor:

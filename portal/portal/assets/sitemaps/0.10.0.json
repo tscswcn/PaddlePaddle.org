@@ -47,7 +47,7 @@
                   "zh": "/book/01.fit_a_line/index.cn.html"
                 },
                 "title": {
-                  "en": "fit a line",
+                  "en": "Linear Regression",
                   "zh": "新手入门"
                 }
               },
@@ -57,7 +57,7 @@
                   "zh": "/book/02.recognize_digits/index.cn.html"
                 },
                 "title": {
-                  "en": "recognize digits",
+                  "en": "Recognize Digits",
                   "zh": "识别数字"
                 }
               },
@@ -77,7 +77,7 @@
                   "zh": "/book/04.word2vec/index.cn.html"
                 },
                 "title": {
-                  "en": "word2vec",
+                  "en": "Word2Vec",
                   "zh": "词向量"
                 }
               },
@@ -87,7 +87,7 @@
                   "zh": "/book/05.recommender_system/index.cn.html"
                 },
                 "title": {
-                  "en": "recommender system",
+                  "en": "Personalized Recommendation",
                   "zh": "个性化推荐"
                 }
               },
@@ -97,7 +97,7 @@
                   "zh": "/book/06.understand_sentiment/index.cn.html"
                 },
                 "title": {
-                  "en": "understand sentiment",
+                  "en": "Sentiment Analysis",
                   "zh": "情感分析"
                 }
               },
@@ -107,7 +107,7 @@
                   "zh": "/book/07.label_semantic_roles/index.cn.html"
                 },
                 "title": {
-                  "en": "label semantic roles",
+                  "en": "Semantic Role Labeling",
                   "zh": "语义角色标注"
                 }
               },
@@ -117,7 +117,7 @@
                   "zh": "/book/08.machine_translation/index.cn.html"
                 },
                 "title": {
-                  "en": "machine translation",
+                  "en": "Machine Translation",
                   "zh": "机器翻译"
                 }
               }
