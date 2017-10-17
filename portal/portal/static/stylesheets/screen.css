@@ -281,11 +281,14 @@ body.invert .footer-nav {
   display: block;
 }
 /* line 176, ../sass/navigation.sass */
-.panel-layout .panel-content .panel-inner .doc-content h1, .panel-layout .panel-content .panel-inner .doc-content h2 {
-  padding-top: 60px;
+.panel-layout .panel-content .panel-inner .doc-content *[id]:before {
+  display: block;
+  content: " ";
   margin-top: -60px;
+  height: 60px;
+  visibility: hidden;
 }
-/* line 180, ../sass/navigation.sass */
+/* line 183, ../sass/navigation.sass */
 .panel-layout .panel-content .panel-inner .permalinks-nav {
   margin: 0;
   display: block;
@@ -293,12 +296,12 @@ body.invert .footer-nav {
   margin: 30px 16px 0 16px;
   border-left: 2px solid #000;
 }
-/* line 187, ../sass/navigation.sass */
+/* line 190, ../sass/navigation.sass */
 .panel-layout .panel-content .panel-inner .permalinks-nav ol, .panel-layout .panel-content .panel-inner .permalinks-nav ul {
   padding-left: 12px;
   margin-bottom: 0px;
 }
-/* line 191, ../sass/navigation.sass */
+/* line 194, ../sass/navigation.sass */
 .panel-layout .panel-content .panel-inner .permalinks-nav ol a, .panel-layout .panel-content .panel-inner .permalinks-nav ul a {
   width: 100%;
   display: block;
@@ -307,65 +310,65 @@ body.invert .footer-nav {
   overflow: hidden;
   color: #000;
 }
-/* line 198, ../sass/navigation.sass */
+/* line 201, ../sass/navigation.sass */
 .panel-layout .panel-content .panel-inner .permalinks-nav ol a:hover, .panel-layout .panel-content .panel-inner .permalinks-nav ol a.active, .panel-layout .panel-content .panel-inner .permalinks-nav ul a:hover, .panel-layout .panel-content .panel-inner .permalinks-nav ul a.active {
   color: #597cf1;
 }
-/* line 202, ../sass/navigation.sass */
+/* line 205, ../sass/navigation.sass */
 .panel-layout .panel-content .panel-inner .permalinks-nav ol li a, .panel-layout .panel-content .panel-inner .permalinks-nav ul li a {
   padding-left: 15px;
 }
 
 @media (min-width: 992px) {
-  /* line 207, ../sass/navigation.sass */
+  /* line 210, ../sass/navigation.sass */
   .panel-layout .sidebar-container {
     display: inline;
     width: 300px;
     float: left;
   }
-  /* line 212, ../sass/navigation.sass */
+  /* line 215, ../sass/navigation.sass */
   .panel-layout .sidebar-container .sidebar {
     top: 60px;
     width: 300px;
     padding-bottom: 120px;
   }
-  /* line 217, ../sass/navigation.sass */
+  /* line 220, ../sass/navigation.sass */
   .panel-layout .panel-content {
     margin-left: 300px;
   }
-  /* line 222, ../sass/navigation.sass */
+  /* line 225, ../sass/navigation.sass */
   .panel-layout .panel-content .panel-inner .doc-content {
     width: 100%;
   }
-  /* line 225, ../sass/navigation.sass */
+  /* line 228, ../sass/navigation.sass */
   .panel-layout .panel-content .panel-inner .doc-content.with-permalink-nav {
     width: -moz-calc(100% - 200px);
     width: -webkit-calc(100% - 200px);
     width: calc(100% - 200px);
   }
-  /* line 228, ../sass/navigation.sass */
+  /* line 231, ../sass/navigation.sass */
   .panel-layout .panel-content .panel-inner .permalinks-nav {
     width: 200px;
     float: right;
     padding-left: 0px;
   }
 
-  /* line 233, ../sass/navigation.sass */
+  /* line 236, ../sass/navigation.sass */
   .sidebar-toggle {
     display: none;
   }
 
-  /* line 236, ../sass/navigation.sass */
+  /* line 239, ../sass/navigation.sass */
   .sidebar.collapse {
     display: block;
   }
 }
-/* line 239, ../sass/navigation.sass */
+/* line 242, ../sass/navigation.sass */
 .footer-nav {
   background-color: #000;
   color: ccc;
 }
-/* line 242, ../sass/navigation.sass */
+/* line 245, ../sass/navigation.sass */
 .footer-nav .intern-console {
   margin-left: 50px;
   margin-right: 19px;
@@ -376,7 +379,7 @@ body.invert .footer-nav {
   float: left;
   display: inline;
 }
-/* line 252, ../sass/navigation.sass */
+/* line 255, ../sass/navigation.sass */
 .footer-nav .chat-console {
   padding-left: 50px;
   color: #ccc;
@@ -387,7 +390,7 @@ body.invert .footer-nav {
   border-left: 1px solid rgba(241, 242, 244, 0.2);
   border-right: 1px solid rgba(241, 242, 244, 0.2);
 }
-/* line 261, ../sass/navigation.sass */
+/* line 264, ../sass/navigation.sass */
 .footer-nav .chat-console .sub-top-nava > li {
   line-height: 30px;
   width: 25%;
@@ -395,7 +398,7 @@ body.invert .footer-nav {
   display: inline;
   margin-bottom: 20px;
 }
-/* line 268, ../sass/navigation.sass */
+/* line 271, ../sass/navigation.sass */
 .footer-nav .public-console {
   margin-left: 49px;
   margin-right: 50px;
@@ -403,20 +406,20 @@ body.invert .footer-nav {
   float: left;
   display: inline;
 }
-/* line 275, ../sass/navigation.sass */
+/* line 278, ../sass/navigation.sass */
 .footer-nav .public-console > * {
   vertical-align: left;
 }
-/* line 277, ../sass/navigation.sass */
+/* line 280, ../sass/navigation.sass */
 .footer-nav .public-console > img {
   margin-right: 5px;
 }
-/* line 279, ../sass/navigation.sass */
+/* line 282, ../sass/navigation.sass */
 .footer-nav .public-console > p {
   color: #ccc;
   font-size: 14px;
 }
-/* line 282, ../sass/navigation.sass */
+/* line 285, ../sass/navigation.sass */
 .footer-nav .contact-us {
   color: #fff;
   text-align: center;
@@ -425,35 +428,35 @@ body.invert .footer-nav {
   margin-bottom: 20px;
   padding-top: 40px;
 }
-/* line 290, ../sass/navigation.sass */
+/* line 293, ../sass/navigation.sass */
 .footer-nav .contact-us > * {
   vertical-align: middle;
 }
-/* line 292, ../sass/navigation.sass */
+/* line 295, ../sass/navigation.sass */
 .footer-nav .contact-us > img {
   margin-right: 5px;
 }
-/* line 294, ../sass/navigation.sass */
+/* line 297, ../sass/navigation.sass */
 .footer-nav .contact-us > a {
   color: #fff;
 }
-/* line 296, ../sass/navigation.sass */
+/* line 299, ../sass/navigation.sass */
 .footer-nav .friendly-links {
   text-align: center;
   margin-bottom: 40px;
 }
-/* line 299, ../sass/navigation.sass */
+/* line 302, ../sass/navigation.sass */
 .footer-nav .friendly-links > li {
   display: inline-block;
   padding: 0 10px;
   line-height: 12px;
 }
-/* line 303, ../sass/navigation.sass */
+/* line 306, ../sass/navigation.sass */
 .footer-nav .friendly-links > li > a {
   color: #ccc;
   font-size: 12px;
 }
-/* line 306, ../sass/navigation.sass */
+/* line 309, ../sass/navigation.sass */
 .footer-nav .copyright {
   color: #666;
   font-size: 12px;
@@ -462,7 +465,7 @@ body.invert .footer-nav {
   padding: 20px 0 20px;
   margin-bottom: 0px;
 }
-/* line 314, ../sass/navigation.sass */
+/* line 317, ../sass/navigation.sass */
 .footer-nav .copyright > a {
   color: #fff;
 }

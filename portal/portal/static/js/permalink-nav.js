@@ -65,6 +65,7 @@ var PermalinkNav = {
                 });
 
                 var offset = 0;
+                var variance = 4;   // Introduce some variance in px when scrolling to combat any rounding errors
                 navContainer.find('a[href^="#"]').click(function(event) {
                     // Prevent from default action to intitiate
                     event.preventDefault();
@@ -94,7 +95,7 @@ var PermalinkNav = {
                         var target = $(anchorId).offset().top - offset;
                         // check if the document has crossed the page
 
-                        if(position>=target){
+                        if(position+variance>=target){
                              //remove active from all anchor and add it to the clicked anchor
                             navContainer.find('a[href^="#"]').removeClass("active")
                             $(this).addClass('active');
