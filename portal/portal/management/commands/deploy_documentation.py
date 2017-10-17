@@ -8,6 +8,7 @@ class Command(BaseCommand):
            "<source_dir> <version> <output_dir> <specified_source> "
 
     def add_arguments(self, parser):
+        print 'add_arguments'
         parser.add_argument('source_dir', nargs='+')
         parser.add_argument('version', nargs='+')
         parser.add_argument('output_dir', nargs='+')
@@ -15,6 +16,8 @@ class Command(BaseCommand):
 
     # A command must define handle()
     def handle(self, *args, **options):
+        print 'handle options'
+        print options
         if 'source_dir' in options:
             documentation.transform(
                 options['source_dir'][0], options['version'][0], options['output_dir'][0],
