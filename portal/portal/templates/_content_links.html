@@ -19,7 +19,7 @@
         {% if chapter_title != None %}
         <li>
             {% if chapter_link != None and chapter_link != "" %}
-                <h3><a href="{{ chapter_link }}" {% if request.path == chapter_link %} class="active" {% endif %}>{% translation chapter.title %}</a></h3>
+                <h3><a href="{{ chapter_link }}" {% if request.path in chapter.all_links %} class="active" {% endif %}>{% translation chapter.title %}</a></h3>
             {% else %}
                 <h3>{% translation chapter.title %}</h3>
             {% endif %}
