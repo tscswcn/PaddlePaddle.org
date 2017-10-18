@@ -57,8 +57,13 @@ a:visited, a:hover {
   overflow: hidden;
 }
 
+/* line 47, ../sass/base.sass */
+input:focus, select:focus, textarea:focus, button:focus {
+  outline: none;
+}
+
 @media (min-width: 992px) {
-  /* line 48, ../sass/base.sass */
+  /* line 51, ../sass/base.sass */
   .fixed-left {
     position: fixed;
     left: 0;
@@ -66,7 +71,7 @@ a:visited, a:hover {
     overflow: auto;
   }
 
-  /* line 54, ../sass/base.sass */
+  /* line 57, ../sass/base.sass */
   .fixed-right {
     position: fixed;
     right: 0;
