@@ -49,7 +49,7 @@ var PermalinkNav = {
                     if (header.is("h1")) {
                         containerOl = $("<ol/>");
                         var link = "#" + headerId;
-                        var linkElement = $('<a />', { text: headerText, href: link })
+                        var linkElement = $('<a />', { text: headerText, href: link, title: headerText })
                         containerOl.append(linkElement);
                         navContainer.append(containerOl);
                     } else if (header.is("h2")) {
@@ -59,7 +59,7 @@ var PermalinkNav = {
                         }
 
                         var link = "#" + headerId;
-                        var linkElement = $('<a />', { text: headerText, href: link })
+                        var linkElement = $('<a />', { text: headerText, href: link, title: headerText })
                         var containerLi = $("<li/>");
                         containerLi.append(linkElement);
                         containerOl.append(containerLi);
