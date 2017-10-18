@@ -36,7 +36,7 @@
         },
         {
           "title": {
-            "en": "Popular application",
+            "en": "Popular applications",
             "zh": "常見应用"
           },
           "sub_sections": [
@@ -419,12 +419,10 @@
       "sections": [
         {
           "title": {
-            "en": "Overview",
             "zh": "概述"
           },
           "link": {
-            "en": "/models/README.html",
-            "zh": "/models/README.cn.html"
+            "zh": "/models/README.html"
           }
         },
         {

@@ -18,6 +18,7 @@ var PermalinkNav = {
 
                 $(".doc-content").addClass('with-permalink-nav');
 
+                var index = 0;
                 var containerOl;
                 permalinks.each(function(index) {
                     var header = $(this);
@@ -37,17 +38,18 @@ var PermalinkNav = {
 
                     if (!headerId) {
                         // Create a permalink id on header (if header does not have an id already)
-                        headerId = ("permalink-" + headerText.replace(/\W+/g, "-")).toLowerCase();
+                        headerId = ("permalink-" + index + "-" + headerText.replace(/\W+/g, "-")).toLowerCase();
                         if (headerId > maxIdLength) {
                             headerId = headerId.substring(0, maxIdLength);
                         }
                         header.attr("id", headerId);
+                        index++;
                     }
 
                     if (header.is("h1")) {
                         containerOl = $("<ol/>");
                         var link = "#" + headerId;
-                        var linkElement = $('<a />', { text: headerText, href: link })
+                        var linkElement = $('<a />', { text: headerText, href: link, title: headerText })
                         containerOl.append(linkElement);
                         navContainer.append(containerOl);
                     } else if (header.is("h2")) {
@@ -57,7 +59,7 @@ var PermalinkNav = {
                         }
 
                         var link = "#" + headerId;
-                        var linkElement = $('<a />', { text: headerText, href: link })
+                        var linkElement = $('<a />', { text: headerText, href: link, title: headerText })
                         var containerLi = $("<li/>");
                         containerLi.append(linkElement);
                         containerOl.append(containerLi);
