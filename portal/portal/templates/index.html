@@ -39,7 +39,11 @@
                         <h3>{% trans "Computer Vision"%}</h3>
                         <p>{% blocktrans %}Using a Convolutional Neural Network (CNN) for Image Recognition and Object Detection.{% endblocktrans %}</p>
                         <div>
-                            <a role="button" class="view-more" href="{% url url_helper.URL_NAME_TUTORIAL settings.DEFAULT_DOCS_VERSION '03.image_classification/index.html'%}">{% trans "Read more >"%}</a>
+                            {% if LANGUAGE_CODE == 'zh' %}
+                            <a role="button" class="view-more" href="{% url url_helper.URL_NAME_TUTORIAL settings.DEFAULT_DOCS_VERSION '03.image_classification/index.cn.html' %}">{% trans "Read more >"%}</a>
+                            {% else %}
+                            <a role="button" class="view-more" href="{% url url_helper.URL_NAME_TUTORIAL settings.DEFAULT_DOCS_VERSION '03.image_classification/index.html' %}">{% trans "Read more >"%}</a>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -55,7 +59,11 @@
                         <h3>{% trans "Natural Language Understanding"%}</h3>
                         <p>{% blocktrans %}Using a Recurrent Neural Network (RNN) for Sentiment Analysis.{% endblocktrans %}</p>
                         <div>
+                            {% if LANGUAGE_CODE == 'zh' %}
+                            <a role="button" class="view-more" href="{% url url_helper.URL_NAME_TUTORIAL settings.DEFAULT_DOCS_VERSION '06.understand_sentiment/index.cn.html'%}">{% trans "Read more >"%}</a>
+                            {% else %}
                             <a role="button" class="view-more" href="{% url url_helper.URL_NAME_TUTORIAL settings.DEFAULT_DOCS_VERSION '06.understand_sentiment/index.html'%}">{% trans "Read more >"%}</a>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -71,7 +79,11 @@
                         <h3>{% trans "Recommender System"%}</h3>
                         <p>{% blocktrans %}Using Deep Learning on Recommendation Systems to Help Users Find Interests.{% endblocktrans %}</p>
                         <div>
+                            {% if LANGUAGE_CODE == 'zh' %}
+                            <a role="button" class="view-more" href="{% url url_helper.URL_NAME_TUTORIAL settings.DEFAULT_DOCS_VERSION '05.recommender_system/index.cn.html'%}">{% trans "Read more >"%}</a>
+                            {% else %}
                             <a role="button" class="view-more" href="{% url url_helper.URL_NAME_TUTORIAL settings.DEFAULT_DOCS_VERSION '05.recommender_system/index.html'%}">{% trans "Read more >"%}</a>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
