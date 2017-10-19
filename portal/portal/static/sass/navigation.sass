@@ -1,3 +1,4 @@
+@import "_mixins.sass"
 @import "_variables.sass"
 
 .navbar
@@ -102,6 +103,7 @@ body
                     width: 100%
                     padding: 8px 24px 8px 16px
                     border-radius: 15px
+                    border: 1px solid #e0e0e0
 
                 input[type=text]
                     font-size: $font-medium
@@ -109,11 +111,14 @@ body
                     &:focus
                         border-color: $accent-color
 
+                    &::placeholder
+                        color: #e0e0e0
+
                 i
                     float: right
                     position: relative
                     margin-right: 8px
-                    margin-top: -26px
+                    margin-top: -28px
                     z-index: 2
                     color: #e0e0e0
 
@@ -159,8 +164,46 @@ body
             li
                 padding-left: 8px
 
-        .panel-content
-            padding-left: 0px
+    .panel-content
+        padding-left: 0px
+
+        .panel-inner
+            display: block
+
+            .doc-content
+                display: block
+
+                *[id]:before
+                    display: block
+                    content: " "
+                    margin-top: -$primary-nav-height
+                    height: $primary-nav-height
+                    visibility: hidden
+
+            .permalinks-nav
+                margin: 0
+                display: block
+                width: 100%
+                margin: $content-padding 16px 0 16px
+                border-left: 2px solid $theme-color
+
+                ol,ul
+                    padding-left: 12px
+                    margin-bottom: 0px
+
+                    a
+                        width: 100%
+                        display: block
+                        white-space: nowrap
+                        text-overflow: ellipsis
+                        overflow: hidden
+                        color: $primary-text-color
+                        &:hover,&.active
+                            color: $accent-color
+
+                    li
+                        a
+                            padding-left: 15px
 
 @media (min-width: 992px)
     .panel-layout
@@ -175,7 +218,20 @@ body
                 padding-bottom: $primary-nav-height * 2
 
         .panel-content
-            padding-left: $sidebar-width
+            margin-left: $sidebar-width
+
+            .panel-inner
+
+                .doc-content
+                    width: 100%
+
+                    &.with-permalink-nav
+                        @include calc( width, '100% - ' + $permalink-nav-width)
+
+                .permalinks-nav
+                    width: $permalink-nav-width
+                    float: right
+                    padding-left: 0px
 
     .sidebar-toggle
         display: none

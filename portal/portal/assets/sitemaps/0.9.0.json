@@ -64,7 +64,7 @@
         },
         {
           "title": {
-            "en": "Example and Demo",
+            "en": "Examples and Demos",
             "zh": "使用示例"
           },
           "link": {
@@ -156,7 +156,7 @@
     },
     "FAQ": {
       "title": {
-        "zh": "常见问题¶"
+        "zh": "常见问题"
       },
       "link": {
         "zh": "/documentation/doc_cn/faq/index.html"
