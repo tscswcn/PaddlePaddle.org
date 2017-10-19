@@ -5,6 +5,8 @@ import codecs
 from bs4 import BeautifulSoup
 import markdown
 
+from django.conf import settings
+
 # Traverse through all the dirs of a given path.
 # BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -162,3 +164,24 @@ def models(original_documentation_dir, version, destination_documentation_dir):
 
             elif 'images' in subpath:
                 copyfile(os.path.join(subdir, file), new_path)
+
+
+def markdown_file(source_markdown_file, version):
+    new_path = '%s/docs/%s/other/%s' % (
+        settings.EXTERNAL_TEMPLATE_DIR, version, os.path.splitext(
+        source_markdown_file.replace('/tmp', ''))[0] + '.html')
+
+    if not os.path.exists(os.path.dirname(new_path)):
+        os.makedirs(os.path.dirname(new_path))
+
+    with open(source_markdown_file) as original_md_file:
+        markdown_body = original_md_file.read()
+
+        with codecs.open(new_path, 'w', 'utf-8') as new_html_partial:
+            # Strip out the wrapping HTML
+            new_html_partial.write(
+                '{% verbatim %}\n' + markdown.markdown(
+                    unicode(markdown_body, 'utf-8'),
+                    extensions=['markdown.extensions.fenced_code', 'markdown.extensions.tables']
+                ) + '\n{% endverbatim %}'
+            )

@@ -14,6 +14,7 @@ from django.utils.translation import LANGUAGE_SESSION_KEY
 from django.core.cache import cache
 
 from portal import sitemap_helper, portal_helper, url_helper
+from deploy.documentation import fetch_and_transform
 
 
 # Search the path and render the content
@@ -113,6 +114,20 @@ def documentation_path(request, version, path=None):
 
 def models_path(request, version, path=None):
     return _render_static_content(request, version, 'documentation', 'models')
+
+
+def other_path(request, version, path=None):
+    # Try to find the template associated with this path.
+    try:
+        # If the template is found, render it.
+        static_content_template = get_template(
+            sitemap_helper.get_external_file_path(request.path))
+
+    except TemplateDoesNotExist:
+        # Else, fetch the page, and run through a generic stripper.
+        fetch_and_transform(url_helper.GITHUB_ROOT + '/' + os.path.splitext(path)[0] + '.md', version)
+
+    return _render_static_content(request, version, 'tutorial', 'other')
 
 
 def _redirect_first_link_in_book(request, version, book_id):

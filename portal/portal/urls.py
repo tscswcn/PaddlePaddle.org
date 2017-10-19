@@ -52,10 +52,14 @@ urlpatterns = [
     # ---------------
     url(r'^docs/(?P<version>.*)/%s(?P<path>.*)$' % url_helper.MODEL_ROOT, views.models_path, name=url_helper.URL_NAME_MODEL),
 
+    # -------------------
+    # OTHER ARBITRARY URLS
+    # -------------------
+    url(r'^docs/(?P<version>.*)/other/(?P<path>.*)$', views.other_path, name=url_helper.URL_NAME_OTHER),
+
     # ---------------
     # ACTION URLS
     # ---------------
     url(r'^change-version$', views.change_version, name='set_version'),
     url(r'^change-lang$', views.change_lang, name='change_lang'),
 ]
-
