@@ -50,11 +50,11 @@ def change_lang(request):
 
     from_path = request.GET.get('path', None)
 
-    if from_path is not None:
+    if from_path:
         # Get which book the user was reading.
-        book_id = request.GET.get('book_id', 'en')
+        book_id = request.GET.get('book_id')
 
-        if book_id != "None":
+        if book_id:
             # Get the proper version
             docs_version = portal_helper.get_preferred_version(request)
             # Find the translated path
@@ -230,6 +230,7 @@ def _get_translated_link_in_book(book_id, version, target_link, lang):
         version
     )
 
+    translated_path = ""
     # Go through each level, and find the matching URL,
     # Once found, check if there is translated link
     for chapter_id, chapter in side_nav_content.iteritems():
@@ -240,7 +241,8 @@ def _get_translated_link_in_book(book_id, version, target_link, lang):
                     link = section['link']
                     if target_link in link.values():
                         if lang in link:
-                            return link[lang]
+                            translated_path = link[lang]
+                            break
 
                 elif 'sub_sections' in section:
                     for sub_section in section['sub_sections']:
@@ -248,9 +250,10 @@ def _get_translated_link_in_book(book_id, version, target_link, lang):
                             link = sub_section['link']
                             if target_link in link.values():
                                 if lang in link:
-                                    return link[lang]
+                                    translated_path = link[lang]
+                                    break
 
-    return
+    return translated_path
 
 
 def static_file_handler(request, path, extension, insecure=False, **kwargs):
