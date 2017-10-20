@@ -143,6 +143,14 @@
         },
         {
           "title": {
+            "en": "Building for mobile"
+          },
+          "link": {
+            "en": "https://raw.githubusercontent.com/PaddlePaddle/Mobile/master/README.md"
+          }
+        },
+        {
+          "title": {
             "en": "Set Command-line Parameters",
             "zh": "设置命令行参数"
           },
