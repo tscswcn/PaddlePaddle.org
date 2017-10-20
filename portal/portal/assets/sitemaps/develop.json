@@ -36,7 +36,7 @@
         },
         {
           "title": {
-            "en": "Popular applications",
+            "en": "Popular Applications",
             "zh": "常見应用"
           },
           "sub_sections": [
@@ -139,6 +139,14 @@
           "link": {
             "en": "/documentation/en/getstarted/build_and_install/build_from_source_en.html",
             "zh": "/documentation/cn/getstarted/build_and_install/cmake/build_from_source_cn.html"
+          }
+        },
+        {
+          "title": {
+            "en": "Building for mobile"
+          },
+          "link": {
+            "en": "https://raw.githubusercontent.com/PaddlePaddle/Mobile/master/README.md"
           }
         },
         {

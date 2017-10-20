@@ -1,19 +1,21 @@
 # -*- coding: utf-8 -*-
 import os
 import posixpath
+from urlparse import urlparse
 
 from django.template.loader import get_template
 from django.shortcuts import render, redirect
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.utils.six.moves.urllib.parse import unquote
-from django.http import Http404, HttpResponseServerError
+from django.http import Http404, HttpResponse, HttpResponseServerError
 from django.views import static
 from django.template import TemplateDoesNotExist
 from django.utils.translation import LANGUAGE_SESSION_KEY
 from django.core.cache import cache
 
 from portal import sitemap_helper, portal_helper, url_helper
+from deploy.documentation import fetch_and_transform
 
 
 # Search the path and render the content
@@ -113,6 +115,40 @@ def documentation_path(request, version, path=None):
 
 def models_path(request, version, path=None):
     return _render_static_content(request, version, 'documentation', 'models')
+
+
+def other_path(request, version, path=None):
+    # Try to find the template associated with this path.
+    try:
+        # If the template is found, render it.
+        static_content_template = get_template(
+            sitemap_helper.get_external_file_path(request.path))
+
+    except TemplateDoesNotExist:
+        # Else, fetch the page, and run through a generic stripper.
+        fetch_and_transform(url_helper.GITHUB_ROOT + '/' + os.path.splitext(path)[0] + '.md', version)
+
+    return _render_static_content(request, version, 'tutorial', 'other')
+
+
+def flush_other_page(request, version):
+    """
+    To clear the contents of any "cached" arbitrary markdown page, one can call
+    *.paddlepaddle.org/docs/{version}/flush?link={...example.com/page.md}&key=123456
+    """
+    secret_subkey = request.GET.get('key', None)
+    link = request.GET.get('link', None)
+
+    if secret_subkey and secret_subkey == settings.SECRET_KEY[:6]:
+        page_path = '%s/docs/%s/other/%s' % (
+            settings.EXTERNAL_TEMPLATE_DIR, version, os.path.splitext(
+            urlparse(link).path)[0] + '.html')
+        try:
+            os.remove(page_path)
+            return HttpResponse('Page successfully flushed.')
+
+        except:
+            return HttpResponse('Page to flush not found.')
 
 
 def _redirect_first_link_in_book(request, version, book_id):
