@@ -66,7 +66,7 @@ def change_lang(request):
                 # There is no translated path. Use the first link in the book instead
                 response = _redirect_first_link_in_book(request, docs_version, book_id)
 
-        elif from_path.startswith("/blog"):
+        elif from_path.startswith('/blog'):
             # Blog doesn't a book_id and translated version. Simply redirect back to the original path
             response = redirect(from_path)
 
@@ -233,19 +233,19 @@ def _get_translated_link_in_book(book_id, version, target_link, lang):
     # Go through each level, and find the matching URL,
     # Once found, check if there is translated link
     for chapter_id, chapter in side_nav_content.iteritems():
-        if "sections" in chapter:
-            for section in chapter["sections"]:
+        if 'sections' in chapter:
+            for section in chapter['sections']:
 
-                if "link" in section:
-                    link = section["link"]
+                if 'link' in section:
+                    link = section['link']
                     if target_link in link.values():
                         if lang in link:
                             return link[lang]
 
-                elif "sub_sections" in section:
-                    for sub_section in section["sub_sections"]:
-                        if "link" in sub_section:
-                            link = sub_section["link"]
+                elif 'sub_sections' in section:
+                    for sub_section in section['sub_sections']:
+                        if 'link' in sub_section:
+                            link = sub_section['link']
                             if target_link in link.values():
                                 if lang in link:
                                     return link[lang]
