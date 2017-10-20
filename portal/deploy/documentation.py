@@ -1,12 +1,12 @@
-from urlparse import urlparse
-import zipfile
 import os
-import tempfile
 
+import zipfile
+import tempfile
 import requests
 
 from deploy import strip
 from django.conf import settings
+from urlparse import urlparse
 
 
 def transform(source_dir, version, output_dir, specified_source=None):
@@ -43,12 +43,17 @@ def transform(source_dir, version, output_dir, specified_source=None):
     elif 'models' in source_dir or specified_source == 'models':
         convertor = strip.models
 
+    if not os.path.exists(os.path.dirname(extracted_source_dir)):
+        print extracted_source_dir, ' is not a valid path'
+        return
+
     if convertor:
         if output_dir:
             convertor(extracted_source_dir, version, output_dir)
         elif settings.EXTERNAL_TEMPLATE_DIR:
             convertor(extracted_source_dir, version, settings.EXTERNAL_TEMPLATE_DIR)
         else:
+            print 'Please provide an output dir or set settings.EXTERNAL_TEMPLATE_DIR'
             return
 
 
