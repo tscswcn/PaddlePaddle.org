@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 import posixpath
+import urllib
 from urlparse import urlparse
 
 from django.template.loader import get_template
@@ -46,9 +47,8 @@ def change_lang(request):
     lang = request.GET.get('lang_code', 'en')
 
     response = redirect('/')
-    portal_helper.set_preferred_language(request, response, lang)
 
-    from_path = request.GET.get('path', None)
+    from_path = urllib.unquote(request.GET.get('path', None))
 
     if from_path:
         # Get which book the user was reading.
@@ -70,6 +70,7 @@ def change_lang(request):
             # Blog doesn't a book_id and translated version. Simply redirect back to the original path
             response = redirect(from_path)
 
+    portal_helper.set_preferred_language(request, response, lang)
     return response
 
 
