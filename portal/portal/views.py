@@ -48,6 +48,28 @@ def change_lang(request):
     response = redirect('/')
     portal_helper.set_preferred_language(request, response, lang)
 
+    from_path = request.GET.get('path', None)
+
+    if from_path:
+        # Get which book the user was reading.
+        book_id = request.GET.get('book_id')
+
+        if book_id:
+            # Get the proper version
+            docs_version = portal_helper.get_preferred_version(request)
+            # Find the translated path
+            translated_path = _get_translated_link_in_book(book_id, docs_version, from_path, lang)
+
+            if translated_path:
+                response = redirect(translated_path)
+            else:
+                # There is no translated path. Use the first link in the book instead
+                response = _redirect_first_link_in_book(request, docs_version, book_id)
+
+        elif from_path.startswith('/blog'):
+            # Blog doesn't a book_id and translated version. Simply redirect back to the original path
+            response = redirect(from_path)
+
     return response
 
 
@@ -200,6 +222,38 @@ def _get_first_link_in_book(book, lang):
             path = first_section['link'][lang]
 
     return path
+
+
+def _get_translated_link_in_book(book_id, version, target_link, lang):
+    side_nav_content = sitemap_helper.get_book_navigation(
+        book_id,
+        version
+    )
+
+    translated_path = ""
+    # Go through each level, and find the matching URL,
+    # Once found, check if there is translated link
+    for chapter_id, chapter in side_nav_content.iteritems():
+        if 'sections' in chapter:
+            for section in chapter['sections']:
+
+                if 'link' in section:
+                    link = section['link']
+                    if target_link in link.values():
+                        if lang in link:
+                            translated_path = link[lang]
+                            break
+
+                elif 'sub_sections' in section:
+                    for sub_section in section['sub_sections']:
+                        if 'link' in sub_section:
+                            link = sub_section['link']
+                            if target_link in link.values():
+                                if lang in link:
+                                    translated_path = link[lang]
+                                    break
+
+    return translated_path
 
 
 def static_file_handler(request, path, extension, insecure=False, **kwargs):
