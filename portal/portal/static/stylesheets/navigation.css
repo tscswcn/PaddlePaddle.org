@@ -201,7 +201,7 @@ body.invert .footer-nav {
   display: block;
 }
 /* line 176, ../sass/navigation.sass */
-.panel-layout .panel-content .panel-inner .doc-content *[id]:before {
+.panel-layout .panel-content .panel-inner .doc-content h1:before, .panel-layout .panel-content .panel-inner .doc-content h2:before {
   display: block;
   content: " ";
   margin-top: -60px;

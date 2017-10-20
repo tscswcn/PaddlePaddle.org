@@ -1660,7 +1660,7 @@
   margin-bottom: 24px;
 }
 /* line 1458, ../sass/content.sass */
-.doc-content .section ul, .doc-content .toctree-wrapper ul {
+.doc-content > ul, .doc-content .section ul, .doc-content .toctree-wrapper ul {
   list-style: disc;
   line-height: 24px;
   margin-bottom: 24px;
@@ -1677,7 +1677,7 @@
   margin-left: 24px;
 }
 /* line 1472, ../sass/content.sass */
-.doc-content .section ul li, .doc-content .toctree-wrapper ul li {
+.doc-content > ul li, .doc-content .section ul li, .doc-content .toctree-wrapper ul li {
   list-style: disc;
   margin-left: 24px;
 }

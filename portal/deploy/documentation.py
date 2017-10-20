@@ -1,8 +1,12 @@
+import os
+
+import zipfile
+import tempfile
+import requests
+
 from deploy import strip
 from django.conf import settings
-import requests
-import zipfile
-import os
+from urlparse import urlparse
 
 
 def transform(source_dir, version, output_dir, specified_source=None):
@@ -51,3 +55,17 @@ def transform(source_dir, version, output_dir, specified_source=None):
         else:
             print 'Please provide an output dir or set settings.EXTERNAL_TEMPLATE_DIR'
             return
+
+
+def fetch_and_transform(source_url, version):
+    response = requests.get(source_url)
+    tmp_dir = tempfile.gettempdir()
+    source_markdown_file = tmp_dir + urlparse(source_url).path
+
+    if not os.path.exists(os.path.dirname(source_markdown_file)):
+        os.makedirs(os.path.dirname(source_markdown_file))
+
+    with open(source_markdown_file, 'wb') as f:
+        f.write(response.content)
+
+    strip.markdown_file(source_markdown_file, version, tmp_dir)
