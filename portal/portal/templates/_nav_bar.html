@@ -26,7 +26,7 @@
                 </li>
                 <li>{% version_links book_id %}</li>
                 <li>
-                    <a class="nav-link" href="{{ lang_def.link }}">{{ lang_def.label}}</a>
+                    <a class="nav-link" href="{{ lang_def.link }}&path={{ request.path }}&book_id={{ book_id }}">{{ lang_def.label}}</a>
                 </li>
                 <li><a class="nav-link" href="https://github.com/PaddlePaddle/Paddle" target="_blank">
                     Github

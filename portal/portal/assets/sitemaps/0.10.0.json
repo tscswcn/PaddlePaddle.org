@@ -229,12 +229,10 @@
         },
         {
           "title": {
-            "en": "RNN Configuration",
-            "zh": "GPU性能分析与调优"
+            "en": "RNN Configuration"
           },
           "link": {
-            "en": "/documentation/doc/howto/deep_model/rnn/rnn_config_en.html",
-            "zh": "/documentation/doc_cn/howto/optimization/gpu_profiling_cn.html"
+            "en": "/documentation/doc/howto/deep_model/rnn/rnn_config_en.html"
           }
         },
         {
@@ -409,111 +407,90 @@
         },
         {
           "title": {
-            "en": "Hsigmoid加速词向量训练",
             "zh": "Hsigmoid加速词向量训练"
           },
           "link": {
-            "en": "/models/hsigmoid/README.html",
             "zh": "/models/hsigmoid/README.html"
           }
         },
         {
           "title": {
-            "en": "噪声对比估计加速词向量训练",
             "zh": "噪声对比估计加速词向量训练"
           },
           "link": {
-            "en": "/models/nce_cost/README.html",
             "zh": "/models/nce_cost/README.html"
           }
         },
         {
           "title": {
-            "en": "使用循环神经网语言模型生成文本",
             "zh": "使用循环神经网语言模型生成文本"
           },
           "link": {
-            "en": "/models/generate_sequence_by_rnn_lm/README.html",
             "zh": "/models/generate_sequence_by_rnn_lm/README.html"
           }
         },
         {
           "title": {
-            "en": "Click-Through Rate Prediction",
             "zh": "Click-Through Rate Prediction"
           },
           "link": {
-            "en": "/models/ctr/README.html",
             "zh": "/models/ctr/README.html"
           }
         },
         {
           "title": {
-            "en": "文本分类",
             "zh": "文本分类"
           },
           "link": {
-            "en": "/models/text_classification/README.html",
+            "en": "/models//README.html",
             "zh": "/models/text_classification/README.html"
           }
         },
         {
           "title": {
-            "en": "排序学习(Learning To Rank)",
             "zh": "排序学习(Learning To Rank)"
           },
           "link": {
-            "en": "/models/ltr/README.html",
             "zh": "/models/ltr/README.html"
           }
         },
         {
           "title": {
-            "en": "Deep Structured Semantic Models (DSSM)",
             "zh": "Deep Structured Semantic Models (DSSM)"
           },
           "link": {
-            "en": "/models/dssm/README.html",
             "zh": "/models/dssm/README.html"
           }
         },
         {
           "title": {
-            "en": "命名实体识别",
             "zh": "命名实体识别"
           },
           "link": {
-            "en": "/models/sequence_tagging_for_ner/README.html",
             "zh": "/models/sequence_tagging_for_ner/README.html"
           }
         },
         {
           "title": {
-            "en": "Neural Machine Translation Model",
             "zh": "Neural Machine Translation Model"
           },
           "link": {
-            "en": "/models/nmt_without_attention/README.html",
             "zh": "/models/nmt_without_attention/README.html"
           }
         },
         {
           "title": {
-            "en": "Convert Caffe model file to PaddlePaddle model file",
             "zh": "Convert Caffe model file to PaddlePaddle model file"
           },
           "link": {
-            "en": "/models/image_classification/caffe2paddle/README.html",
             "zh": "/models/image_classification/caffe2paddle/README.html"
           }
         },
         {
           "title": {
-            "en": "图像分类",
             "zh": "图像分类"
           },
           "link": {
-            "en": "/models/image_classification/README.html",
             "zh": "/models/image_classification/README.html"
           }
         }
