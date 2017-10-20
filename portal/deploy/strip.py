@@ -166,10 +166,10 @@ def models(original_documentation_dir, version, destination_documentation_dir):
                 copyfile(os.path.join(subdir, file), new_path)
 
 
-def markdown_file(source_markdown_file, version):
+def markdown_file(source_markdown_file, version, tmp_dir):
     new_path = '%s/docs/%s/other/%s' % (
         settings.EXTERNAL_TEMPLATE_DIR, version, os.path.splitext(
-        source_markdown_file.replace('/tmp', ''))[0] + '.html')
+        source_markdown_file.replace(tmp_dir, ''))[0] + '.html')
 
     if not os.path.exists(os.path.dirname(new_path)):
         os.makedirs(os.path.dirname(new_path))

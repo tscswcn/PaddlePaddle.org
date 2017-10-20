@@ -56,6 +56,7 @@ urlpatterns = [
     # OTHER ARBITRARY URLS
     # -------------------
     url(r'^docs/(?P<version>.*)/other/(?P<path>.*)$', views.other_path, name=url_helper.URL_NAME_OTHER),
+    url(r'^docs/(?P<version>.*)/flush$', views.flush_other_page, name='flush_other_page'),
 
     # ---------------
     # ACTION URLS

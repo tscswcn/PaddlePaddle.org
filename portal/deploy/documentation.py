@@ -1,6 +1,7 @@
 from urlparse import urlparse
 import zipfile
 import os
+import tempfile
 
 import requests
 
@@ -53,7 +54,8 @@ def transform(source_dir, version, output_dir, specified_source=None):
 
 def fetch_and_transform(source_url, version):
     response = requests.get(source_url)
-    source_markdown_file = '/tmp' + urlparse(source_url).path
+    tmp_dir = tempfile.gettempdir()
+    source_markdown_file = tmp_dir + urlparse(source_url).path
 
     if not os.path.exists(os.path.dirname(source_markdown_file)):
         os.makedirs(os.path.dirname(source_markdown_file))
@@ -61,4 +63,4 @@ def fetch_and_transform(source_url, version):
     with open(source_markdown_file, 'wb') as f:
         f.write(response.content)
 
-    strip.markdown_file(source_markdown_file, version)
+    strip.markdown_file(source_markdown_file, version, tmp_dir)
