@@ -47,6 +47,8 @@ def change_lang(request):
     lang = request.GET.get('lang_code', 'en')
 
     response = redirect('/')
+    # Needs to set the preferred language first in case the following code reads lang from portal_helper
+    portal_helper.set_preferred_language(request, response, lang)
 
     from_path = urllib.unquote(request.GET.get('path', None))
 
