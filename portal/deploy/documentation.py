@@ -53,6 +53,7 @@ def transform(source_dir, version, output_dir, specified_source=None):
         elif settings.EXTERNAL_TEMPLATE_DIR:
             convertor(extracted_source_dir, version, settings.EXTERNAL_TEMPLATE_DIR)
         else:
+            print 'Please provide an output dir or set settings.EXTERNAL_TEMPLATE_DIR'
             return
 
 
