@@ -93,7 +93,68 @@
       max-height: 100%
       margin-bottom: $home-line-spacing
 
+  .quick-start-guide
+    h3
+      color: #999
+
+    p
+      padding: $home-line-spacing 0px
+
+      &.installation-note
+        font-size: 12px
+        text-align: center
+
+      &.sidenote
+        text-align: right
+        font-style: italic
+
+        a
+          color: #999
+
+    nav
+      padding: $home-line-spacing * 2 0
+
+      ul
+        margin: auto
+        overflow: hidden
+        text-align: center
+
+        li
+          border-radius: 6px
+          padding: 24px
+          background-color: #f4f5f7
+          cursor: pointer
+          display: inline-block
+
+          .pip-icon, .docker-icon
+            display: inline-block
+            width: 24px
+            height: 24px
+            background-position: -24px -0px
+            margin-right: 12px
+            float: left
+
+          .pip-icon
+            background-image: url(./../images/pip.png)
+
+          .docker-icon
+            background-image: url(./../images/docker.png)
+
+          &.selected
+            .pip-icon, .docker-icon
+              background-position: 0px 0px
+
+          &:hover
+            background-color: #efefef
+
+          &.selected
+            color: #fff
+            background-color: #9977ef
+
+
   .features
+    padding-bottom: $home-line-spacing * 2
+
     .col-lg-3
       width: 50%
       padding: 8px
@@ -117,31 +178,65 @@
     p
       line-height: 24px
 
-  .get-started
-    text-align: center
-    padding-bottom: $home-line-spacing * 2
 
-    h2
-      margin-top: $home-line-spacing * 2
-      margin-bottom: $home-line-spacing
 
-    p
-      padding: 0 0 $home-line-spacing 0
+  code
+    padding: 0
+    padding-top: 0.2em
+    padding-bottom: 0.2em
+    margin: 0
+    background-color: rgba(0, 0, 0, 0.04)
+    border-radius: 3px
+    font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace
+    color: #E74C3C
+    overflow-x: auto
 
-    .quick-start
-      color: #fff
-      background-color: #0073eb
-      font-size: 18px
-      display: inline-block
-      line-height: 48px
-      width: 212px
-      &:hover
-        color: #fff
-        background-color: #3095ff
-        font-size: 18px
-        display: inline-block
-        line-height: 60px
-        width: 212px
+
+  pre
+    white-space: pre
+    padding: 24px
+    overflow: auto
+    line-height: 1.45
+    background-color: #f7f7f7
+    border-radius: 3px
+    word-wrap: normal
+    margin-top: 0
+    margin-bottom: 0
+    font: Consolas, "Liberation Mono", Menlo, Courier, monospace
+    color: #292b2c
+
+    > code
+      padding: 0
+      margin: 0
+      font-size: 100%
+      word-break: normal
+      white-space: pre
+      background: transparent
+      border: 0
+
+    code
+      display: inline
+      max-width: auto
+      padding: 0
+      margin: 0
+      overflow: visible
+      line-height: inherit
+      word-wrap: normal
+      background-color: transparent
+      border: 0
+      color: #292b2c
+
+      &::before, &::after
+        content: normal
+
+    .hljs-comment
+      color: #7f7f7f
+
+  strong
+    font-weight: bold
+
+  em
+    font-style: italic
 
 @media (min-width: 992px)
   .home
@@ -197,21 +292,13 @@
     .features
       h2
         margin-top: $home-line-spacing * 4
-        margin-bottom: $home-line-spacing * 4
+        margin-bottom: $home-line-spacing * 2
 
       .feature-desc
         margin: 8px
         padding: 8px
         background-color: transparent
 
-    .get-started
-      padding-bottom: $home-line-spacing * 6
-
+    .quick-start-guide
       h2
         margin-top: $home-line-spacing * 4
-        margin-bottom: $home-line-spacing * 2
-
-      .quick-start
-        font-size: 18px
-        line-height: 60px
-        width: 212px
