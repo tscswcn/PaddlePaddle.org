@@ -176,6 +176,23 @@ def flush_other_page(request, version):
             return HttpResponse('Page to flush not found.')
 
 
+def clear_caches(request, version):
+    """
+    To clear the cached sitemap, sidebar, one can call
+    *.paddlepaddle.org/util/{version}/clear_caches?key=123456
+    """
+
+    secret_subkey = request.GET.get('key', None)
+
+    if secret_subkey and secret_subkey == settings.SECRET_KEY[:6]:
+        cache.clear()
+        sitemap_helper.generate_sitemap(version)
+
+        return HttpResponse('Caches cleared')
+    else:
+        return HttpResponse('Unable to clear caches')
+
+
 def _redirect_first_link_in_book(request, version, book_id):
     portal_helper.set_preferred_version(request, version)
     lang = portal_helper.get_preferred_language(request)
