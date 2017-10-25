@@ -34,7 +34,7 @@ def models_sitemap(original_documentation_dir, generated_documentation_dir, vers
             # The absolute URLs link to the github site. Transform them into relative URL for local HTML files.
             # dynamically remove develop or v0.10.0, etc
             link_zh = tag['href'].replace(github_path, '')
-            link_zh = re.sub(r"^v?[0-9]+\.[0-9]+\.[0-9]+|^develop", 'models', link_zh) + '/README.html'
+            link_zh = re.sub(r"^v?[0-9]+\.[0-9]+\.[0-9]+/|^develop/", 'models/', link_zh) + '/README.html'
 
             link = {'zh': link_zh}
 
