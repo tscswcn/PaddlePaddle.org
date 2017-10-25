@@ -57,7 +57,6 @@ urlpatterns = [
     # -------------------
     url(r'^docs/(?P<version>.*)/other/(?P<path>.*)$', views.other_path, name=url_helper.URL_NAME_OTHER),
     url(r'^docs/(?P<version>.*)/flush$', views.flush_other_page, name='flush_other_page'),
-    url(r'^util/(?P<version>.*)/clear_caches$', views.clear_caches, name='clear_caches'),
 
     # ---------------
     # ACTION URLS
