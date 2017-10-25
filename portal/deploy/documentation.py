@@ -4,57 +4,67 @@ import zipfile
 import tempfile
 import requests
 
-from deploy import strip
+from deploy import documentation_generator, strip, sitemap_generator
 from django.conf import settings
 from urlparse import urlparse
+import traceback
 
 
-def transform(source_dir, version, output_dir, specified_source=None):
-    convertor = None
-    extracted_source_dir = None
-
-    # python manage.py deploy_documentation book v0.10.0 generated_contents/
-    # remove the heading 'v'
-    if version[0] == 'v':
-        version = version[1:]
-
-    if source_dir in settings.GIT_REPO_MAP:
-        git_repo = settings.GIT_REPO_MAP[source_dir]
-        git_repo = git_repo + version + '.zip'
-        extracted_dir = source_dir + '-' + version
-        response = requests.get(git_repo)
-        tmp_zip_file = settings.TEMPORARY_DIR + source_dir + '.zip'
-
-        with open(tmp_zip_file, 'wb') as f:
-            f.write(response.content)
-
-        with zipfile.ZipFile(tmp_zip_file, "r") as zip_ref:
-            zip_ref.extractall(settings.TEMPORARY_DIR)
-            extracted_source_dir = settings.TEMPORARY_DIR + '/' + extracted_dir
-    else:
-        extracted_source_dir = source_dir
-
-    if 'documentation' in source_dir or specified_source == 'documentation':
-        convertor = strip.sphinx
-
-    elif 'book' in source_dir or specified_source == 'book':
-        convertor = strip.book
-
-    elif 'models' in source_dir or specified_source == 'models':
-        convertor = strip.models
-
-    if not os.path.exists(os.path.dirname(extracted_source_dir)):
-        print extracted_source_dir, ' is not a valid path'
-        return
-
-    if convertor:
-        if output_dir:
-            convertor(extracted_source_dir, version, output_dir)
-        elif settings.EXTERNAL_TEMPLATE_DIR:
-            convertor(extracted_source_dir, version, settings.EXTERNAL_TEMPLATE_DIR)
-        else:
-            print 'Please provide an output dir or set settings.EXTERNAL_TEMPLATE_DIR'
+def transform(original_documentation_dir, generated_docs_dir, version):
+    try:
+        print 'Processing docs at %s to %s for version %s' % (original_documentation_dir, generated_docs_dir, version)
+        if not os.path.exists(os.path.dirname(original_documentation_dir)):
+            print 'Cannot strip documentation, source_dir=%s does not exists' % original_documentation_dir
             return
+
+        doc_generator = None
+        convertor = None
+        sm_generator = None
+        output_dir_name = None
+
+        # remove the heading 'v'
+        if version[0] == 'v':
+            version = version[1:]
+
+        if original_documentation_dir.lower().endswith('/paddle'):
+            doc_generator = documentation_generator.generate_paddle_docs
+            convertor = strip.sphinx
+            sm_generator = sitemap_generator.sphinx_sitemap
+            output_dir_name = 'documentation'
+
+        elif original_documentation_dir.lower().endswith('/book'):
+            doc_generator = documentation_generator.generate_book_docs
+            convertor = strip.book
+            sm_generator = sitemap_generator.book_sitemap
+            output_dir_name = 'book'
+
+        elif original_documentation_dir.lower().endswith('/models'):
+            doc_generator = documentation_generator.generate_models_docs
+            convertor = strip.models
+            sm_generator = sitemap_generator.models_sitemap
+            output_dir_name = 'models'
+
+        else:
+            raise Exception('Unsupported content.')
+
+        if not generated_docs_dir:
+            # If we have not already generated the documentation, then run the document generator
+            print 'Generating documentation at %s' % original_documentation_dir
+            if doc_generator:
+                generated_docs_dir = doc_generator(original_documentation_dir, output_dir_name)
+
+        print 'Stripping documentation at %s, version %s' % (generated_docs_dir, version)
+        if convertor:
+            convertor(generated_docs_dir, version, output_dir_name)
+
+        print 'Generating sitemap for documentation at %s, gen_docs_dir=%s,  version %s' % \
+              (original_documentation_dir, generated_docs_dir, version)
+        if sm_generator:
+            sm_generator(original_documentation_dir, generated_docs_dir, version, output_dir_name)
+
+    except Exception as e:
+        print 'Unable to process documentation: %s' % e
+        traceback.print_exc(original_documentation_dir)
 
 
 def fetch_and_transform(source_url, version):
