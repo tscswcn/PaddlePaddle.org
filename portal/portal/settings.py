@@ -89,7 +89,7 @@ CACHES = {
     }
 }
 
-DEFAULT_CACHE_EXPIRY = 5 if DEBUG else 600
+DEFAULT_CACHE_EXPIRY = 5 if DEBUG else 300
 
 WSGI_APPLICATION = 'portal.wsgi.application'
 

@@ -5,8 +5,6 @@ import tempfile
 
 from django.conf import settings
 from django.core.cache import cache
-from django.http import HttpResponseServerError
-
 from portal import url_helper
 
 
@@ -27,23 +25,23 @@ def get_sitemap(version):
 
 
 def _load_sitemap_from_file(version):
-    # TODO[thuan]: Remove code that caches sitemap file for now, need to find better way of doing this
-    # sitemap = None
-    # sitemap_path = _get_sitemap_path(version)
-    # if os.path.isfile(sitemap_path):
-    #     # Sitemap file exists, lets load it
-    #     try:
-    #         print "Loading sitemap from %s" % sitemap_path
-    #         json_data = open(sitemap_path).read()
-    #         sitemap = json.loads(json_data, object_pairs_hook=collections.OrderedDict)
-    #     except Exception as e:
-    #         print "Cannot load sitemap from file %s: %s" % (sitemap_path, e.message)
-    #
-    # if not sitemap:
-    #     # We couldn't load sitemap.<version>.json file, lets generate it
-    #     sitemap = generate_sitemap(version)
+    sitemap = None
+    sitemap_path = _get_sitemap_path(version)
 
-    return generate_sitemap(version)
+    if os.path.isfile(sitemap_path):
+        # Sitemap file exists, lets load it
+        try:
+            print "Loading sitemap from %s" % sitemap_path
+            json_data = open(sitemap_path).read()
+            sitemap = json.loads(json_data, object_pairs_hook=collections.OrderedDict)
+        except Exception as e:
+            print "Cannot load sitemap from file %s: %s" % (sitemap_path, e.message)
+
+    if not sitemap:
+        # We couldn't load sitemap.<version>.json file, lets generate it
+        sitemap = generate_sitemap(version)
+
+    return sitemap
 
 
 def generate_sitemap(version):
@@ -56,10 +54,9 @@ def generate_sitemap(version):
         sitemap = _resolve_references(sitemap, version)
         _transform_urls(version, sitemap)
 
-        # TODO[thuan]: Remove code that caches sitemap file for now, need to find better way of doing this
-        # sitemap_path = _get_sitemap_path(version)
-        # with open(sitemap_path, 'w') as fp:
-        #     json.dump(sitemap, fp)
+        sitemap_path = _get_sitemap_path(version)
+        with open(sitemap_path, 'w') as fp:
+            json.dump(sitemap, fp)
 
     except Exception as e:
         print "Cannot generate sitemap from %s: %s" % (sitemap_template_path, e.message)
@@ -69,7 +66,6 @@ def generate_sitemap(version):
 
 def load_json_and_resolve_references(path, version):
     sitemap = None
-    # TODO[Jeff]: Modify the path for Blog if necessary
     sitemap_path = "%s/docs/%s/%s" % (settings.EXTERNAL_TEMPLATE_DIR, version, path)
 
     try:
