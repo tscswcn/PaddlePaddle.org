@@ -29,7 +29,7 @@
 .home .banner {
   color: white;
   text-align: center;
-  background: url(./../images/banner.jpg) no-repeat center bottom;
+  background: url(./../images/banner.png) no-repeat center center;
   background-size: cover;
   height: 260px;
   padding-bottom: auto;
@@ -55,90 +55,89 @@
   display: inline-block;
   line-height: 48px;
   color: #ffffff;
+  background-color: #0073eb;
   font-size: 18px;
   width: 212px;
-  border: 1px solid #fff;
 }
 /* line 59, ../sass/home.sass */
 .home .banner .quick-start:hover {
-  color: #333;
-  background-color: #ededed;
-  border: 1px solid #ededed;
+  color: #fff;
+  background-color: #3095ff;
 }
-/* line 64, ../sass/home.sass */
+/* line 63, ../sass/home.sass */
 .home .services {
   background-color: transparent;
 }
-/* line 66, ../sass/home.sass */
+/* line 65, ../sass/home.sass */
 .home .services .sub-title {
   text-align: center;
   color: #999;
 }
-/* line 70, ../sass/home.sass */
+/* line 69, ../sass/home.sass */
 .home .services h2 {
   margin-top: 32px;
 }
-/* line 73, ../sass/home.sass */
+/* line 72, ../sass/home.sass */
 .home .services p {
   padding: 16px 0 16px 0;
 }
-/* line 76, ../sass/home.sass */
+/* line 75, ../sass/home.sass */
 .home .services .sub-title {
   padding: 0;
 }
-/* line 79, ../sass/home.sass */
+/* line 78, ../sass/home.sass */
 .home .services .service-row {
   padding: 8 16px 0 16px 0;
   text-align: left;
   top: 50%;
 }
-/* line 81, ../sass/home.sass */
+/* line 80, ../sass/home.sass */
 .home .services .service-row .service-desc {
   position: relative;
   top: 50%;
   transform: translateY(-50%);
   left: 0;
 }
-/* line 90, ../sass/home.sass */
+/* line 89, ../sass/home.sass */
 .home .services .service-icon {
   text-align: center;
   max-width: 100%;
   max-height: 100%;
   margin-bottom: 16px;
 }
-/* line 97, ../sass/home.sass */
+/* line 96, ../sass/home.sass */
 .home .quick-start-guide h3 {
   color: #999;
 }
-/* line 100, ../sass/home.sass */
+/* line 99, ../sass/home.sass */
 .home .quick-start-guide p {
   padding: 16px 0px;
 }
-/* line 103, ../sass/home.sass */
+/* line 102, ../sass/home.sass */
 .home .quick-start-guide p.installation-note {
   font-size: 12px;
   text-align: center;
 }
-/* line 107, ../sass/home.sass */
+/* line 106, ../sass/home.sass */
 .home .quick-start-guide p.sidenote {
   text-align: right;
   font-style: italic;
 }
-/* line 111, ../sass/home.sass */
+/* line 110, ../sass/home.sass */
 .home .quick-start-guide p.sidenote a {
   color: #999;
 }
-/* line 114, ../sass/home.sass */
+/* line 113, ../sass/home.sass */
 .home .quick-start-guide nav {
   padding: 32px 0;
 }
-/* line 117, ../sass/home.sass */
+/* line 116, ../sass/home.sass */
 .home .quick-start-guide nav ul {
   margin: auto;
   overflow: hidden;
   text-align: center;
 }
-/* line 122, ../sass/home.sass */
+/* line 121, ../sass/home.sass */
 .home .quick-start-guide nav ul li {
   border-radius: 6px;
   padding: 24px;
@@ -146,7 +145,7 @@
   cursor: pointer;
   display: inline-block;
 }
-/* line 129, ../sass/home.sass */
+/* line 128, ../sass/home.sass */
 .home .quick-start-guide nav ul li .pip-icon, .home .quick-start-guide nav ul li .docker-icon {
   display: inline-block;
   width: 24px;
@@ -155,49 +154,49 @@
   margin-right: 12px;
   float: left;
 }
-/* line 137, ../sass/home.sass */
+/* line 136, ../sass/home.sass */
 .home .quick-start-guide nav ul li .pip-icon {
   background-image: url(./../images/pip.png);
 }
-/* line 140, ../sass/home.sass */
+/* line 139, ../sass/home.sass */
 .home .quick-start-guide nav ul li .docker-icon {
   background-image: url(./../images/docker.png);
 }
-/* line 144, ../sass/home.sass */
+/* line 143, ../sass/home.sass */
 .home .quick-start-guide nav ul li.selected .pip-icon, .home .quick-start-guide nav ul li.selected .docker-icon {
   background-position: 0px 0px;
 }
-/* line 147, ../sass/home.sass */
+/* line 146, ../sass/home.sass */
 .home .quick-start-guide nav ul li:hover {
   background-color: #efefef;
 }
-/* line 150, ../sass/home.sass */
+/* line 149, ../sass/home.sass */
 .home .quick-start-guide nav ul li.selected {
   color: #fff;
   background-color: #9977ef;
 }
-/* line 155, ../sass/home.sass */
+/* line 154, ../sass/home.sass */
 .home .features {
   padding-bottom: 32px;
 }
-/* line 158, ../sass/home.sass */
+/* line 157, ../sass/home.sass */
 .home .features .col-lg-3 {
   width: 50%;
   padding: 8px;
 }
-/* line 162, ../sass/home.sass */
+/* line 161, ../sass/home.sass */
 .home .features h2 {
   margin-top: 32px;
 }
-/* line 165, ../sass/home.sass */
+/* line 164, ../sass/home.sass */
 .home .features h3 {
   margin: 16px 0 16px 0;
 }
-/* line 168, ../sass/home.sass */
+/* line 167, ../sass/home.sass */
 .home .features .feature-icon {
   text-align: center;
 }
-/* line 171, ../sass/home.sass */
+/* line 170, ../sass/home.sass */
 .home .features .feature-desc {
   display: inline-block;
   height: 100%;
@@ -205,11 +204,11 @@
   padding: 8px;
   background-color: #ededed;
 }
-/* line 178, ../sass/home.sass */
+/* line 177, ../sass/home.sass */
 .home .features p {
   line-height: 24px;
 }
-/* line 183, ../sass/home.sass */
+/* line 182, ../sass/home.sass */
 .home code {
   padding: 0;
   padding-top: 0.2em;
@@ -221,7 +220,7 @@
   color: #E74C3C;
   overflow-x: auto;
 }
-/* line 195, ../sass/home.sass */
+/* line 194, ../sass/home.sass */
 .home pre {
   white-space: pre;
   padding: 24px;
@@ -235,7 +234,7 @@
   font: Consolas, "Liberation Mono", Menlo, Courier, monospace;
   color: #292b2c;
 }
-/* line 208, ../sass/home.sass */
+/* line 207, ../sass/home.sass */
 .home pre > code {
   padding: 0;
   margin: 0;
@@ -245,7 +244,7 @@
   background: transparent;
   border: 0;
 }
-/* line 217, ../sass/home.sass */
+/* line 216, ../sass/home.sass */
 .home pre code {
   display: inline;
   max-width: auto;
@@ -258,99 +257,99 @@
   border: 0;
   color: #292b2c;
 }
-/* line 229, ../sass/home.sass */
+/* line 228, ../sass/home.sass */
 .home pre code::before, .home pre code::after {
   content: normal;
 }
-/* line 232, ../sass/home.sass */
+/* line 231, ../sass/home.sass */
 .home pre .hljs-comment {
   color: #7f7f7f;
 }
-/* line 235, ../sass/home.sass */
+/* line 234, ../sass/home.sass */
 .home strong {
   font-weight: bold;
 }
-/* line 238, ../sass/home.sass */
+/* line 237, ../sass/home.sass */
 .home em {
   font-style: italic;
 }
 
 @media (min-width: 992px) {
-  /* line 243, ../sass/home.sass */
+  /* line 242, ../sass/home.sass */
   .home h1 {
     font-size: 48px;
   }
-  /* line 246, ../sass/home.sass */
+  /* line 245, ../sass/home.sass */
   .home h2 {
     font-size: 24px;
   }
-  /* line 249, ../sass/home.sass */
+  /* line 248, ../sass/home.sass */
   .home h3 {
     font-size: 20px;
   }
-  /* line 252, ../sass/home.sass */
+  /* line 251, ../sass/home.sass */
   .home h1, .home h2, .home h3 {
     text-align: center;
   }
-  /* line 255, ../sass/home.sass */
+  /* line 254, ../sass/home.sass */
   .home hr {
     display: none;
   }
-  /* line 258, ../sass/home.sass */
+  /* line 257, ../sass/home.sass */
   .home p {
     font-size: 16px;
     font-weight: 100;
     color: #999;
     margin: 0px;
   }
-  /* line 264, ../sass/home.sass */
+  /* line 263, ../sass/home.sass */
   .home .banner {
     color: white;
     height: 525px;
   }
-  /* line 268, ../sass/home.sass */
+  /* line 267, ../sass/home.sass */
   .home .banner .tag-line {
     padding-top: 96px;
     margin-bottom: 48px;
   }
-  /* line 272, ../sass/home.sass */
+  /* line 271, ../sass/home.sass */
   .home .banner p {
     margin-bottom: 48px;
   }
-  /* line 275, ../sass/home.sass */
+  /* line 274, ../sass/home.sass */
   .home .banner .quick-start {
     line-height: 60px;
     font-size: 18px;
     width: 212px;
   }
-  /* line 280, ../sass/home.sass */
+  /* line 279, ../sass/home.sass */
   .home .services {
     background-color: #f4f5f7;
   }
-  /* line 283, ../sass/home.sass */
+  /* line 282, ../sass/home.sass */
   .home .services h2 {
     margin-top: 64px;
   }
-  /* line 286, ../sass/home.sass */
+  /* line 285, ../sass/home.sass */
   .home .services .sub-title {
     padding: 16px 0 0 0;
   }
-  /* line 289, ../sass/home.sass */
+  /* line 288, ../sass/home.sass */
   .home .services .service-row {
     padding: 16px 0 16px 0;
   }
-  /* line 293, ../sass/home.sass */
+  /* line 292, ../sass/home.sass */
   .home .features h2 {
     margin-top: 64px;
     margin-bottom: 32px;
   }
-  /* line 297, ../sass/home.sass */
+  /* line 296, ../sass/home.sass */
   .home .features .feature-desc {
     margin: 8px;
     padding: 8px;
     background-color: transparent;
   }
-  /* line 303, ../sass/home.sass */
+  /* line 302, ../sass/home.sass */
   .home .quick-start-guide h2 {
     margin-top: 64px;
   }
