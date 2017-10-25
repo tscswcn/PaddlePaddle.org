@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 import json
+import re
 from bs4 import BeautifulSoup
 from django.conf import settings
 
@@ -14,7 +15,7 @@ def book_sitemap(original_documentation_dir, generated_documentation_dir, versio
 
 
 def models_sitemap(original_documentation_dir, generated_documentation_dir, version, output_dir_name):
-    github_path = 'https://github.com/PaddlePaddle/models/tree/develop'
+    github_path = 'https://github.com/PaddlePaddle/models/tree/'
 
     # Create models sitemap template
     sections = []
@@ -31,7 +32,10 @@ def models_sitemap(original_documentation_dir, generated_documentation_dir, vers
         for tag in anchor_tags:
             title = {'zh': tag.text}
             # The absolute URLs link to the github site. Transform them into relative URL for local HTML files.
-            link_zh = tag['href'].replace(github_path, 'models/') + '/README.html'
+            # dynamically remove develop or v0.10.0, etc
+            link_zh = tag['href'].replace(github_path, '')
+            link_zh = re.sub(r"^v?[0-9]+\.[0-9]+\.[0-9]+|^develop", 'models', link_zh) + '/README.html'
+
             link = {'zh': link_zh}
 
             section = {'title': title, 'link': link}
