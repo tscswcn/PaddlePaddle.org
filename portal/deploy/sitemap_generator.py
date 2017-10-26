@@ -3,7 +3,6 @@ import os
 import re
 import json
 from collections import OrderedDict, Mapping
-
 from django.conf import settings
 from bs4 import BeautifulSoup
 
@@ -98,7 +97,8 @@ def _get_toc_level(toc_classes):
 
 
 def book_sitemap(original_documentation_dir, generated_documentation_dir, version, output_dir_name):
-    pass
+    _book_sitemap_with_lang(original_documentation_dir, generated_documentation_dir, version, output_dir_name, 'en')
+    _book_sitemap_with_lang(original_documentation_dir, generated_documentation_dir, version, output_dir_name, 'zh')
 
 
 def models_sitemap(original_documentation_dir, generated_documentation_dir, version, output_dir_name):
@@ -157,3 +157,49 @@ def _create_models_sitemap(generated_documentation_dir, version, html_file_name,
 
 def _get_destination_documentation_dir(version, output_dir_name):
     return '%s/docs/%s/%s' % (settings.EXTERNAL_TEMPLATE_DIR, version, output_dir_name)
+
+
+def _book_sitemap_with_lang(original_documentation_dir, generated_documentation_dir, version, output_dir_name, lang):
+    title = 'Book'
+    root_json_path_template = '.tools/templates/index.html.json'
+    output_file_name = 'site.en.json'
+    sections_title = 'Deep Learning 101'
+
+    if lang == 'zh':
+        title = '专题文章'
+        root_json_path_template = '.tools/templates/index.cn.html.json'
+        output_file_name = 'site.zh.json'
+        sections_title = '深度学习入门'
+
+    sections = []
+    sitemap = {"title": {lang: title}, 'sections': [{'title':{lang: sections_title}, 'sections':sections}]}
+
+    # Read .tools/templates/index.html.json and .tools/templates/index.cn.html.json to generate the sitemap.
+    root_json_path = os.path.join(original_documentation_dir, root_json_path_template)
+    json_data = open(root_json_path).read()
+    json_map = json.loads(json_data, object_pairs_hook=OrderedDict)
+
+    # Go through each item and put it into the right format
+    chapters = json_map['chapters']
+    for chapter in chapters:
+        parsed_section = {}
+
+        if chapter['name']:
+            parsed_section['title'] = {lang: chapter['name']}
+
+        if chapter['link']:
+            link = chapter['link']
+            link = link.replace('./', 'book/', 1)
+            parsed_section['link'] = {lang: link}
+
+        sections.append(parsed_section)
+
+    versioned_dest_dir = _get_destination_documentation_dir(version, output_dir_name)
+    if not os.path.isdir(versioned_dest_dir):
+        os.makedirs(versioned_dest_dir)
+
+    # Output the json file
+    sitemap_path = os.path.join(versioned_dest_dir, output_file_name)
+    with open(sitemap_path, 'w') as outfile:
+        json.dump(sitemap, outfile)
+
