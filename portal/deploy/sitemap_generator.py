@@ -160,18 +160,21 @@ def _get_destination_documentation_dir(version, output_dir_name):
 
 
 def _book_sitemap_with_lang(original_documentation_dir, generated_documentation_dir, version, output_dir_name, lang):
-    title = 'Deep Learning 101'
+    title = 'Book'
     root_json_path_template = '.tools/templates/index.html.json'
-    output_file_name = 'site.json'
+    output_file_name = 'site..en.json'
+    sections_title = 'Deep Learning 101'
 
     if lang == 'zh':
-        title = '深度学习入门'
+        title = 'Book Zh'
         root_json_path_template = '.tools/templates/index.cn.html.json'
         output_file_name = 'site.cn.json'
+        sections_title = '深度学习入门'
 
     sections = []
-    sitemap = {"title": {lang: title}, 'sections': sections}
+    sitemap = {"title": {lang: title}, 'sections': {'title2':{lang: sections_title}, 'sections2':sections}}
 
+    print sitemap
     # Read .tools/templates/index.html.json and .tools/templates/index.cn.html.json to generate the sitemap.
     root_json_path = os.path.join(original_documentation_dir, root_json_path_template)
     json_data = open(root_json_path).read()
@@ -187,7 +190,7 @@ def _book_sitemap_with_lang(original_documentation_dir, generated_documentation_
 
         if chapter['link']:
             link = chapter['link']
-            link = link.replace('./', 'book/')
+            link = link.replace(r'^./', 'book/')
             parsed_section['link'] = {lang: link}
 
         sections.append(parsed_section)
