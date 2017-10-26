@@ -70,11 +70,19 @@ def change_lang(request):
         if book_id:
             # Get the proper version
             docs_version = portal_helper.get_preferred_version(request)
-            # Find the translated path
-            translated_path = _get_translated_link_in_book(book_id, docs_version, from_path, lang)
 
-            if translated_path:
-                response = redirect(translated_path)
+            all_links_cache = cache.get(lang, None)
+            if not all_links_cache:
+                # Force to read the sitemap of counter part language.
+                # This will prepare the sitemap and all_links_cache
+                sitemap_helper.get_sitemap(docs_version, lang)
+                all_links_cache = cache.get(lang, None)
+
+            # Grab the key from the from_path
+            path_componemts = os.path.split(from_path)
+            key = path_componemts[0]
+            if key in all_links_cache:
+                response = redirect(all_links_cache[key])
             else:
                 # There is no translated path. Use the first link in the book instead
                 response = _redirect_first_link_in_book(request, docs_version, book_id)
