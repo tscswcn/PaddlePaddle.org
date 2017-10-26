@@ -5,6 +5,7 @@ from portal import portal_helper
 from django.conf import settings
 
 from portal import url_helper
+import json
 
 
 register = template.Library()
@@ -62,11 +63,12 @@ def apply_class_if_template(context, template_file_name, class_name):
 
 @register.inclusion_tag('_nav_bar.html', takes_context=True)
 def nav_bar(context):
+    current_lang_code = context.request.LANGUAGE_CODE
     root_navigation = sitemap_helper.get_sitemap(
-        portal_helper.get_preferred_version(context.request)
+        portal_helper.get_preferred_version(context.request),
+        current_lang_code
     )
 
-    current_lang_code = context.request.LANGUAGE_CODE
 
     # Since we default to english, we set the change lang toggle to chinese
     lang_label = u"中文"
@@ -84,10 +86,13 @@ def nav_bar(context):
 
 @register.inclusion_tag('_content_links.html', takes_context=True)
 def content_links(context, book_id):
+    current_lang_code = context.request.LANGUAGE_CODE
     docs_version = context.get('CURRENT_DOCS_VERSION', None)
+
     side_nav_content = sitemap_helper.get_book_navigation(
         book_id,
-        docs_version
+        docs_version,
+        current_lang_code
     )
 
     return _common_context(context, {
@@ -102,7 +107,7 @@ def version_links(context, book_id):
     versions = sitemap_helper.get_available_versions()
 
     is_hidden = True
-    if context.template and (book_id == 'tutorial' or book_id == 'documentation'):
+    if context.template and book_id:
         is_hidden = False
 
     return _common_context(context, {

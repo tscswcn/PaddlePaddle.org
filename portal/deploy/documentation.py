@@ -1,13 +1,13 @@
 import os
 
-import zipfile
 import tempfile
 import requests
+import traceback
 
 from deploy import documentation_generator, strip, sitemap_generator
 from django.conf import settings
 from urlparse import urlparse
-import traceback
+from portal import sitemap_helper
 
 
 def transform(original_documentation_dir, generated_docs_dir, version):
@@ -21,6 +21,9 @@ def transform(original_documentation_dir, generated_docs_dir, version):
         convertor = None
         sm_generator = None
         output_dir_name = None
+
+        if original_documentation_dir:
+            original_documentation_dir = original_documentation_dir.rstrip('/')
 
         # remove the heading 'v'
         if version[0] == 'v':
@@ -61,6 +64,10 @@ def transform(original_documentation_dir, generated_docs_dir, version):
               (original_documentation_dir, generated_docs_dir, version)
         if sm_generator:
             sm_generator(original_documentation_dir, generated_docs_dir, version, output_dir_name)
+
+
+        sitemap_helper.generate_sitemap(version, 'en')
+        sitemap_helper.generate_sitemap(version, 'zh')
 
     except Exception as e:
         print 'Unable to process documentation: %s' % e
