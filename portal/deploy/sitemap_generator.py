@@ -8,8 +8,12 @@ from bs4 import BeautifulSoup
 
 
 def sphinx_sitemap(original_documentation_dir, generated_documentation_dir, version, output_dir_name):
+    """
+    Generates a sitemap for all languages for the paddle documentation.
+    """
     versioned_dest_dir = _get_destination_documentation_dir(version, output_dir_name)
-    print 'GENERATING SITEMAP FOR PADDLE'
+
+    print 'Generating sitemap for Paddle'
 
     parent_path_map = { 'en': '/en/html/',
                         'zh': '/cn/html/' }
@@ -19,42 +23,49 @@ def sphinx_sitemap(original_documentation_dir, generated_documentation_dir, vers
                             'zh': '/doc_cn/'}
 
     for lang, parent_path in parent_path_map.items():
+        # Using the index.html of the generated Sphinx HTML documentation,
+        # separately for each language, generate a sitemap.
+
         index_html_path = '%s/%s/index.html' % (generated_documentation_dir, parent_path)
 
         sitemap = _create_sphinx_site_map_from_index(index_html_path, lang)
-        sitemap_ouput_path = os.path.join(versioned_dest_dir, 'site.%s.json' % lang)
 
+        # Write the sitemap into the specific content directory.
+        sitemap_ouput_path = os.path.join(versioned_dest_dir, 'site.%s.json' % lang)
         with open(sitemap_ouput_path, 'w') as outfile:
             json.dump(sitemap, outfile)
 
 
 def _create_sphinx_site_map_from_index(index_html_path, language):
-    '''
-    Creates Paddle doc TOC from HTML navigation.  Example of HTML:
+    """
+    Given an index.html generated from running Sphinx on a doc directory, parse
+    the HTML tree to get the links from the navigation menu.
+
+    Eg. creates Paddle doc TOC from HTML navigation.  Example of HTML:
       <nav class="doc-menu-vertical" role="navigation">
-    <ul>
-      <li class="toctree-l1">
-        <a class="reference internal" href="getstarted/index_en.html">GET STARTED</a>
         <ul>
-          <li class="toctree-l2">
-            <a class="reference internal" href="getstarted/build_and_install/index_en.html">Install and Build</a>
+          <li class="toctree-l1">
+            <a class="reference internal" href="getstarted/index_en.html">GET STARTED</a>
             <ul>
-              <li class="toctree-l3">
-                <a class="reference internal" href="getstarted/build_and_install/docker_install_en.html">PaddlePaddle in Docker Containers</a>
-              </li>
-              <li class="toctree-l3">
-                <a class="reference internal" href="getstarted/build_and_install/build_from_source_en.html">Installing from Sources</a>
+              <li class="toctree-l2">
+                <a class="reference internal" href="getstarted/build_and_install/index_en.html">Install and Build</a>
+                <ul>
+                  <li class="toctree-l3">
+                    <a class="reference internal" href="getstarted/build_and_install/docker_install_en.html">PaddlePaddle in Docker Containers</a>
+                  </li>
+                  <li class="toctree-l3">
+                    <a class="reference internal" href="getstarted/build_and_install/build_from_source_en.html">Installing from Sources</a>
+                  </li>
+                </ul>
               </li>
             </ul>
           </li>
+          <li class="toctree-l1">
+            <a class="reference internal" href="howto/index_en.html">HOW TO</a>
+          </li>
         </ul>
-      </li>
-      <li class="toctree-l1">
-        <a class="reference internal" href="howto/index_en.html">HOW TO</a>
-      </li>
-    </ul>
-  </nav>
-    '''
+      </nav>
+    """
     with open(index_html_path) as html:
         chapters = []
 
@@ -77,6 +88,10 @@ def _create_sphinx_site_map_from_index(index_html_path, language):
 
 
 def _create_sphinx_site_map(parent_list, node, language):
+    """
+    Recursive function to append links to a new parent list object by going down the
+    nested lists inside the HTML, using BeautifulSoup tree parser.
+    """
     if node:
         node_dict = OrderedDict()
         if parent_list != None:
@@ -110,6 +125,11 @@ def models_sitemap(original_documentation_dir, generated_documentation_dir, vers
 
 
 def _create_models_sitemap(generated_documentation_dir, version, html_file_name, output_dir_name, language):
+    """
+    Generate a sitemap for models' content by parsing the content of the index
+    (root readme) file. Iterates through all the links inside list items of the
+    file, and writes the constructed sitemap file.
+    """
     github_path = 'https://github.com/PaddlePaddle/models/tree/'
 
     root_html_path = os.path.join(generated_documentation_dir, html_file_name)
@@ -119,41 +139,48 @@ def _create_models_sitemap(generated_documentation_dir, version, html_file_name,
 
     title = '模型' if language == 'zh' else 'Models'
     link = 'models/%s' % html_file_name
-    sitemap = { 'title': {language: title},
-                'sections': [
-                    {
-                       'title': {language: title},
-                       'link': {language: link},
-                       'sections': sections
-                    }
-                ]
-            }
 
-    # Read the stripped html file
+    sitemap = {
+        'title': { language: title },
+        'sections': [
+            {
+               'title': {language: title},
+               'link': {language: link},
+               'sections': sections
+            }
+        ]
+    }
+
+    # Read the stripped html file.
     # TODO [Jeff Wang]: Confirm the root_html_path is correct
     with open(root_html_path) as original_html_file:
         soup = BeautifulSoup(original_html_file, 'lxml')
 
         anchor_tags = soup.select('li a[href]')
+
         # Extract the links and the article titles
         for tag in anchor_tags:
-            title = {language: tag.text}
-            # The absolute URLs link to the github site. Transform them into relative URL for local HTML files.
-            # dynamically remove develop or v0.10.0, etc
+            title = { language: tag.text }
+
+            # The absolute URLs link to the github site.
+            # Transform them into relative URL for local HTML files.
+            # Dynamically remove develop or v0.10.0, etc
+            # NOTE: Use of `link_zh` instead of `link` because all the links lead to Chinese pages.
             link_zh = tag['href'].replace(github_path, '')
             link_zh = re.sub(r"^v?[0-9]+\.[0-9]+\.[0-9]+/|^develop/", 'models/', link_zh) + '/' + html_file_name
 
-            link = {language: link_zh}
+            link = { language: link_zh }
 
-            section = {'title': title, 'link': link}
+            section = { 'title': title, 'link': link }
             sections.append(section)
 
     # TODO [Jeff Wang]: Confirm the models sitemap path is correct
     versioned_dest_dir = _get_destination_documentation_dir(version, output_dir_name)
     if not os.path.isdir(versioned_dest_dir):
         os.makedirs(versioned_dest_dir)
+
+    # Update the models' site.json by writing a new version.
     sitemap_path = os.path.join(versioned_dest_dir, 'site.%s.json' % language)
-    # Update the models.json
     with open(sitemap_path, 'w') as outfile:
         json.dump(sitemap, outfile)
 
@@ -205,4 +232,3 @@ def _book_sitemap_with_lang(original_documentation_dir, generated_documentation_
     sitemap_path = os.path.join(versioned_dest_dir, output_file_name)
     with open(sitemap_path, 'w') as outfile:
         json.dump(sitemap, outfile)
-
