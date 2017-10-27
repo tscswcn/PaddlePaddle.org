@@ -83,7 +83,7 @@ def change_lang(request):
             root_navigation = sitemap_helper.get_sitemap(docs_version, lang)
 
             if book_id in root_navigation:
-                all_links_cache = cache.get(lang, None)
+                all_links_cache = cache.get(sitemap_helper.get_all_links_cache_key(docs_version, lang), None)
                 key = url_helper.link_cache_key(from_path)
                 if key in all_links_cache:
                     response = redirect(all_links_cache[key])
@@ -231,39 +231,6 @@ def _get_first_link_in_book(book, lang):
             path = first_section['link'][lang]
 
     return path
-
-
-def _get_translated_link_in_book(book_id, version, target_link, lang):
-    side_nav_content = sitemap_helper.get_book_navigation(
-        book_id,
-        version,
-        lang
-    )
-
-    translated_path = ""
-    # Go through each level, and find the matching URL,
-    # Once found, check if there is translated link
-    for chapter_id, chapter in side_nav_content.iteritems():
-        if 'sections' in chapter:
-            for section in chapter['sections']:
-
-                if 'link' in section:
-                    link = section['link']
-                    if target_link in link.values():
-                        if lang in link:
-                            translated_path = link[lang]
-                            break
-
-                elif 'sub_sections' in section:
-                    for sub_section in section['sub_sections']:
-                        if 'link' in sub_section:
-                            link = sub_section['link']
-                            if target_link in link.values():
-                                if lang in link:
-                                    translated_path = link[lang]
-                                    break
-
-    return translated_path
 
 
 def static_file_handler(request, path, extension, insecure=False, **kwargs):

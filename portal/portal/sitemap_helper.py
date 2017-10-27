@@ -174,7 +174,9 @@ def _transform_urls(version, sitemap, language):
                         key = url_helper.link_cache_key(path)
                         all_links_cache[key] = path
 
-    cache.set(language, all_links_cache)
+    # Don't expire all_links_cache. It is possible that the sitemap is loaded from saved file and bypass the generator.
+    cache.set(get_all_links_cache_key(version, language), all_links_cache, None)
+
 
 def get_book_navigation(book_id, version, language):
     root_nav = get_sitemap(version, language)
@@ -194,6 +196,10 @@ def get_available_versions():
     for root, dirs, files in os.walk(path):
         if root == path:
             return dirs
+
+
+def get_all_links_cache_key(version, lang):
+    return 'links.%s.%s' % (version, lang)
 
 
 def get_external_file_path(sub_path):
