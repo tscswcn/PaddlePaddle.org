@@ -226,7 +226,7 @@ def _render_static_content(request, version, content_id, content_src, additional
     if additional_context:
         context.update(additional_context)
 
-    return render(request, 'content.html', context)
+    return render(request, 'content_panel.html', context)
 
 
 ######## Paths and content roots below ########################
@@ -251,7 +251,7 @@ def home_root(request):
 def blog_root(request):
     path = sitemap_helper.get_external_file_path('blog/index.html')
 
-    return render(request, 'blog.html', {
+    return render(request, 'content.html', {
         'static_content': _get_static_content_from_template(path)
     })
 
@@ -259,7 +259,7 @@ def blog_root(request):
 def blog_sub_path(request, path):
     static_content_path = sitemap_helper.get_external_file_path(request.path)
 
-    return render(request, 'blog.html', {
+    return render(request, 'content.html', {
         'static_content': _get_static_content_from_template(static_content_path)
     })
 
