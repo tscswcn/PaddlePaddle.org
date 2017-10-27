@@ -11,3 +11,5 @@ bundle exec jekyll build
 
 cp -r ./_site/ $DESTINATION_DIR
 
+echo "show generated blog"
+ls $DESTINATION_DIR
