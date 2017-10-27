@@ -8,6 +8,10 @@ import markdown
 
 
 def generate_paddle_docs(original_documentation_dir, output_dir_name):
+    """
+    Given a Paddle doc directory, invoke a script to generate docs using Sphinx
+    and after parsing the code base based on given config, into an output dir.
+    """
     # Remove old generated docs directory
     destination_dir = _get_destination_documentation_dir(output_dir_name)
     if os.path.exists(destination_dir) and os.path.isdir(destination_dir):
@@ -72,6 +76,10 @@ def generate_models_docs(original_documentation_dir, output_dir_name):
 
 
 def generate_book_docs(original_documentation_dir, output_dir_name):
+    """
+    Given a book directory, invoke a script to generate docs using repo scripts
+    to generate HTML, into an output dir.
+    """
     # Remove old generated docs directory
     destination_dir = _get_destination_documentation_dir(output_dir_name)
     if os.path.exists(destination_dir) and os.path.isdir(destination_dir):

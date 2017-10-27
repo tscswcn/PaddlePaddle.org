@@ -127,7 +127,7 @@ paddle.init(use_gpu=False, trainer_count=1)
 x = paddle.layer.data(name='x', type=paddle.data_type.dense_vector(13))
 y_predict = paddle.layer.fc(input=x, size=1, act=paddle.activation.Linear())
 
-<span class="hljs-comment"># TODO: Load the model by prepending ‘fit_a_line.tar’ with path on your computer)</span>
+<span class="hljs-comment"># TODO: Load the model by prepending 'fit_a_line.tar' with path on your computer)</span>
 with open('fit_a_line.tar', 'r') as f:
     parameters = paddle.parameters.Parameters.from_tar(f)
 

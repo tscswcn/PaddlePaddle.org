@@ -65,6 +65,9 @@ WORKSPACE_DIR = '%s/.ppo_workspace' % CONTENT_DIR
 GENERATED_DOCS_DIR = '%s/generated_docs' % WORKSPACE_DIR
 EXTERNAL_TEMPLATE_DIR = '%s/content' % WORKSPACE_DIR
 
+OTHER_PAGE_PATH = '%s/docs/%s/other/%s'
+SITEMAP_TEMPLATE_PATH = '%s/assets/sitemaps/%s.json'
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -85,11 +88,10 @@ TEMPLATES = [
 
 CACHES = {
     'default': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache'
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'TIMEOUT': 5 if DEBUG else 300
     }
 }
-
-DEFAULT_CACHE_EXPIRY = 5 if DEBUG else 300
 
 WSGI_APPLICATION = 'portal.wsgi.application'
 
