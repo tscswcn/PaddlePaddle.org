@@ -18,8 +18,7 @@ def get_sitemap(version, language):
         sitemap_cache = _load_sitemap_from_file(version, language)
 
         if sitemap_cache:
-            timeout = settings.DEFAULT_CACHE_EXPIRY
-            cache.set(cache_key, sitemap_cache, timeout)
+            cache.set(cache_key, sitemap_cache)
         else:
             raise Exception("Cannot generate sitemap for version %s" % version)
 
@@ -80,7 +79,6 @@ def load_json_and_resolve_references(path, version, language):
         json_data = open(sitemap_path).read()
         sitemap = json.loads(json_data, object_pairs_hook=collections.OrderedDict)
         sitemap = _resolve_references(sitemap, version, language)
-
     except Exception as e:
         print "Cannot resolve sitemap from %s: %s" % (sitemap_path, e.message)
 
@@ -166,9 +164,9 @@ def _transform_urls(version, sitemap, language):
                                             if not lang in chapter_link:
                                                 chapter_link[lang] = link[lang]
 
-                                section['all_links'] = all_sub_section_links
+                                section['links'] = all_sub_section_links
 
-                    chapter['all_links'] = all_links
+                    chapter['links'] = all_links
                     chapter['link'] = chapter_link
 
                     # Prepare link cache for language switching
@@ -176,8 +174,7 @@ def _transform_urls(version, sitemap, language):
                         key = url_helper.link_cache_key(path)
                         all_links_cache[key] = path
 
-    timeout = settings.DEFAULT_CACHE_EXPIRY
-    cache.set(language, all_links_cache, timeout)
+    cache.set(language, all_links_cache)
 
 def get_book_navigation(book_id, version, language):
     root_nav = get_sitemap(version, language)

@@ -85,11 +85,10 @@ TEMPLATES = [
 
 CACHES = {
     'default': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache'
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'TIMEOUT': 5 if DEBUG else 300
     }
 }
-
-DEFAULT_CACHE_EXPIRY = 5 if DEBUG else 300
 
 WSGI_APPLICATION = 'portal.wsgi.application'
 
