@@ -119,4 +119,8 @@ def generate_blog_docs(original_documentation_dir, output_dir_name):
 
 
 def _get_destination_documentation_dir(output_dir_name):
-    return '%s/%s' % (settings.GENERATED_DOCS_DIR, output_dir_name)
+    documentation_dir = '%s/%s' % (settings.GENERATED_DOCS_DIR, output_dir_name)
+    if not os.path.exists(documentation_dir):
+        os.makedirs(documentation_dir)
+    return documentation_dir
+
