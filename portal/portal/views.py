@@ -40,7 +40,7 @@ def change_version(request):
 
     if content_id:
         if content_id in root_navigation and root_navigation[content_id]:
-            response =  _redirect_first_link_in_book(request, preferred_version, content_id)
+            response =  _redirect_first_link_in_contents(request, preferred_version, content_id)
         else:
             # This version doesn't support this book. Redirect it back to home
             response =  redirect('/')
@@ -49,7 +49,7 @@ def change_version(request):
     elif root_navigation and len(root_navigation) > 0:
         for content_id, content in root_navigation.items():
             if content:
-                response = _redirect_first_link_in_book(request, preferred_version, content_id)
+                response = _redirect_first_link_in_contents(request, preferred_version, content_id)
 
     return response
 
@@ -91,7 +91,7 @@ def change_lang(request):
                     response = redirect(all_links_cache[key])
                 else:
                     # There is no translated path. Use the first link in the contents instead
-                    response = _redirect_first_link_in_book(request, docs_version, content_id)
+                    response = _redirect_first_link_in_contents(request, docs_version, content_id)
 
         # If the user happens to be coming from the blog.
         elif from_path.startswith('/blog'):
