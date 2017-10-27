@@ -10,7 +10,7 @@ from portal import url_helper
 
 
 def get_sitemap(version, language):
-    cache_key = 'sitemap.%s' % version
+    cache_key = 'sitemap.%s.%s' % (version, language)
     sitemap_cache = cache.get(cache_key, None)
 
     if not sitemap_cache:
@@ -58,7 +58,7 @@ def generate_sitemap(version, language):
         json_data = open(sitemap_template_path).read()
         sitemap = json.loads(json_data, object_pairs_hook=collections.OrderedDict)
         sitemap = _resolve_references(sitemap, version, language)
-        _transform_urls(version, sitemap)
+        _transform_urls(version, sitemap, language)
 
         sitemap_path = _get_sitemap_path(version, language)
         with open(sitemap_path, 'w') as fp:
@@ -115,7 +115,7 @@ def _resolve_references(navigation, version, language):
         return navigation
 
 
-def _transform_urls(version, sitemap):
+def _transform_urls(version, sitemap, language):
     '''
     Since paths defined in assets/sitemaps/<version>.json are defined relative to the folder structure of the content
     directories, we will need to append the URL path prefix so our URL router knows how to resolve the URLs.
@@ -128,6 +128,7 @@ def _transform_urls(version, sitemap):
     :param sitemap:
     :return:
     '''
+    all_links_cache = {}
     if sitemap:
 
         for _, book in sitemap.items():
@@ -166,10 +167,16 @@ def _transform_urls(version, sitemap):
 
                                 section['all_links'] = all_sub_section_links
 
-                        chapter['all_links'] = all_links
-
+                    chapter['all_links'] = all_links
                     chapter['link'] = chapter_link
 
+                    # Prepare link cache for language switching
+                    for item in all_links:
+                        key = os.path.split(item)[0]
+                        all_links_cache[key] = item
+
+    timeout = settings.DEFAULT_CACHE_EXPIRY
+    cache.set(language, all_links_cache, timeout)
 
 def get_book_navigation(book_id, version, language):
     root_nav = get_sitemap(version, language)

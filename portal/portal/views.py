@@ -44,14 +44,21 @@ def change_version(request):
     lang = portal_helper.get_preferred_language(request)
     root_navigation = sitemap_helper.get_sitemap(preferred_version, lang)
 
+    response = home_root(request)
+
     if book_id:
-        return _redirect_first_link_in_book(request, preferred_version, book_id)
+        if book_id in root_navigation:
+            response =  _redirect_first_link_in_book(request, preferred_version, book_id)
+        else:
+            # This version doesn't support this book. Redirect it back to home
+            response =  redirect('/')
+
     elif root_navigation and len(root_navigation) > 0:
         for book_id, book in root_navigation.items():
             if book:
-                return _redirect_first_link_in_book(request, preferred_version, book_id)
+                response = _redirect_first_link_in_book(request, preferred_version, book_id)
 
-    return home_root(request)
+    return response
 
 
 def change_lang(request):
@@ -70,14 +77,22 @@ def change_lang(request):
         if book_id:
             # Get the proper version
             docs_version = portal_helper.get_preferred_version(request)
-            # Find the translated path
-            translated_path = _get_translated_link_in_book(book_id, docs_version, from_path, lang)
 
-            if translated_path:
-                response = redirect(translated_path)
-            else:
-                # There is no translated path. Use the first link in the book instead
-                response = _redirect_first_link_in_book(request, docs_version, book_id)
+            # Grabbing root_navigation to check if the current lang supports this book
+            # It also makes sure that all_links_cache is ready.
+            root_navigation = sitemap_helper.get_sitemap(docs_version, lang)
+
+            if book_id in root_navigation:
+                all_links_cache = cache.get(lang, None)
+
+                # Grab the key from the from_path
+                path_componemts = os.path.split(from_path)
+                key = path_componemts[0]
+                if key in all_links_cache:
+                    response = redirect(all_links_cache[key])
+                else:
+                    # There is no translated path. Use the first link in the book instead
+                    response = _redirect_first_link_in_book(request, docs_version, book_id)
 
         elif from_path.startswith('/blog'):
             # Blog doesn't a book_id and translated version. Simply redirect back to the original path
