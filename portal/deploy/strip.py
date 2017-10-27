@@ -139,6 +139,14 @@ def models(generated_documentation_dir, version, output_dir_name):
     copytree(generated_documentation_dir, destination_documentation_dir)
 
 
+def blog(generated_documentation_dir, version, output_dir_name):
+    destination_documentation_dir = _get_destination_documentation_dir(version, output_dir_name)
+
+    if os.path.exists(destination_documentation_dir):
+        rmtree(destination_documentation_dir)
+    copytree(generated_documentation_dir, destination_documentation_dir)
+
+
 def markdown_file(source_markdown_file, version, tmp_dir):
     """
     Given a markdown file path, generate an HTML partial in a directory nested
@@ -166,4 +174,11 @@ def markdown_file(source_markdown_file, version, tmp_dir):
 
 
 def _get_destination_documentation_dir(version, output_dir_name):
+    """
+    The destination dir structure looks like below:
+    content/blog
+    content/docs/<version>/<book|documentation|models>
+    """
+    if output_dir_name == 'blog':
+        return '%s/blog' % settings.EXTERNAL_TEMPLATE_DIR
     return '%s/docs/%s/%s' % (settings.EXTERNAL_TEMPLATE_DIR, version, output_dir_name)

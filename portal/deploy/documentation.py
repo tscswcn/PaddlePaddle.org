@@ -59,6 +59,16 @@ def transform(original_documentation_dir, generated_docs_dir, version):
             sm_generator = sitemap_generator.models_sitemap
             output_dir_name = path_base_name.lower()
 
+        elif original_documentation_dir.lower().endswith('/blog'):
+            doc_generator = documentation_generator.generate_blog_docs
+
+            # move the folder _site/ from generated_docs_dir to content_dir
+            convertor = strip.blog
+
+            # sm_generator = sitemap_generator.models_sitemap
+            sm_generator = None
+
+            output_dir_name = 'blog'
         else:
             raise Exception('Unsupported content.')
 
