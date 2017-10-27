@@ -256,7 +256,7 @@ def content_root(request, version, content_id):
 
 
 def book_sub_path(request, version, path=None):
-    return _render_static_content(request, version, 'tutorial', 'book')
+    return _render_static_content(request, version, 'book', 'book')
 
 
 def documentation_path(request, version, path=None):
