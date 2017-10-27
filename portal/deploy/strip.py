@@ -7,14 +7,6 @@ import markdown
 
 from django.conf import settings
 
-# Traverse through all the dirs of a given path.
-# BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-
-# generated_documentation_dir = BASE_DIR + '/docs'
-# destination_documentation_dir = BASE_DIR + '/documentation'
-
-# Using the map for a new directory mapping, determine a new location for the transformed file.
-
 
 def sphinx(generated_documentation_dir, version, output_dir_name):
     """
@@ -135,18 +127,28 @@ def book(generated_documentation_dir, version, output_dir_name):
 
 
 def models(generated_documentation_dir, version, output_dir_name):
+    """
+    Generates and moves generated output from a source directory to an output
+    one, without any transformations or build steps.
+    """
     destination_documentation_dir = _get_destination_documentation_dir(version, output_dir_name)
 
     if os.path.exists(destination_documentation_dir):
         rmtree(destination_documentation_dir)
+
     copytree(generated_documentation_dir, destination_documentation_dir)
 
 
 def markdown_file(source_markdown_file, version, tmp_dir):
-    new_path = '%s/docs/%s/other/%s' % (
+    """
+    Given a markdown file path, generate an HTML partial in a directory nested
+    by the path on the URL itself.
+    """
+    new_path = settings.OTHER_PAGE_PATH % (
         settings.EXTERNAL_TEMPLATE_DIR, version, os.path.splitext(
         source_markdown_file.replace(tmp_dir, ''))[0] + '.html')
 
+    # Create the nested directories if they don't exist.
     if not os.path.exists(os.path.dirname(new_path)):
         os.makedirs(os.path.dirname(new_path))
 

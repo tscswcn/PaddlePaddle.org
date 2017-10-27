@@ -38,7 +38,7 @@ urlpatterns = [
     # ---------------
     # CONTENT ROOT URLS
     # ---------------
-    url(r'^content-root/(?P<version>.*)/(?P<book_id>.*)$', views.content_root, name=url_helper.URL_NAME_CONTENT_ROOT),
+    url(r'^content-root/(?P<version>.*)/(?P<content_id>.*)$', views.content_root, name=url_helper.URL_NAME_CONTENT_ROOT),
 
     # ---------------
     # TUTORIAL URLS
