@@ -16,14 +16,14 @@ DEPLOY_DOCS_DIR=$CONTENT_DIR/.ppo_workspace
 ### pull PaddlePaddle.org app and run the deploy_documentation command
 # https://github.com/PaddlePaddle/PaddlePaddle.org/archive/develop.zip
 
-#DEV_BRANCH=develop
-DEV_BRANCH=deploy_blog
+#PPO_BRANCH=develop
+PPO_BRANCH=deploy_blog
 
-curl -LOk https://github.com/PaddlePaddle/PaddlePaddle.org/archive/$DEV_BRANCH.zip
+curl -LOk https://github.com/PaddlePaddle/PaddlePaddle.org/archive/$PPO_BRANCH.zip
 
-unzip $DEV_BRANCH.zip
+unzip $PPO_BRANCH.zip
 
-cd PaddlePaddle.org-$DEV_BRANCH/
+cd PaddlePaddle.org-$PPO_BRANCH/
 
 cd portal/
 
