@@ -6,6 +6,7 @@ from subprocess import call
 from django.conf import settings
 import markdown
 
+
 def generate_paddle_docs(original_documentation_dir, output_dir_name):
     # Remove old generated docs directory
     destination_dir = _get_destination_documentation_dir(output_dir_name)
