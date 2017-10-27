@@ -94,7 +94,7 @@ def content_links(context, content_id):
     current_lang_code = context.request.LANGUAGE_CODE
     docs_version = context.get('CURRENT_DOCS_VERSION', None)
 
-    side_nav_content = sitemap_helper.get_book_navigation(
+    side_nav_content = sitemap_helper.get_content_navigation(
         content_id,
         docs_version,
         current_lang_code
