@@ -47,7 +47,7 @@ def change_version(request):
     response = home_root(request)
 
     if book_id:
-        if book_id in root_navigation:
+        if book_id in root_navigation and root_navigation[book_id]:
             response =  _redirect_first_link_in_book(request, preferred_version, book_id)
         else:
             # This version doesn't support this book. Redirect it back to home
