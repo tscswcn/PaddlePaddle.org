@@ -16,15 +16,23 @@ DEPLOY_DOCS_DIR=$CONTENT_DIR/.ppo_workspace
 ### pull PaddlePaddle.org app and run the deploy_documentation command
 # https://github.com/PaddlePaddle/PaddlePaddle.org/archive/develop.zip
 
-curl -LOk https://github.com/PaddlePaddle/PaddlePaddle.org/archive/develop.zip
+PPO_BRANCH=develop
+#PPO_BRANCH=deploy_blog
 
-unzip develop.zip
+curl -LOk https://github.com/PaddlePaddle/PaddlePaddle.org/archive/$PPO_BRANCH.zip
 
-cd PaddlePaddle.org-develop/
+unzip $PPO_BRANCH.zip
+
+cd PaddlePaddle.org-$PPO_BRANCH/
 
 cd portal/
 
 sudo pip install -r requirements.txt
+
+if [ -d ./tmp ]
+then
+    rm -rf ./tmp
+fi
 
 mkdir ./tmp
 python manage.py deploy_documentation --source=$SOURCE_DIR --dest_gen_docs_dir=$GENERATED_DOCS_DIR --doc_version=$GITHUB_BRANCH
@@ -39,7 +47,7 @@ chmod 400 content_mgr.pem
 
 
 ssh-add content_mgr.pem
-rsync -r $DEPLOY_DOCS_DIR/content/docs content_mgr@staging.paddlepaddle.org:/var/content/.ppo_workspace/content
+rsync -r $DEPLOY_DOCS_DIR/content content_mgr@staging.paddlepaddle.org:/var/content/.ppo_workspace
 
 
 chmod 644 content_mgr.pem
