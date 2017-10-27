@@ -10,3 +10,4 @@ cd "$DOCS_LOCATION"
 bundle exec jekyll build
 
 cp -r ./_site/ $DESTINATION_DIR
+
