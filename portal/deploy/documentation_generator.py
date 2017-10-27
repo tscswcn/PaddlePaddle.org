@@ -90,5 +90,32 @@ def generate_book_docs(original_documentation_dir, output_dir_name):
         raise Exception('Cannot generate documentation, directory %s does not exists.' % original_documentation_dir)
 
 
+def generate_blog_docs(original_documentation_dir, output_dir_name):
+    # Unlike 'book', 'models' or 'Paddle', for 'blog' we do the strip first then build
+    BLOG_DEFAULT = '<!DOCTYPE html><html><meta charset="utf-8">' \
+                   '<body><div class="page-content"><div class="wrapper">{{ content }}' \
+                   '</div></div></body></html>'
+
+    destination_dir = _get_destination_documentation_dir(output_dir_name)
+    if os.path.exists(destination_dir) and os.path.isdir(destination_dir):
+        shutil.rmtree(destination_dir)
+
+    if os.path.exists(os.path.dirname(original_documentation_dir)):
+        destination_dir = _get_destination_documentation_dir(output_dir_name)
+        settings_path = settings.PROJECT_ROOT
+        script_path = settings_path + '/../../scripts/deploy/generate_blog_docs.sh'
+
+        with open(original_documentation_dir+"/_layouts/default.html", "w") as fp:
+            fp.write(BLOG_DEFAULT)
+
+        if os.path.exists(os.path.dirname(script_path)):
+            call([script_path, original_documentation_dir, destination_dir])
+            return destination_dir
+        else:
+            raise Exception('Cannot find script located at %s.' % script_path)
+    else:
+        raise Exception('Cannot generate documentation, directory %s does not exists.' % original_documentation_dir)
+
+
 def _get_destination_documentation_dir(output_dir_name):
     return '%s/%s' % (settings.GENERATED_DOCS_DIR, output_dir_name)
