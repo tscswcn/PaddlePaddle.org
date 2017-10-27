@@ -87,8 +87,9 @@ def transform(original_documentation_dir, generated_docs_dir, version):
         if sm_generator:
             sm_generator(original_documentation_dir, generated_docs_dir, version, output_dir_name)
 
-        sitemap_helper.generate_sitemap(version, 'en')
-        sitemap_helper.generate_sitemap(version, 'zh')
+        if output_dir_name != 'blog':
+            sitemap_helper.generate_sitemap(version, 'en')
+            sitemap_helper.generate_sitemap(version, 'zh')
 
     except Exception as e:
         print 'Unable to process documentation: %s' % e
