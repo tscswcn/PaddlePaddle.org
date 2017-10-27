@@ -51,13 +51,9 @@ def append_prefix_to_path(version, path):
 
 
 def link_cache_key(path):
-    key = ''
-    if path.endswith('index.html') or path.endswith('README.html'):
-        key = os.path.split(path)[0]
-    else:
-        # Remove all language specific strings
-        key = re.sub(r'[._][ecn]*\.html$', '', path)
-        key = key.replace('/en/', '/')
-        key = key.replace('/zh/', '/')
+    # Remove all language specific strings
+    key = re.sub(r'[._]?[ecn]*\.html$', '', path)
+    key = key.replace('/en/', '/')
+    key = key.replace('/zh/', '/')
 
     return key
