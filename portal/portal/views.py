@@ -17,7 +17,7 @@ from django.core.cache import cache
 
 from portal import sitemap_helper, portal_helper, url_helper
 from deploy.documentation import fetch_and_transform
-
+from portal import url_helper
 
 # Search the path and render the content
 # Return Page not found if the template is missing.
@@ -84,10 +84,7 @@ def change_lang(request):
 
             if book_id in root_navigation:
                 all_links_cache = cache.get(lang, None)
-
-                # Grab the key from the from_path
-                path_componemts = os.path.split(from_path)
-                key = path_componemts[0]
+                key = url_helper.link_cache_key(from_path)
                 if key in all_links_cache:
                     response = redirect(all_links_cache[key])
                 else:

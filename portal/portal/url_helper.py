@@ -1,5 +1,6 @@
 from urlparse import urlparse
 import os
+import re
 
 from django.conf import settings, urls
 from django.core.urlresolvers import reverse
@@ -47,3 +48,16 @@ def append_prefix_to_path(version, path):
             print 'Cannot append prefix to version %s, path %s' % (version, path)
 
     return url
+
+
+def link_cache_key(path):
+    key = ''
+    if path.endswith('index.html') or path.endswith('README.html'):
+        key = os.path.split(path)[0]
+    else:
+        # Remove all language specific strings
+        key = re.sub(r'[._][ecn]*\.html$', '', path)
+        key = key.replace('/en/', '/')
+        key = key.replace('/zh/', '/')
+
+    return key

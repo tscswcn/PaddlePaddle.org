@@ -3,6 +3,7 @@ import os
 import collections
 import tempfile
 import traceback
+import re
 
 from django.conf import settings
 from django.core.cache import cache
@@ -171,9 +172,9 @@ def _transform_urls(version, sitemap, language):
                     chapter['link'] = chapter_link
 
                     # Prepare link cache for language switching
-                    for item in all_links:
-                        key = os.path.split(item)[0]
-                        all_links_cache[key] = item
+                    for path in all_links:
+                        key = url_helper.link_cache_key(path)
+                        all_links_cache[key] = path
 
     timeout = settings.DEFAULT_CACHE_EXPIRY
     cache.set(language, all_links_cache, timeout)
