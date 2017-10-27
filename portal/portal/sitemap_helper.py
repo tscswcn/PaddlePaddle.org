@@ -3,6 +3,7 @@ import os
 import collections
 import tempfile
 import traceback
+import re
 
 from django.conf import settings
 from django.core.cache import cache
@@ -15,15 +16,14 @@ def get_sitemap(version, language):
     Given a version and language, fetch the sitemap for all contents from the
     cache, if available, or load them from the pre-compiled sitemap.
     """
-    cache_key = 'sitemap.%s' % version
+    cache_key = 'sitemap.%s.%s' % (version, language)
     sitemap_cache = cache.get(cache_key, None)
 
     if not sitemap_cache:
         sitemap_cache = _load_sitemap_from_file(version, language)
 
         if sitemap_cache:
-            timeout = settings.DEFAULT_CACHE_EXPIRY
-            cache.set(cache_key, sitemap_cache, timeout)
+            cache.set(cache_key, sitemap_cache)
         else:
             raise Exception('Cannot generate sitemap for version %s' % version)
 
@@ -75,7 +75,7 @@ def generate_sitemap(version, language):
             sitemap = _resolve_references(sitemap, version, language)
 
             # Change URLs to represent accurate URL paths and not references to repo directory structures.
-            _transform_urls(version, sitemap)
+            _transform_urls(version, sitemap, language)
 
             sitemap_path = _get_sitemap_path(version, language)
 
@@ -104,7 +104,6 @@ def load_json_and_resolve_references(path, version, language):
 
         # Resolve any reference in inner sitemap files.
         sitemap = _resolve_references(sitemap, version, language)
-
     except Exception as e:
         print 'Cannot resolve sitemap from %s: %s' % (sitemap_path, e.message)
 
@@ -145,7 +144,7 @@ def _resolve_references(navigation, version, language):
         return navigation
 
 
-def _transform_urls(version, sitemap):
+def _transform_urls(version, sitemap, language):
     """
     Since paths defined in assets/sitemaps/<version>.json are defined relative to the folder structure of the content
     directories, we will need to append the URL path prefix so our URL router knows how to resolve the URLs.
@@ -158,6 +157,8 @@ def _transform_urls(version, sitemap):
     :param sitemap:
     :return:
     """
+    all_links_cache = {}
+
     if sitemap:
 
         for _, book in sitemap.items():
@@ -194,11 +195,18 @@ def _transform_urls(version, sitemap):
                                             if not lang in chapter_link:
                                                 chapter_link[lang] = link[lang]
 
-                                section['all_links'] = all_sub_section_links
+                                section['links'] = all_sub_section_links
 
-                        chapter['all_links'] = all_links
-
+                    chapter['links'] = all_links
                     chapter['link'] = chapter_link
+
+                    # Prepare link cache for language switching
+                    for path in all_links:
+                        key = url_helper.link_cache_key(path)
+                        all_links_cache[key] = path
+
+    # Don't expire all_links_cache. It is possible that the sitemap is loaded from saved file and bypass the generator.
+    cache.set(get_all_links_cache_key(version, language), all_links_cache, None)
 
 
 def get_content_navigation(content_id, version, language):
@@ -229,6 +237,10 @@ def get_available_versions():
     for root, dirs, files in os.walk(path):
         if root == path:
             return dirs
+
+
+def get_all_links_cache_key(version, lang):
+    return 'links.%s.%s' % (version, lang)
 
 
 def get_external_file_path(sub_path):

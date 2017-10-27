@@ -31,30 +31,33 @@ def transform(original_documentation_dir, generated_docs_dir, version):
         if original_documentation_dir:
             original_documentation_dir = original_documentation_dir.rstrip('/')
 
+        dir_path = os.path.dirname(original_documentation_dir)
+        path_base_name = os.path.basename(original_documentation_dir)
+
         # Remove the heading 'v', left in for purely user-facing convenience.
         if version[0] == 'v':
             version = version[1:]
 
         # If this seems like a request to build/transform the core Paddle docs.
-        if original_documentation_dir.lower().endswith('/paddle'):
+        if path_base_name.lower() == 'paddle':
             doc_generator = documentation_generator.generate_paddle_docs
             convertor = strip.sphinx
             sm_generator = sitemap_generator.sphinx_sitemap
             output_dir_name = 'documentation'
 
         # Or if this seems like a request to build/transform the book.
-        elif original_documentation_dir.lower().endswith('/book'):
+        elif path_base_name.lower() == 'book':
             doc_generator = documentation_generator.generate_book_docs
             convertor = strip.book
             sm_generator = sitemap_generator.book_sitemap
-            output_dir_name = 'book'
+            output_dir_name = path_base_name.lower()
 
         # Or if this seems like a request to build/transform the models.
-        elif original_documentation_dir.lower().endswith('/models'):
+        elif path_base_name.lower() == 'models':
             doc_generator = documentation_generator.generate_models_docs
             convertor = strip.models
             sm_generator = sitemap_generator.models_sitemap
-            output_dir_name = 'models'
+            output_dir_name = path_base_name.lower()
 
         else:
             raise Exception('Unsupported content.')

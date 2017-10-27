@@ -17,6 +17,7 @@ from django.core.cache import cache
 
 from portal import sitemap_helper, portal_helper, url_helper
 from deploy.documentation import fetch_and_transform
+from portal import url_helper
 
 
 def change_version(request):
@@ -35,16 +36,22 @@ def change_version(request):
 
     root_navigation = sitemap_helper.get_sitemap(preferred_version, lang)
 
+    response = home_root(request)
+
     if content_id:
-        return _redirect_first_link_in_contents(request, preferred_version, content_id)
+        if content_id in root_navigation and root_navigation[content_id]:
+            response =  _redirect_first_link_in_book(request, preferred_version, content_id)
+        else:
+            # This version doesn't support this book. Redirect it back to home
+            response =  redirect('/')
 
     # If no content service specified, just redirect to first page of root site navigation.
     elif root_navigation and len(root_navigation) > 0:
         for content_id, content in root_navigation.items():
             if content:
-                return _redirect_first_link_in_contents(request, preferred_version, content_id)
+                response = _redirect_first_link_in_book(request, preferred_version, content_id)
 
-    return home_root(request)
+    return response
 
 
 def change_lang(request):
@@ -71,14 +78,20 @@ def change_lang(request):
             # Get the proper version.
             docs_version = portal_helper.get_preferred_version(request)
 
-            # Find the translated path.
-            translated_path = _get_translated_link_in_content(content_id, docs_version, from_path, lang)
+            # Grabbing root_navigation to check if the current lang supports this book
+            # It also makes sure that all_links_cache is ready.
+            root_navigation = sitemap_helper.get_sitemap(docs_version, lang)
 
-            if translated_path:
-                response = redirect(translated_path)
-            else:
-                # There is no translated path. Use the first link in the contents instead.
-                response = _redirect_first_link_in_contents(request, docs_version, content_id)
+            if content_id in root_navigation:
+                all_links_cache = cache.get(sitemap_helper.get_all_links_cache_key(docs_version, lang), None)
+
+                key = url_helper.link_cache_key(from_path)
+
+                if key in all_links_cache:
+                    response = redirect(all_links_cache[key])
+                else:
+                    # There is no translated path. Use the first link in the contents instead
+                    response = _redirect_first_link_in_book(request, docs_version, content_id)
 
         # If the user happens to be coming from the blog.
         elif from_path.startswith('/blog'):

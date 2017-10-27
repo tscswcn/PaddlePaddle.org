@@ -40,6 +40,31 @@ def _create_sphinx_site_map_from_index(index_html_path, language):
     """
     Given an index.html generated from running Sphinx on a doc directory, parse
     the HTML tree to get the links from the navigation menu.
+
+    Eg. creates Paddle doc TOC from HTML navigation.  Example of HTML:
+      <nav class="doc-menu-vertical" role="navigation">
+        <ul>
+          <li class="toctree-l1">
+            <a class="reference internal" href="getstarted/index_en.html">GET STARTED</a>
+            <ul>
+              <li class="toctree-l2">
+                <a class="reference internal" href="getstarted/build_and_install/index_en.html">Install and Build</a>
+                <ul>
+                  <li class="toctree-l3">
+                    <a class="reference internal" href="getstarted/build_and_install/docker_install_en.html">PaddlePaddle in Docker Containers</a>
+                  </li>
+                  <li class="toctree-l3">
+                    <a class="reference internal" href="getstarted/build_and_install/build_from_source_en.html">Installing from Sources</a>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+          <li class="toctree-l1">
+            <a class="reference internal" href="howto/index_en.html">HOW TO</a>
+          </li>
+        </ul>
+      </nav>
     """
     with open(index_html_path) as html:
         chapters = []
@@ -51,74 +76,42 @@ def _create_sphinx_site_map_from_index(index_html_path, language):
         navs = BeautifulSoup(html, 'lxml').findAll('nav', class_='doc-menu-vertical')
 
         if len(navs) > 0:
-            toc_lis = navs[0].findAll('li', { 'class': re.compile('^toctree-.*$') })
-            _create_sphinx_site_map(chapters, 0, 1, toc_lis, language)
+            chapters_container = navs[0].find('ul', recursive=False)
+            if chapters_container:
+
+                for chapter in chapters_container.find_all('li', recursive=False):
+                    _create_sphinx_site_map(chapters, chapter, language)
         else:
             print 'Cannot generate sphinx sitemap, nav.doc-menu-vertical not found in %s' % index_html_path
 
         return sitemap
 
 
-def _create_sphinx_site_map(parent_list, iterator_idx, level, li_elements, language):
+def _create_sphinx_site_map(parent_list, node, language):
     """
     Recursive function to append links to a new parent list object by going down the
     nested lists inside the HTML, using BeautifulSoup tree parser.
     """
-    previous_child_node = None
+    if node:
+        node_dict = OrderedDict()
+        if parent_list != None:
+            parent_list.append(node_dict)
 
-    idx = iterator_idx
-    while idx < len(li_elements):
-        li = li_elements[idx]
-        li_level = _get_toc_level(li['class'])
+        first_link = node.find('a')
+        if first_link:
+            link_url = '/documentation/%s/%s' % (language, first_link['href'])
+            node_dict['title'] = OrderedDict({ language: first_link.text })
+            node_dict['link'] = OrderedDict({ language: link_url})
 
-        all_anchors = li.findAll('a')
+        sections = node.findAll('ul', recursive=False)
+        for section in sections:
+            sub_sections = section.findAll('li', recursive=False)
 
-        if len(all_anchors) > 0:
-            first_anchor = all_anchors[0]
+            if len(sub_sections) > 0:
+                node_dict['sections'] = []
 
-            if li_level == -1:
-                raise Exception('Invalid TOC level for li %s' % li)
-
-            if li_level == level:
-                child_node_dict = OrderedDict()
-                previous_child_node = child_node_dict
-                parent_list.append(child_node_dict)
-
-                link_url = '/documentation/%s/%s' % (language, first_anchor['href'])
-                child_node_dict['title'] = OrderedDict({ language: first_anchor.text})
-                child_node_dict['link'] = OrderedDict({ language: link_url})
-
-            elif li_level > level:
-                # This is a child level, lets recursively process it
-                if previous_child_node:
-                    sub_child_list = []
-                    previous_child_node['sections'] = sub_child_list
-                    idx = _create_sphinx_site_map(sub_child_list, idx, li_level, li_elements, language)
-                else:
-                    print 'Unhandled... li_level < level'
-
-            elif li_level < level:
-                # We went up a level, lets process this line again after we return from _create_sphinx_site_map
-                return idx-1
-
-        idx += 1
-
-    return idx
-
-def _get_toc_level(toc_classes):
-    """
-    Based on the classname of the TOC element, determine the link's nesting level.
-    """
-    level = -1
-    prefix = 'toctree-l'
-
-    for toc_class_name in toc_classes:
-        if toc_class_name and toc_class_name.startswith(prefix):
-            level_str = toc_class_name[len(prefix):]
-            level = int(level_str)
-            break
-
-    return level
+                for sub_section in sub_sections:
+                    _create_sphinx_site_map(node_dict['sections'], sub_section, language)
 
 
 def book_sitemap(original_documentation_dir, generated_documentation_dir, version, output_dir_name):
@@ -239,4 +232,3 @@ def _book_sitemap_with_lang(original_documentation_dir, generated_documentation_
     sitemap_path = os.path.join(versioned_dest_dir, output_file_name)
     with open(sitemap_path, 'w') as outfile:
         json.dump(sitemap, outfile)
-
