@@ -48,7 +48,6 @@ def transform(original_documentation_dir, generated_docs_dir, version):
             output_dir_name = 'models'
 
         elif original_documentation_dir.lower().endswith('/blog'):
-            import pdb;pdb.set_trace()
             doc_generator = documentation_generator.generate_blog_docs
 
             # move the folder _site/ from generated_docs_dir to content_dir
