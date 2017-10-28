@@ -57,6 +57,8 @@ MIDDLEWARE_CLASSES = (
 
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 
+PREFERRED_VERSION_NAME = "preferred_version"
+
 ROOT_URLCONF = 'portal.urls'
 
 TEMPLATE_DIR = os.path.join(BASE_DIR, 'portal/templates')

@@ -8,17 +8,24 @@ def get_preferred_version(request):
     """
     preferred_version = settings.DEFAULT_DOCS_VERSION
     if request and 'preferred_version' in request.session:
-        preferred_version = request.session['preferred_version']
+        preferred_version = request.session[settings.PREFERRED_VERSION_NAME]
+
+    if not preferred_version:
+        preferred_version = request.COOKIES.get(settings.PREFERRED_VERSION_NAME, settings.DEFAULT_DOCS_VERSION)
 
     return preferred_version
 
 
-def set_preferred_version(request, preferred_version):
+def set_preferred_version(request, response, preferred_version):
     """
     Sets the preferred documentation version in the user's session.
     """
-    if request and preferred_version:
-        request.session['preferred_version'] = preferred_version
+    if preferred_version:
+        if request:
+            request.session[settings.PREFERRED_VERSION_NAME] = preferred_version
+
+        if response:
+            response.set_cookie(settings.PREFERRED_VERSION_NAME, preferred_version)
 
     request.session.modified = True
 
