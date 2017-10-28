@@ -87,7 +87,7 @@ def change_lang(request):
 
                 key = url_helper.link_cache_key(from_path)
 
-                if key in all_links_cache:
+                if all_links_cache and key in all_links_cache:
                     response = redirect(all_links_cache[key])
                 else:
                     # There is no translated path. Use the first link in the contents instead
