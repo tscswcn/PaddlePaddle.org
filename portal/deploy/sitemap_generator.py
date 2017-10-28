@@ -121,7 +121,7 @@ def book_sitemap(original_documentation_dir, generated_documentation_dir, versio
 
 def models_sitemap(original_documentation_dir, generated_documentation_dir, version, output_dir_name):
     _create_models_sitemap(generated_documentation_dir, version, 'README.html', output_dir_name, 'en')
-    _create_models_sitemap(generated_documentation_dir, version, 'README.html', output_dir_name, 'zh')
+    _create_models_sitemap(generated_documentation_dir, version, 'README.cn.html', output_dir_name, 'zh')
 
 
 def _create_models_sitemap(generated_documentation_dir, version, html_file_name, output_dir_name, language):
@@ -167,7 +167,11 @@ def _create_models_sitemap(generated_documentation_dir, version, html_file_name,
             # Dynamically remove develop or v0.10.0, etc
             # NOTE: Use of `link_zh` instead of `link` because all the links lead to Chinese pages.
             link_zh = tag['href'].replace(github_path, '')
-            link_zh = re.sub(r"^v?[0-9]+\.[0-9]+\.[0-9]+/|^develop/", 'models/', link_zh) + '/' + html_file_name
+
+            # TODO[thuan]:  Since all markdown are named README.md, we need to hardcode this for now, regardless of language.
+            # We need to communicate this with the team to get it corrected
+            # link_zh = re.sub(r"^v?[0-9]+\.[0-9]+\.[0-9]+/|^develop/", 'models/', link_zh) + '/' + html_file_name
+            link_zh = re.sub(r"^v?[0-9]+\.[0-9]+\.[0-9]+/|^develop/", 'models/', link_zh) + '/README.html'
 
             link = { language: link_zh }
 
