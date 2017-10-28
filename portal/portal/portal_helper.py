@@ -6,14 +6,7 @@ def get_preferred_version(request):
     """
     Observes the user's session to find the preferred documentation version.
     """
-    preferred_version = settings.DEFAULT_DOCS_VERSION
-    if request and 'preferred_version' in request.session:
-        preferred_version = request.session[settings.PREFERRED_VERSION_NAME]
-
-    if not preferred_version:
-        preferred_version = request.COOKIES.get(settings.PREFERRED_VERSION_NAME, settings.DEFAULT_DOCS_VERSION)
-
-    return preferred_version
+    return request.COOKIES.get(settings.PREFERRED_VERSION_NAME, settings.DEFAULT_DOCS_VERSION)
 
 
 def set_preferred_version(request, response, preferred_version):
