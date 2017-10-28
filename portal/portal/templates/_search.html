@@ -1,6 +1,11 @@
 <script src="/static/js/underscore.js"></script>
 <script src="/static/js/doctools.js"></script>
+
+{% if CURRENT_DOCS_VERSION == '0.9.0' %}
+<script src="/static/js/searchtools_0.9.0.js"></script>
+{% else %}
 <script src="/static/js/searchtools.js"></script>
+{% endif %}
 
 <!--search_partial-->
 <script type="text/javascript">
@@ -12,12 +17,12 @@
         HAS_SOURCE:  true,
         SOURCELINK_SUFFIX: ".txt",
     };
-</script>
 
-<script type="text/javascript">
-    jQuery(function() { Search.loadIndex("searchindex.js"); });
-    jQuery('.doc-content-wrap > div[role="navigation"]').remove();
-    jQuery('.doc-content-wrap').css('padding-top', 0);
+    if (location.pathname.endsWith('/search.html')) {
+        jQuery(function() { Search.loadIndex("searchindex.js"); });
+        jQuery('.doc-content-wrap > div[role="navigation"]').remove();
+        jQuery('.doc-content-wrap').css('padding-top', 0);
+    }
 </script>
 
 <script type="text/javascript" id="searchindexloader"></script>
