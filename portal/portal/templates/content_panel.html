@@ -1,6 +1,7 @@
-{% extends "_base_nav.html" %}
+{% extends "content.html" %}
 
 {% load app_tags %}
+{% load cache %}
 
 {% block content %}
 <div class="container-fluid panel-layout">
@@ -12,7 +13,11 @@
                         <i class="glyphicon glyphicon-menu-hamburger"></i> Navigation
                     </a>
                 </div>
-                {% block side_nav_content %}{% endblock %}
+                {% block side_nav_content %}
+                {% cache settings.CACHES.default.TIMEOUT sidebar LANGUAGE_CODE request.path %}
+                {% content_links content_id %}
+                {% endcache %}
+                {% endblock %}
             </div>
             <div class="panel-content">
                 <div class="panel-inner">

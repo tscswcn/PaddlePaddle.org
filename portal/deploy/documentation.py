@@ -1,67 +1,106 @@
-from urlparse import urlparse
-import zipfile
 import os
 import tempfile
-
 import requests
+import traceback
+from urlparse import urlparse
 
-from deploy import strip
 from django.conf import settings
 
+from deploy import documentation_generator, strip, sitemap_generator
+from portal import sitemap_helper
 
-def transform(source_dir, version, output_dir, specified_source=None):
-    convertor = None
-    extracted_source_dir = None
 
-    # python manage.py deploy_documentation book v0.10.0 generated_contents/
-    # remove the heading 'v'
-    if version[0] == 'v':
-        version = version[1:]
-
-    if source_dir in settings.GIT_REPO_MAP:
-        git_repo = settings.GIT_REPO_MAP[source_dir]
-        git_repo = git_repo + version + '.zip'
-        extracted_dir = source_dir + '-' + version
-        response = requests.get(git_repo)
-        tmp_zip_file = settings.TEMPORARY_DIR + source_dir + '.zip'
-
-        with open(tmp_zip_file, 'wb') as f:
-            f.write(response.content)
-
-        with zipfile.ZipFile(tmp_zip_file, "r") as zip_ref:
-            zip_ref.extractall(settings.TEMPORARY_DIR)
-            extracted_source_dir = settings.TEMPORARY_DIR + '/' + extracted_dir
-    else:
-        extracted_source_dir = source_dir
-
-    if 'documentation' in source_dir or specified_source == 'documentation':
-        print 'is documentation'
-        convertor = strip.sphinx
-
-    elif 'book' in source_dir or specified_source == 'book':
-        print 'is book'
-        convertor = strip.book
-
-    elif 'models' in source_dir or specified_source == 'models':
-        print 'is models'
-        convertor = strip.models
-
-    print 'extracted_source_dir: ', extracted_source_dir
-    print 'version: ', version
-    print 'specified_source: ', specified_source
-
-    if convertor:
-        if output_dir:
-            print 'has output_dir'
-            convertor(extracted_source_dir, version, output_dir)
-        elif settings.EXTERNAL_TEMPLATE_DIR:
-            print 'has EXTERNAL_TEMPLATE_DIR'
-            convertor(extracted_source_dir, version, settings.EXTERNAL_TEMPLATE_DIR)
-        else:
+def transform(original_documentation_dir, generated_docs_dir, version):
+    """
+    Given a raw repo directory contents, perform the following steps (conditional to the repo):
+    - Generate the output HTML contents from its source content generator engine.
+    - Strip their contents from the static files and header, footers, that cause inconsistencies.
+    - Generate individual sitemaps.
+    """
+    try:
+        print 'Processing docs at %s to %s for version %s' % (original_documentation_dir, generated_docs_dir, version)
+        if not os.path.exists(os.path.dirname(original_documentation_dir)):
+            print 'Cannot strip documentation, source_dir=%s does not exists' % original_documentation_dir
             return
+
+        doc_generator = None
+        convertor = None
+        sm_generator = None
+        output_dir_name = None
+
+        if original_documentation_dir:
+            original_documentation_dir = original_documentation_dir.rstrip('/')
+
+        dir_path = os.path.dirname(original_documentation_dir)
+        path_base_name = os.path.basename(original_documentation_dir)
+
+        # Remove the heading 'v', left in for purely user-facing convenience.
+        if version[0] == 'v':
+            version = version[1:]
+
+        # If this seems like a request to build/transform the core Paddle docs.
+        if path_base_name.lower() == 'paddle':
+            doc_generator = documentation_generator.generate_paddle_docs
+            convertor = strip.sphinx
+            sm_generator = sitemap_generator.sphinx_sitemap
+            output_dir_name = 'documentation'
+
+        # Or if this seems like a request to build/transform the book.
+        elif path_base_name.lower() == 'book':
+            doc_generator = documentation_generator.generate_book_docs
+            convertor = strip.book
+            sm_generator = sitemap_generator.book_sitemap
+            output_dir_name = path_base_name.lower()
+
+        # Or if this seems like a request to build/transform the models.
+        elif path_base_name.lower() == 'models':
+            doc_generator = documentation_generator.generate_models_docs
+            convertor = strip.models
+            sm_generator = sitemap_generator.models_sitemap
+            output_dir_name = path_base_name.lower()
+
+        elif original_documentation_dir.lower().endswith('/blog'):
+            doc_generator = documentation_generator.generate_blog_docs
+
+            # move the folder _site/ from generated_docs_dir to content_dir
+            convertor = strip.blog
+
+            # sm_generator = sitemap_generator.models_sitemap
+            sm_generator = None
+
+            output_dir_name = 'blog'
+        else:
+            raise Exception('Unsupported content.')
+
+        if not generated_docs_dir:
+            # If we have not already generated the documentation, then run the document generator
+            print 'Generating documentation at %s' % original_documentation_dir
+            if doc_generator:
+                generated_docs_dir = doc_generator(original_documentation_dir, output_dir_name)
+
+        print 'Stripping documentation at %s, version %s' % (generated_docs_dir, version)
+        if convertor:
+            convertor(generated_docs_dir, version, output_dir_name)
+
+        print 'Generating sitemap for documentation at %s, gen_docs_dir=%s,  version %s' % \
+              (original_documentation_dir, generated_docs_dir, version)
+        if sm_generator:
+            sm_generator(original_documentation_dir, generated_docs_dir, version, output_dir_name)
+
+        if output_dir_name != 'blog':
+            sitemap_helper.generate_sitemap(version, 'en')
+            sitemap_helper.generate_sitemap(version, 'zh')
+
+    except Exception as e:
+        print 'Unable to process documentation: %s' % e
+        traceback.print_exc(original_documentation_dir)
 
 
 def fetch_and_transform(source_url, version):
+    """
+    For an arbitrary URL of Markdown contents, fetch and transform them into a
+    "stripped" and barebones HTML file.
+    """
     response = requests.get(source_url)
     tmp_dir = tempfile.gettempdir()
     source_markdown_file = tmp_dir + urlparse(source_url).path

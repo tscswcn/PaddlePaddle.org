@@ -12,14 +12,14 @@
     </div>
     {% endif %}
 
-    {% for chapter_id, chapter in side_nav_content.items %}
+    {% for chapter in side_nav_content.sections %}
     <ol class="chapter">
         {% translation_assignment chapter.title as chapter_title %}
         {% translation_assignment chapter.link as chapter_link %}
         {% if chapter_title != None %}
         <li>
             {% if chapter_link != None and chapter_link != "" %}
-                <h3><a href="{{ chapter_link }}" {% if request.path in chapter.all_links %} class="active" {% endif %}>{% translation chapter.title %}</a></h3>
+                <h3><a href="{{ chapter_link|safe }}" {% if request.path in chapter.links %} class="active" {% endif %}>{% translation chapter.title %}</a></h3>
             {% else %}
                 <h3>{% translation chapter.title %}</h3>
             {% endif %}
@@ -30,21 +30,22 @@
                     {% translation_assignment section.title as section_title %}
                     {% translation_assignment section.link as section_link %}
 
-                    {% if section_title != None and section_link != "" %}
-                    <a href="{{ section_link }}" {% if request.path == section_link %} class="active" {% endif %}>{{ section_title }}</a>
-                    {% elif section_title != None and section.sub_sections != None %}
-
+                    {% if section_title != None and section.sections == None %}
+                        {% if section_link != "" %}
+                            <a href="{{ section_link|safe }}">{{ section_title }}</a>
+                        {% endif %}
+                    {% elif section_title != None and section.sections != None %}
                     <a class="collapsed" data-toggle="collapse" href="#collapse{{ forloop.parentloop.counter }}{{ forloop.counter}}">{{ section_title }}<span class="dropdown-toggle"></span></a>
                     <div id="collapse{{ forloop.parentloop.counter }}{{ forloop.counter}}"
-                         class="panel-collapse collapse {% if request.path in section.all_links %}show{% endif %}">
+                         class="panel-collapse collapse {% if request.path in section.links %}show{% endif %}">
                     <ol class="sub-section">
-                        {% for sub_section in section.sub_sections %}
+                        {% for sub_section in section.sections %}
                         {% translation_assignment sub_section.title as sub_section_title %}
                         {% translation_assignment sub_section.link as sub_section_link %}
 
                         {% if sub_section_link != None %}
                         <li>
-                            <a href="{{ sub_section_link }}" {% if request.path == sub_section_link %} class="active" {% endif %}>{{ sub_section_title }}</a>
+                            <a href="{{ sub_section_link|safe }}" {% if request.path == sub_section_link %} class="active" {% endif %}>{{ sub_section_title }}</a>
                         </li>
                         {% endif %}
                         {% endfor %}

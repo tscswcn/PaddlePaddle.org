@@ -57,8 +57,40 @@
         font-size: 90%
 
 
+// Blog only.
+.page-content
+    padding: 30px 0
+
+    .wrapper
+        max-width: -webkit-calc(800px - (30px * 2))
+        max-width: calc(800px - (30px * 2))
+        margin-right: auto
+        margin-left: auto
+        padding-right: 30px
+        padding-left: 30px
+
+        .page-heading
+            font-size: 20px
+
+        .post-meta
+            font-size: 14px
+            color: #828282
+
+        .post-list > li
+            margin-bottom: 30px
+
+        // Actual post page.
+        .post-header
+            margin-bottom: 30px
+
+        .entry-content
+            h1
+                padding-bottom: 0.3em
+                font-size: 2em
+                border-bottom: 1px solid #eaecef
+
+
 .doc-content
-    padding: 30px
     padding-top: 6px
 
     // Merged from Sphinx and Github.
@@ -114,6 +146,11 @@
 
         font-size: 0.85em
         color: #777
+
+
+
+.doc-content, .page-content
+    padding: 30px
 
     hr
         height: 0

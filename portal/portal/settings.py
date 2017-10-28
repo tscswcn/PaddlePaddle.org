@@ -57,10 +57,18 @@ MIDDLEWARE_CLASSES = (
 
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 
+PREFERRED_VERSION_NAME = "preferred_version"
+
 ROOT_URLCONF = 'portal.urls'
 
 TEMPLATE_DIR = os.path.join(BASE_DIR, 'portal/templates')
-EXTERNAL_TEMPLATE_DIR = os.environ.get('EXTERNAL_TEMPLATE_DIR', None)
+CONTENT_DIR = os.environ.get('CONTENT_DIR', None)
+WORKSPACE_DIR = '%s/.ppo_workspace' % CONTENT_DIR
+GENERATED_DOCS_DIR = '%s/generated_docs' % WORKSPACE_DIR
+EXTERNAL_TEMPLATE_DIR = '%s/content' % WORKSPACE_DIR
+RESOLVED_SITEMAP_DIR = '%s/resolved_sitemap' % WORKSPACE_DIR
+
+OTHER_PAGE_PATH = '%s/docs/%s/other/%s'
 
 TEMPLATES = [
     {
@@ -82,11 +90,10 @@ TEMPLATES = [
 
 CACHES = {
     'default': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache'
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'TIMEOUT': 5 if DEBUG else 300
     }
 }
-
-DEFAULT_CACHE_EXPIRY = 5 if DEBUG else 600
 
 WSGI_APPLICATION = 'portal.wsgi.application'
 
@@ -122,9 +129,3 @@ STATIC_ROOT = 'static/'
 STATIC_URL = '/static/'
 
 TEMPORARY_DIR = '/tmp/'
-
-
-GIT_REPO_MAP = {
-    'book': 'https://github.com/bobateadev/book/archive/',
-    'models': 'https://github.com/bobateadev/models/archive/'
-}
