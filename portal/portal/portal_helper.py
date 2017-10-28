@@ -20,6 +20,8 @@ def set_preferred_version(request, preferred_version):
     if request and preferred_version:
         request.session['preferred_version'] = preferred_version
 
+    request.session.modified = True
+
 
 def get_preferred_language(request):
     """
@@ -39,3 +41,4 @@ def set_preferred_language(request, response, lang):
     """
     request.session[LANGUAGE_SESSION_KEY] = lang
     response.set_cookie(settings.LANGUAGE_COOKIE_NAME, lang)
+    request.session.modified = True
