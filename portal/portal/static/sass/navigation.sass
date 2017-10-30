@@ -95,7 +95,7 @@ body
                 margin: 0px
         .sidebar
             background-color: $side-panel-bg-color
-            padding: 20px
+            padding: $sidebar-padding
             height: 100%
 
             .search-form
@@ -136,15 +136,21 @@ body
 
             a
                 color: $primary-text-color
-                width: 100%
-                padding-right: 16px
+
+                &.title-with-toggle
+                    display: inline-block
+                    width: $sidebar-width - ($sidebar-padding * 3) - $sidebar-arrow-width
+
+                .toggle
+                    width: $sidebar-arrow-width
+                    margin-right: 0px
+                    float: right
 
                 &:hover, &:active
                     color: $accent-color
 
                 &.active
                     color: $accent-color
-                    font-weight: $font-bold
 
                 &.collapsed
                     .dropdown-toggle
