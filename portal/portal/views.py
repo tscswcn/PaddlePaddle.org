@@ -26,7 +26,6 @@ def change_version(request):
     """
     # Look for a new version in the URL get params.
     preferred_version = request.GET.get('preferred_version', settings.DEFAULT_DOCS_VERSION)
-    portal_helper.set_preferred_version(request, preferred_version)
 
     # Refers to the name of the contents service, for eg. 'models', 'documentation', or 'book'.
     content_id = request.GET.get('content_id', None)
@@ -50,6 +49,8 @@ def change_version(request):
         for content_id, content in root_navigation.items():
             if content:
                 response = _redirect_first_link_in_contents(request, preferred_version, content_id)
+
+    portal_helper.set_preferred_version(request, response, preferred_version)
 
     return response
 
@@ -87,7 +88,7 @@ def change_lang(request):
 
                 key = url_helper.link_cache_key(from_path)
 
-                if key in all_links_cache:
+                if all_links_cache and key in all_links_cache:
                     response = redirect(all_links_cache[key])
                 else:
                     # There is no translated path. Use the first link in the contents instead
@@ -108,7 +109,6 @@ def _redirect_first_link_in_contents(request, version, content_id):
     Given a version and a content service, redirect to the first link in it's
     navigation.
     """
-    portal_helper.set_preferred_version(request, version)
     lang = portal_helper.get_preferred_language(request)
     root_navigation = sitemap_helper.get_sitemap(version, lang)
 
@@ -122,6 +122,8 @@ def _redirect_first_link_in_contents(request, version, content_id):
             print 'Cannot perform reverse lookup on link: %s' % path
             return HttpResponseServerError()
 
+        response = redirect(path)
+        portal_helper.set_preferred_version(request, response, version)
         return redirect(path)
 
     except Exception as e:
@@ -212,8 +214,6 @@ def _render_static_content(request, version, content_id, content_src, additional
     This is the primary function that renders all static content (.html) pages.
     It builds the context and passes it to the only documentation template rendering template.
     """
-    if version:
-        portal_helper.set_preferred_version(request, version)
 
     static_content_path = sitemap_helper.get_external_file_path(request.path)
 
@@ -226,7 +226,11 @@ def _render_static_content(request, version, content_id, content_src, additional
     if additional_context:
         context.update(additional_context)
 
-    return render(request, 'content_panel.html', context)
+    response = render(request, 'content_panel.html', context)
+    if version:
+        portal_helper.set_preferred_version(request, response, version)
+
+    return response
 
 
 ######## Paths and content roots below ########################

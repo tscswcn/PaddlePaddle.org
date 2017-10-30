@@ -57,6 +57,8 @@ MIDDLEWARE_CLASSES = (
 
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 
+PREFERRED_VERSION_NAME = "preferred_version"
+
 ROOT_URLCONF = 'portal.urls'
 
 TEMPLATE_DIR = os.path.join(BASE_DIR, 'portal/templates')
@@ -64,9 +66,9 @@ CONTENT_DIR = os.environ.get('CONTENT_DIR', None)
 WORKSPACE_DIR = '%s/.ppo_workspace' % CONTENT_DIR
 GENERATED_DOCS_DIR = '%s/generated_docs' % WORKSPACE_DIR
 EXTERNAL_TEMPLATE_DIR = '%s/content' % WORKSPACE_DIR
+RESOLVED_SITEMAP_DIR = '%s/resolved_sitemap' % WORKSPACE_DIR
 
 OTHER_PAGE_PATH = '%s/docs/%s/other/%s'
-SITEMAP_TEMPLATE_PATH = '%s/assets/sitemaps/%s.json'
 
 TEMPLATES = [
     {
