@@ -231,10 +231,30 @@ def get_available_versions():
     Go through all the generated folders inside the parent content directory's
     versioned `docs` dir, and return a list of the first-level of subdirectories.
     """
+    versions = None
     path = '%s/docs' % settings.EXTERNAL_TEMPLATE_DIR
     for root, dirs, files in os.walk(path):
         if root == path:
-            return dirs
+            versions = dirs
+            break
+
+    # Divide versions into two catrgories
+    # number based: EX: 0.1.0, 1.3.4
+    # string based: EX: develop
+    string_based_version = []
+    number_based_version = []
+    for version in versions:
+        normalized_version = version.split('.')
+        if len(normalized_version) > 1:
+            number_based_version.append(version)
+        else:
+            string_based_version.append(version)
+
+    # Sort both versions
+    number_based_version.sort(key = lambda s: list(map(int, s.split('.'))))
+    string_based_version.sort()
+
+    return number_based_version + string_based_version
 
 
 def get_all_links_cache_key(version, lang):
