@@ -11,6 +11,8 @@ which bundle
 echo "listing from within PPO"
 gem list
 
+ruby -v
+which ruby
 bundle exec jekyll build
 
 cp -r ./_site/ $DESTINATION_DIR
