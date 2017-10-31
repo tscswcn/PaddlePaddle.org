@@ -11,7 +11,9 @@ which bundle
 echo "listing from within PPO"
 gem list
 
-ruby -v
+rvm use 2.4.1
+ruby --version
+
 which ruby
 bundle exec jekyll build
 
