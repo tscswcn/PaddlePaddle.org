@@ -47,7 +47,7 @@ chmod 400 content_mgr.pem
 
 
 ssh-add content_mgr.pem
-rsync -r $DEPLOY_DOCS_DIR/content content_mgr@staging.paddlepaddle.org:/var/content/.ppo_workspace
+rsync -r $DEPLOY_DOCS_DIR/content content_mgr@52.76.173.135:/var/content/.ppo_workspace
 
 
 chmod 644 content_mgr.pem
