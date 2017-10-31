@@ -18,7 +18,7 @@ ruby --version
 which ruby
 bundle exec jekyll build
 
-cp -r ./_site/ $DESTINATION_DIR
+cp -r ./_site/* $DESTINATION_DIR
 
 echo "show generated blog"
 ls $DESTINATION_DIR
