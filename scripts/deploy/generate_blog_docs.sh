@@ -11,6 +11,7 @@ which bundle
 echo "listing from within PPO"
 gem list
 
+[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"
 rvm use 2.4.1
 ruby --version
 
