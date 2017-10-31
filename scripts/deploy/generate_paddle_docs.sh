@@ -29,3 +29,4 @@ make -j $processors paddle_docs paddle_docs_cn
 mkdir -p $DESTINATION_DIR
 
 cp -R $DOCS_LOCATION/doc/ $DESTINATION_DIR/.
+
