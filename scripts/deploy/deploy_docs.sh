@@ -14,10 +14,8 @@ DEPLOY_DOCS_DIR=$CONTENT_DIR/.ppo_workspace
 
 
 ### pull PaddlePaddle.org app and run the deploy_documentation command
-# https://github.com/PaddlePaddle/PaddlePaddle.org/archive/develop.zip
 
-PPO_BRANCH=develop
-#PPO_BRANCH=deploy_blog
+PPO_BRANCH=master
 
 curl -LOk https://github.com/PaddlePaddle/PaddlePaddle.org/archive/$PPO_BRANCH.zip
 
@@ -47,7 +45,7 @@ chmod 400 content_mgr.pem
 
 
 ssh-add content_mgr.pem
-rsync -r $DEPLOY_DOCS_DIR/content content_mgr@staging.paddlepaddle.org:/var/content/.ppo_workspace
+rsync -r $DEPLOY_DOCS_DIR/content content_mgr@52.76.173.135:/var/content/.ppo_workspace
 
 
 chmod 644 content_mgr.pem
