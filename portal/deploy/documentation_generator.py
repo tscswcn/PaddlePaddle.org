@@ -101,9 +101,7 @@ def generate_book_docs(original_documentation_dir, output_dir_name):
 
 def generate_blog_docs(original_documentation_dir, output_dir_name):
     # Unlike 'book', 'models' or 'Paddle', for 'blog' we do the strip first then build
-    BLOG_TEMPLATE = '<!DOCTYPE html><html><meta charset="utf-8">' \
-                   '<body><div class="page-content"><div class="wrapper">{{ content }}' \
-                   '</div></div></body></html>'
+    BLOG_TEMPLATE = '<div class="page-content"><div class="wrapper">{{ content }}</div></div>'
 
     destination_dir = _get_destination_documentation_dir(output_dir_name)
     if os.path.exists(destination_dir) and os.path.isdir(destination_dir):
@@ -131,4 +129,3 @@ def _get_destination_documentation_dir(output_dir_name):
     if not os.path.exists(documentation_dir):
         os.makedirs(documentation_dir)
     return documentation_dir
-
