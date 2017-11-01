@@ -21,14 +21,23 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY', '1')
+SECRET_KEY = os.environ.get('SECRET_KEY', 'secret')
 
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True if os.environ.get('ENV', None) == 'development' else False
-DOC_MODE = True if os.environ.get('DOC_MODE', '0') == '1' else False
-DEFAULT_DOCS_VERSION = '0.10.0' if not DOC_MODE else 'doc_test'
+DEBUG = False
+DOC_MODE = False
+
+ENV = os.environ.get('ENV', None)
+
+if not ENV:
+    DOC_MODE = True
+    DEBUG = True
+elif ENV == 'development':
+    DEBUG = True
+
+DEFAULT_DOCS_VERSION = "develop" if not DOC_MODE else "doc_test"
 
 if DEBUG:
     ALLOWED_HOSTS = ['localhost', '127.0.0.1']

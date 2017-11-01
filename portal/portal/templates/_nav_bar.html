@@ -33,6 +33,14 @@
                 <li><a class="nav-link" href="https://github.com/PaddlePaddle/Paddle" target="_blank">
                     Github
                 </a></li>
+
+                {% else %}
+                <li>
+                    <a class="nav-link" href="{{ lang_def.link }}&path={{ request.path|urlencode }}&content_id={{ content_id }}">{{ lang_def.label}}</a>
+                </li>
+                <li>
+                    <a class="nav-link border" href="{% url 'reload_docs' %}?content_id={{ content_id }}" onclick="return showFullpageSpinnerForContentId('{{ content_id }}');">Refresh Content</a>
+                </li>
                 {% endif %}
 
             </ul>
