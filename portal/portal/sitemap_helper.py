@@ -39,7 +39,7 @@ def _load_sitemap_from_file(version, language):
         # Sitemap file exists, lets load it
         try:
             with open(sitemap_path) as json_data:
-                print "Loading sitemap from %s" % sitemap_path
+                print 'Loading sitemap from %s' % sitemap_path
                 sitemap = json.loads(json_data.read(), object_pairs_hook=collections.OrderedDict)
                 cache.set(get_all_links_cache_key(version, language), sitemap['all_links_cache'], None)
 
@@ -177,7 +177,7 @@ def _transform_urls(version, sitemap, language):
                                 for lang, url in link.items():
                                     link[lang] = url_helper.append_prefix_to_path(version, link[lang])
                                     all_links.append(link[lang])
-                                    if not lang in chapter_link:
+                                    if lang not in chapter_link:
                                         chapter_link[lang] = link[lang]
 
                             if 'sections' in section:
@@ -189,7 +189,7 @@ def _transform_urls(version, sitemap, language):
                                             link[lang] = url_helper.append_prefix_to_path(version, link[lang])
                                             all_links.append(link[lang])
                                             all_sub_section_links.append(link[lang])
-                                            if not lang in chapter_link:
+                                            if lang not in chapter_link:
                                                 chapter_link[lang] = link[lang]
 
                                 section['links'] = all_sub_section_links
