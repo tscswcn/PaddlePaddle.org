@@ -22,7 +22,7 @@
 .home p {
   font-size: 12px;
   font-weight: 100;
-  color: #999;
+  color: #666;
   margin: 0px;
 }
 /* line 31, ../sass/home.sass */
@@ -71,7 +71,7 @@
 /* line 65, ../sass/home.sass */
 .home .services .sub-title {
   text-align: center;
-  color: #999;
+  color: #666;
 }
 /* line 69, ../sass/home.sass */
 .home .services h2 {
@@ -107,7 +107,7 @@
 }
 /* line 96, ../sass/home.sass */
 .home .quick-start-guide h3 {
-  color: #999;
+  color: #666;
 }
 /* line 99, ../sass/home.sass */
 .home .quick-start-guide p {
@@ -125,7 +125,7 @@
 }
 /* line 110, ../sass/home.sass */
 .home .quick-start-guide p.sidenote a {
-  color: #999;
+  color: #666;
 }
 /* line 113, ../sass/home.sass */
 .home .quick-start-guide nav {
@@ -299,7 +299,7 @@
   .home p {
     font-size: 16px;
     font-weight: 100;
-    color: #999;
+    color: #666;
     margin: 0px;
   }
   /* line 263, ../sass/home.sass */
