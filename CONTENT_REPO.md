@@ -1,13 +1,3 @@
-# PaddlePaddle.org
-
-**PaddlePaddle.org** is the repository for the website of the [PaddlePaddle](https://github.com/PaddlePaddle/Paddle) open source project: an easy-to-use, efficient, and scalable distributed deep learning platform. The goal is to provide a unified web access to all code and documentation related to the PaddlePaddle project. The website is designed to yield uniform user experience and provide access to the latest information about PaddlePaddle.
-
-## Overview
-
-This website is built using the Python framework Django (1.8.11). All the content is served from built assets, and as a result, the website setup does not require any database infrastructure.
-
-The webserver running the site is Gunicorn tied with Nginx. We use a Docker container to deploy it to a public cloud.
-
 ### Content Management
 
 This website unifies contents from diverse opensource repos related to different technical and non-technical aspects of project, including:

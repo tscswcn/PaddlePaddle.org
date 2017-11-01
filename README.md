@@ -1,6 +1,22 @@
-## How to run
+# PaddlePaddle.org
 
-####1) Clone Paddle repositories
+**PaddlePaddle.org** is the repository for the website of the [PaddlePaddle](https://github.com/PaddlePaddle/Paddle) open source project: an easy-to-use, efficient, and scalable distributed deep learning platform. The goal is to provide a unified web access to all code and documentation related to the PaddlePaddle project. The website is designed to yield uniform user experience and provide access to the latest information about PaddlePaddle.
+
+## Contributing to PaddlePaddle.org
+
+We appreciate contribution to various aspects of the platform and supporting content, apart from better presenting these materials.
+
+You may fork or clone this repository, or begin asking questions and providing feedback and leave bug reports on Github Issues.
+
+## PaddlePaddle.org  Document Generation and Viewer Tool
+
+PaddlePaddle.org not only powers [http://paddlepaddle.org](http://paddlepaddle.org), it can be used as a tool for documentation creators to generate and view their documentation on their local machine.  To run PaddlePaddle.org as a Document tool, please follow the instructions below:
+
+**Prerequisites**:  Docker is required in order to run PaddlePaddle.org doucmentation viewer.
+[Install Docker Here](https://docs.docker.com/engine/installation/).
+
+####1) Clone Paddle repositories 
+NOTE: Skip this step if you already have a local copy of these repos. 
 ```
 mkdir paddlepaddle
 cd paddlepaddle
@@ -8,27 +24,28 @@ git clone git@github.com:PaddlePaddle/Paddle.git
 git clone git@github.com:PaddlePaddle/book.git
 git clone git@github.com:PaddlePaddle/models.git
 ```
+ 
+Now your directories should look like:
 
-####2) Run PaddlePaddle.org Docker Image within "paddlepaddle" subdirectory
+```
+- paddlepaddle
+    - Paddle
+    - book
+    - models
+    - mobile
+```
+
+####2) Run PaddlePaddle.org Docker Image within the *paddlepaddle* directory
 
 ```
 docker run -d -p 8000:8000 -v `pwd`:/var/content nguyenthuan/paddlepaddle.org:latest
 ```
 
-####3) Open up your browser and navigate to [http://localhost:8000](http://localhost:8000).
+#####3) Open up your browser and navigate to [http://localhost:8000](http://localhost:8000).
 
 ## Additional Resources
 - [Full installation instructions](INSTALL.md)
 - [Content repositories](CONTENT_REPO.md)
-
-## How to Contribute
-
-We appreciate contribution to various aspects of the platform and supporting content, apart from better presenting these materials.
-
-You may fork or clone this repository, or begin asking questions and providing feedback and leave bug reports on Github Issues.
-
-* [PaddlePaddle](https://github.com/PaddlePaddle/Paddle/blob/develop/doc/howto/dev/contribute_to_paddle_en.md)
-* [Book](https://github.com/PaddlePaddle/book#contribute)
 
 ## Copyright and License
 

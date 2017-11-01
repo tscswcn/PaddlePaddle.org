@@ -122,6 +122,9 @@ def reload_docs(request):
                   None,
                   settings.DEFAULT_DOCS_VERSION)
 
+        sitemap_helper.generate_sitemap(settings.DEFAULT_DOCS_VERSION, 'en')
+        sitemap_helper.generate_sitemap(settings.DEFAULT_DOCS_VERSION, 'zh')
+
         if content_id:
             return _redirect_first_link_in_contents(request, settings.DEFAULT_DOCS_VERSION, content_id)
         else:

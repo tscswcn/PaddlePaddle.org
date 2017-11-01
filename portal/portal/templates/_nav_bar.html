@@ -20,7 +20,19 @@
                     {% endif %}
                 {% endfor %}
 
-                {% if not settings.DOC_MODE %}
+                {% if settings.DOC_MODE %}
+
+                <li>
+                    <a class="nav-link" href="{{ lang_def.link }}&path={{ request.path|urlencode }}&content_id={{ content_id }}">{{ lang_def.label}}</a>
+                </li>
+                {% if content_id %}
+                <li>
+                    <a class="nav-link border" href="{% url 'reload_docs' %}?content_id={{ content_id }}" onclick="return showFullpageSpinnerForContentId('{{ content_id }}');">Refresh Content</a>
+                </li>
+                {% endif %}
+
+                {% else %}
+
                 <li class="nav-item{% apply_class_if_template 'blog.html' ' active' %}">
                     <a class="nav-link" href="{% url 'blog_root' %}">{% trans "Blog" %}</a>
                 </li>
@@ -34,13 +46,6 @@
                     Github
                 </a></li>
 
-                {% else %}
-                <li>
-                    <a class="nav-link" href="{{ lang_def.link }}&path={{ request.path|urlencode }}&content_id={{ content_id }}">{{ lang_def.label}}</a>
-                </li>
-                <li>
-                    <a class="nav-link border" href="{% url 'reload_docs' %}?content_id={{ content_id }}" onclick="return showFullpageSpinnerForContentId('{{ content_id }}');">Refresh Content</a>
-                </li>
                 {% endif %}
 
             </ul>

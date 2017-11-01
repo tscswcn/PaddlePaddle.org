@@ -37,7 +37,7 @@ if not ENV:
 elif ENV == 'development':
     DEBUG = True
 
-DEFAULT_DOCS_VERSION = "develop" if not DOC_MODE else "doc_test"
+DEFAULT_DOCS_VERSION = 'develop' if not DOC_MODE else 'doc_test'
 
 if DEBUG:
     ALLOWED_HOSTS = ['localhost', '127.0.0.1']
@@ -64,9 +64,9 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.security.SecurityMiddleware',
 )
 
-SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 
-PREFERRED_VERSION_NAME = "preferred_version"
+PREFERRED_VERSION_NAME = 'preferred_version'
 
 ROOT_URLCONF = 'portal.urls'
 
