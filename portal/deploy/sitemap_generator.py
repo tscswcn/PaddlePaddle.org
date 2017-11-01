@@ -206,7 +206,7 @@ def _book_sitemap_with_lang(original_documentation_dir, generated_documentation_
         sections_title = '深度学习入门'
 
     sections = []
-    sitemap = {"title": {lang: title}, 'sections': [{'title':{lang: sections_title}, 'sections':sections}]}
+    sitemap = { 'title': {lang: title}, 'sections': [{'title':{lang: sections_title}, 'sections':sections}]}
 
     # Read .tools/templates/index.html.json and .tools/templates/index.cn.html.json to generate the sitemap.
     root_json_path = os.path.join(original_documentation_dir, root_json_path_template)
@@ -234,5 +234,18 @@ def _book_sitemap_with_lang(original_documentation_dir, generated_documentation_
 
     # Output the json file
     sitemap_path = os.path.join(versioned_dest_dir, output_file_name)
+    with open(sitemap_path, 'w') as outfile:
+        json.dump(sitemap, outfile)
+
+
+def mobile_sitemap(original_documentation_dir, generated_documentation_dir, version, output_dir_name):
+    sitemap = { 'title': {'en': 'Mobile'}, 'link': { 'en': '/docs/%s/mobile/README.html' % version } }
+
+    versioned_dest_dir = _get_destination_documentation_dir(version, output_dir_name)
+    if not os.path.isdir(versioned_dest_dir):
+        os.makedirs(versioned_dest_dir)
+
+    # Update the mobile site.json by writing a new version.
+    sitemap_path = os.path.join(versioned_dest_dir, 'site.en.json')
     with open(sitemap_path, 'w') as outfile:
         json.dump(sitemap, outfile)

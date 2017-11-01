@@ -55,6 +55,11 @@ urlpatterns = [
     # ---------------
     url(r'^docs/(?P<version>.*)/%s(?P<path>.*)$' % url_helper.MODEL_ROOT, views.models_path, name=url_helper.URL_NAME_MODEL),
 
+    # ---------------
+    # MOBILE URLS
+    # ---------------
+    url(r'^docs/(?P<version>.*)/%s(?P<path>.*)$' % url_helper.MOBILE_ROOT, views.mobile_path, name=url_helper.URL_NAME_MOBILE),
+
     # -------------------
     # OTHER ARBITRARY URLS
     # -------------------
