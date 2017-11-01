@@ -14,10 +14,8 @@ DEPLOY_DOCS_DIR=$CONTENT_DIR/.ppo_workspace
 
 
 ### pull PaddlePaddle.org app and run the deploy_documentation command
-# https://github.com/PaddlePaddle/PaddlePaddle.org/archive/develop.zip
 
-PPO_BRANCH=develop
-#PPO_BRANCH=deploy_blog
+PPO_BRANCH=master
 
 curl -LOk https://github.com/PaddlePaddle/PaddlePaddle.org/archive/$PPO_BRANCH.zip
 
@@ -47,8 +45,16 @@ chmod 400 content_mgr.pem
 
 
 ssh-add content_mgr.pem
-rsync -r $DEPLOY_DOCS_DIR/content content_mgr@52.76.173.135:/var/content/.ppo_workspace
 
+export STAGE_DEPLOY_IP=52.76.173.135
+
+rsync -r $DEPLOY_DOCS_DIR/content content_mgr@$STAGE_DEPLOY_IP:/var/content/.ppo_workspace
+
+# Remove the resolved_sitemap to force the site to generate new sitemaps
+ssh -i ubuntu.pem ubuntu@$STAGE_DEPLOY_IP << EOF
+  set -e
+  rm -rf /var/content/.ppo_workspace/resolved_sitemap
+EOF
 
 chmod 644 content_mgr.pem
 
