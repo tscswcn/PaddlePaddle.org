@@ -78,7 +78,7 @@ def generate_sitemap(version, language):
         with open(sitemap_path, 'w') as fp:
             json.dump(sitemap, fp)
             # Enable the write permissions so the deploy_docs scripts can delete the sitemaps to force updates.
-            os.chmod(sitemap_path, 0666)
+            os.chmod(sitemap_path, 0664)
 
     except Exception as e:
         print 'Cannot generate sitemap from %s: %s' % (sitemap_template_path, e.message)
@@ -224,7 +224,7 @@ def _get_sitemap_path(version, language):
     """
     if not os.path.exists(settings.RESOLVED_SITEMAP_DIR):
         os.makedirs(settings.RESOLVED_SITEMAP_DIR)
-        os.chmod(settings.RESOLVED_SITEMAP_DIR, 0777)
+        os.chmod(settings.RESOLVED_SITEMAP_DIR, 0775)
 
     return '%s/sitemap.%s.%s.json' % (settings.RESOLVED_SITEMAP_DIR, version, language)
 
