@@ -10,6 +10,7 @@ BLOG_ROOT = 'blog/'
 BOOK_ROOT = 'book/'
 DOCUMENTATION_ROOT = 'documentation/'
 MODEL_ROOT = 'models/'
+MOBILE_ROOT = 'mobile/'
 GITHUB_ROOT = 'https://raw.githubusercontent.com'
 
 URL_NAME_CONTENT_ROOT = 'content_root'
@@ -19,6 +20,7 @@ URL_NAME_DOCS = 'docs_path'
 URL_NAME_TUTORIAL_ROOT = 'tutorial_root'
 URL_NAME_TUTORIAL = 'tutorial_path'
 URL_NAME_MODEL = 'model_path'
+URL_NAME_MOBILE = 'mobile_path'
 URL_NAME_OTHER = 'other_path'
 
 
@@ -49,6 +51,10 @@ def append_prefix_to_path(version, path):
         elif path.startswith(MODEL_ROOT):
             url_name = URL_NAME_MODEL
             sub_path = path[len(MODEL_ROOT):]
+
+        elif path.startswith(MOBILE_ROOT):
+            url_name = URL_NAME_MOBILE
+            sub_path = path[len(MOBILE_ROOT):]
 
         elif path.startswith(GITHUB_ROOT):
             url_name = URL_NAME_OTHER

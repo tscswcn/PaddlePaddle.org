@@ -16,5 +16,10 @@
             "en": "models/site.en.json",
             "zh": "models/site.zh.json"
         }
+    },
+    "mobile": {
+        "$ref": {
+            "en": "mobile/site.en.json"
+        }
     }
 }

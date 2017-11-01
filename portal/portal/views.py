@@ -114,7 +114,6 @@ def _redirect_first_link_in_contents(request, version, content_id):
 
     try:
         # Get the first section link from the content.
-        path = None
         content = root_navigation[content_id]
         path = _get_first_link_in_contents(content, lang)
 
@@ -148,6 +147,10 @@ def _get_first_link_in_contents(content, lang):
         elif first_chapter and ('sections' in first_chapter) and len(first_chapter['sections']) > 0:
             first_section = first_chapter['sections'][0]
             return first_section['link'][lang]
+
+        # Last option is to attempt to see if there is only one link on the title level.
+        elif 'link' in content:
+            return content['link'][lang]
 
 
 def _get_translated_link_in_content(content_id, version, target_link, lang):
@@ -295,6 +298,10 @@ def documentation_path(request, version, path=None):
 
 def models_path(request, version, path=None):
     return _render_static_content(request, version, 'models', None)
+
+
+def mobile_path(request, version, path=None):
+    return _render_static_content(request, version, 'mobile', None)
 
 
 def other_path(request, version, path=None):

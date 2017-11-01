@@ -113,16 +113,17 @@
 
 /* line 93, ../sass/content.sass */
 .doc-content {
+  padding: 30px;
   padding-top: 6px;
 }
-/* line 97, ../sass/content.sass */
+/* line 98, ../sass/content.sass */
 .doc-content h1, .doc-content h2, .doc-content h3, .doc-content h4, .doc-content h5, .doc-content h6 {
   font-weight: 600;
   margin-top: 24px;
   margin-bottom: 16px;
   line-height: 1.25;
 }
-/* line 103, ../sass/content.sass */
+/* line 104, ../sass/content.sass */
 .doc-content h1 {
   font-size: 32px;
   color: #2f323a;
@@ -132,7 +133,7 @@
   font-size: 2em;
   border-bottom: 1px solid #eee;
 }
-/* line 115, ../sass/content.sass */
+/* line 116, ../sass/content.sass */
 .doc-content h2 {
   font-size: 24px;
   color: #2f323a;
@@ -141,36 +142,32 @@
   font-size: 1.5em;
   border-bottom: 1px solid #eee;
 }
-/* line 125, ../sass/content.sass */
+/* line 126, ../sass/content.sass */
 .doc-content h3 {
   font-size: 20px;
   color: #2f323a;
   margin-bottom: 30px;
   font-size: 1.25em;
 }
-/* line 132, ../sass/content.sass */
+/* line 133, ../sass/content.sass */
 .doc-content h4 {
   font-size: 16px;
   color: #2f323a;
   margin-bottom: 30px;
   font-size: 1em;
 }
-/* line 139, ../sass/content.sass */
+/* line 140, ../sass/content.sass */
 .doc-content h5 {
   font-size: 14px;
   font-size: 0.875em;
 }
-/* line 144, ../sass/content.sass */
+/* line 145, ../sass/content.sass */
 .doc-content h6 {
   font-size: 12px;
   font-size: 0.85em;
   color: #777;
 }
 
-/* line 152, ../sass/content.sass */
-.doc-content, .page-content {
-  padding: 30px;
-}
 /* line 155, ../sass/content.sass */
 .doc-content hr, .page-content hr {
   height: 0;
