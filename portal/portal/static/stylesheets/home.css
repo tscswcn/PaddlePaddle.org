@@ -274,82 +274,101 @@
   font-style: italic;
 }
 
+/* line 241, ../sass/home.sass */
+.home-doc-mode h1, .home-doc-mode h2, .home-doc-mode h3 {
+  text-align: center;
+}
+/* line 244, ../sass/home.sass */
+.home-doc-mode a, .home-doc-mode a:visited, .home-doc-mode a:hover {
+  color: #597cf1;
+}
+/* line 247, ../sass/home.sass */
+.home-doc-mode .btn-container {
+  width: 100%;
+  padding: 8px;
+}
+/* line 251, ../sass/home.sass */
+.home-doc-mode .btn {
+  width: 100%;
+  border-color: black;
+}
+
 @media (min-width: 992px) {
-  /* line 242, ../sass/home.sass */
+  /* line 257, ../sass/home.sass */
   .home h1 {
     font-size: 48px;
   }
-  /* line 245, ../sass/home.sass */
+  /* line 260, ../sass/home.sass */
   .home h2 {
     font-size: 24px;
   }
-  /* line 248, ../sass/home.sass */
+  /* line 263, ../sass/home.sass */
   .home h3 {
     font-size: 20px;
   }
-  /* line 251, ../sass/home.sass */
+  /* line 266, ../sass/home.sass */
   .home h1, .home h2, .home h3 {
     text-align: center;
   }
-  /* line 254, ../sass/home.sass */
+  /* line 269, ../sass/home.sass */
   .home hr {
     display: none;
   }
-  /* line 257, ../sass/home.sass */
+  /* line 272, ../sass/home.sass */
   .home p {
     font-size: 16px;
     font-weight: 100;
     color: #666;
     margin: 0px;
   }
-  /* line 263, ../sass/home.sass */
+  /* line 278, ../sass/home.sass */
   .home .banner {
     color: white;
     height: 525px;
   }
-  /* line 267, ../sass/home.sass */
+  /* line 282, ../sass/home.sass */
   .home .banner .tag-line {
     padding-top: 96px;
     margin-bottom: 48px;
   }
-  /* line 271, ../sass/home.sass */
+  /* line 286, ../sass/home.sass */
   .home .banner p {
     margin-bottom: 48px;
   }
-  /* line 274, ../sass/home.sass */
+  /* line 289, ../sass/home.sass */
   .home .banner .quick-start {
     line-height: 60px;
     font-size: 18px;
     width: 212px;
   }
-  /* line 279, ../sass/home.sass */
+  /* line 294, ../sass/home.sass */
   .home .services {
     background-color: #f4f5f7;
   }
-  /* line 282, ../sass/home.sass */
+  /* line 297, ../sass/home.sass */
   .home .services h2 {
     margin-top: 64px;
   }
-  /* line 285, ../sass/home.sass */
+  /* line 300, ../sass/home.sass */
   .home .services .sub-title {
     padding: 16px 0 0 0;
   }
-  /* line 288, ../sass/home.sass */
+  /* line 303, ../sass/home.sass */
   .home .services .service-row {
     padding: 16px 0 16px 0;
   }
-  /* line 292, ../sass/home.sass */
+  /* line 307, ../sass/home.sass */
   .home .features h2 {
     margin-top: 64px;
     margin-bottom: 32px;
   }
-  /* line 296, ../sass/home.sass */
+  /* line 311, ../sass/home.sass */
   .home .features .feature-desc {
     margin: 8px;
     padding: 8px;
     background-color: transparent;
   }
-  /* line 302, ../sass/home.sass */
+  /* line 317, ../sass/home.sass */
   .home .quick-start-guide h2 {
     margin-top: 64px;
   }
