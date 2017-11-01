@@ -15,7 +15,7 @@ GITHUB_ROOT = 'https://raw.githubusercontent.com'
 
 URL_NAME_CONTENT_ROOT = 'content_root'
 URL_NAME_BLOG_ROOT = 'blog_root'
-URL_NAME_DOCS_ROOT = "docs_root"
+URL_NAME_DOCS_ROOT = 'docs_root'
 URL_NAME_DOCS = 'docs_path'
 URL_NAME_TUTORIAL_ROOT = 'tutorial_root'
 URL_NAME_TUTORIAL = 'tutorial_path'
@@ -63,7 +63,7 @@ def append_prefix_to_path(version, path):
         if sub_path and url_name:
             url = reverse(url_name, args=[version, sub_path])
             # reverse method escapes #, which breaks when we try to find it in the file system.  We unescape it here
-            url = url.replace('%23', "#")
+            url = url.replace('%23', '#')
         else:
             print 'Cannot append prefix to version %s, path %s' % (version, path)
 

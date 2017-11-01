@@ -39,10 +39,10 @@ def change_version(request):
 
     if content_id:
         if content_id in root_navigation and root_navigation[content_id]:
-            response =  _redirect_first_link_in_contents(request, preferred_version, content_id)
+            response = _redirect_first_link_in_contents(request, preferred_version, content_id)
         else:
             # This version doesn't support this book. Redirect it back to home
-            response =  redirect('/')
+            response = redirect('/')
 
     # If no content service specified, just redirect to first page of root site navigation.
     elif root_navigation and len(root_navigation) > 0:
@@ -280,11 +280,7 @@ def book_sub_path(request, version, path=None):
 
 
 def documentation_path(request, version, path=None):
-    # Since only the API section of docs is in "Documentation" book, we only
-    # use the "documentation.html" template for
-    # URLs with /api/ in the path.  Otherwise we use "tutorial.html" template
     lang = portal_helper.get_preferred_language(request)
-    template = 'documentation'     # TODO[thuan]: do this in a less hacky way
     allow_search = True
 
     search_url = None
@@ -293,7 +289,7 @@ def documentation_path(request, version, path=None):
         search_url = '%s/search.html' % lang
     extra_context =  { 'allow_search': allow_search, 'search_url': search_url }
 
-    return _render_static_content(request, version, template, 'docs', extra_context)
+    return _render_static_content(request, version, 'documentation', 'docs', extra_context)
 
 
 def models_path(request, version, path=None):
