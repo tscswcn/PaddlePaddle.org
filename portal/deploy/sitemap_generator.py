@@ -239,7 +239,7 @@ def _book_sitemap_with_lang(original_documentation_dir, generated_documentation_
 
 
 def mobile_sitemap(original_documentation_dir, generated_documentation_dir, version, output_dir_name):
-    sitemap = { 'title': {'en': 'Mobile'}, 'link': { 'en': '/docs/%s/mobile/README.html' % version } }
+    sitemap = { 'title': {'en': 'Mobile'}, 'link': { 'en': '/mobile/README.html' } }
 
     versioned_dest_dir = _get_destination_documentation_dir(version, output_dir_name)
     if not os.path.isdir(versioned_dest_dir):
