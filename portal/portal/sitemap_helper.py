@@ -70,7 +70,7 @@ def generate_sitemap(version, language):
             sitemap = _resolve_references(sitemap, version, language)
 
             # Change URLs to represent accurate URL paths and not references to repo directory structures.
-            _transform_urls(version, sitemap, language)
+            _transform_sitemap_urls(version, sitemap, language)
 
             sitemap_path = _get_sitemap_path(version, language)
 
@@ -141,7 +141,7 @@ def _resolve_references(navigation, version, language):
         return navigation
 
 
-def _transform_urls(version, sitemap, language):
+def _transform_sitemap_urls(version, sitemap, language):
     """
     Since paths defined in assets/sitemaps/<version>.json are defined relative to the folder structure of the content
     directories, we will need to append the URL path prefix so our URL router knows how to resolve the URLs.
@@ -155,55 +155,46 @@ def _transform_urls(version, sitemap, language):
     :return:
     """
     all_links_cache = {}
-
     if sitemap:
-
         for _, book in sitemap.items():
-            if book and 'sections' in book:
-                for chapter in book['sections']:
-                    all_links = []
-                    chapter_link = {}
-                    if 'link' in chapter:
-                        chapter_link = chapter['link']
-
-                        for lang, url in chapter_link.items():
-                            chapter_link[lang] = url_helper.append_prefix_to_path(version, chapter_link[lang])
-                            all_links.append(chapter_link[lang])
-
-                    if 'sections' in chapter:
-                        for section in chapter['sections']:
-                            if 'link' in section:
-                                link = section['link']
-                                for lang, url in link.items():
-                                    link[lang] = url_helper.append_prefix_to_path(version, link[lang])
-                                    all_links.append(link[lang])
-                                    if lang not in chapter_link:
-                                        chapter_link[lang] = link[lang]
-
-                            if 'sections' in section:
-                                all_sub_section_links = []
-                                for subsection in section['sections']:
-                                    if 'link' in subsection:
-                                        link = subsection['link']
-                                        for lang, url in link.items():
-                                            link[lang] = url_helper.append_prefix_to_path(version, link[lang])
-                                            all_links.append(link[lang])
-                                            all_sub_section_links.append(link[lang])
-                                            if lang not in chapter_link:
-                                                chapter_link[lang] = link[lang]
-
-                                section['links'] = all_sub_section_links
-
-                    chapter['links'] = all_links
-                    chapter['link'] = chapter_link
-
-                    # Prepare link cache for language switching
-                    for path in all_links:
-                        key = url_helper.link_cache_key(path)
-                        all_links_cache[key] = path
+            _transform_urls(version, sitemap, book, all_links_cache, language)
 
     sitemap['all_links_cache'] = all_links_cache
     cache.set(get_all_links_cache_key(version, language), all_links_cache, None)
+
+
+def _transform_urls(version, sitemap, node, all_links_cache, language):
+    all_node_links = []
+
+    if sitemap and node:
+        if 'link' in node and language in node['link']:
+            appended_path = url_helper.append_prefix_to_path(version, node['link'][language])
+            if appended_path:
+                node['link'][language] = appended_path
+            else:
+                appended_path = node['link'][language]
+
+            all_node_links.append(appended_path)
+
+            if all_links_cache:
+                key = url_helper.link_cache_key(all_node_links)
+                all_links_cache[key] = all_node_links
+
+        if 'sections' in node:
+            for child_node in node['sections']:
+                child_node_links = _transform_urls(version, sitemap, child_node, all_links_cache, language)
+                all_node_links.extend(child_node_links)
+
+        node['links'] = all_node_links
+        if ('link' not in node or not node['link'][language]):
+            # After we process the node's children, we check if the node has a default link.
+            # If not, then we set the node's first link
+            if len(all_node_links) > 0:
+                node['link'] = {
+                    language: all_node_links[0]
+                }
+
+    return all_node_links
 
 
 def get_content_navigation(content_id, version, language):

@@ -7,7 +7,8 @@ from django.conf import settings
 CONTENT_ID_TO_FOLDER_MAP = {
     'documentation': 'Paddle',
     'models': 'models',
-    'book': 'book'
+    'book': 'book',
+    'mobile': 'Mobile'
 }
 
 # Invert the keys and value.  This assumes that the values are all unique
