@@ -176,9 +176,9 @@ def _transform_urls(version, sitemap, node, all_links_cache, language):
 
             all_node_links.append(appended_path)
 
-            if all_links_cache:
-                key = url_helper.link_cache_key(all_node_links)
-                all_links_cache[key] = all_node_links
+            if all_links_cache != None:
+                key = url_helper.link_cache_key(appended_path)
+                all_links_cache[key] = appended_path
 
         if 'sections' in node:
             for child_node in node['sections']:
