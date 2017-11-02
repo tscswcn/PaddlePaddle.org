@@ -38,7 +38,7 @@ Now your directories should look like:
 #### 2) Run PaddlePaddle.org Docker Image within the *paddlepaddle* directory
 
 ```
-docker run -d -p 8000:8000 -v `pwd`:/var/content nguyenthuan/paddlepaddle.org:latest
+docker run -d -p 8000:8000 -v `pwd`:/var/content paddlepaddle/paddlepaddle.org:latest
 ```
 
 ##### 3) Open up your browser and navigate to [http://localhost:8000](http://localhost:8000).
