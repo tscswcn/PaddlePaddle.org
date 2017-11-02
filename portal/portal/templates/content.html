@@ -11,7 +11,18 @@
     <link href="//cdn.bootcss.com/highlight.js/9.9.0/styles/darcula.min.css" rel="stylesheet">
     <link href="/static/stylesheets/content.css" media="screen, projection" rel="stylesheet" type="text/css" />
 
+{% if settings.DOC_MODE %}
+    <link href="/static/stylesheets/spinner.css" media="screen, projection" rel="stylesheet" type="text/css" />
+{% endif %}
+
 {% endblock %}
+
+{% if settings.DOC_MODE %}
+{% block content_root %}
+{% include '_full_page_spinner.html' %}
+{{ block.super }}
+{% endblock %}
+{% endif %}
 
 {% block scripts %}
 {{ block.super }}
@@ -73,6 +84,23 @@ MathJax.Hub.Config({
         highlightSideNavActiveLink();
     })();
 </script>
+
+{% if settings.DOC_MODE %}
+<script>
+    function showFullpageSpinnerForContentId(folderName) {
+        var message = '{% trans "Refreshing " %}' + folderName +
+                        '{% trans ". This may take up to 5 minutes, please wait..." %}';
+        $('.spinner-container').show();
+        $('.spinner-label').text(message);
+        return true;
+    }
+
+    function hideFullpageSpinner() {
+        $('spinner-container').hide();
+        return true;
+    }
+</script>
+{% endif %}
 
 {% if allow_search %}
 {% include '_search.html' %}

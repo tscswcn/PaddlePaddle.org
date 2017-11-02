@@ -7,16 +7,14 @@ from urlparse import urlparse
 from django.template.loader import get_template
 from django.shortcuts import render, redirect
 from django.conf import settings
-from django.core.urlresolvers import reverse
 from django.utils.six.moves.urllib.parse import unquote
 from django.http import Http404, HttpResponse, HttpResponseServerError
 from django.views import static
 from django.template import TemplateDoesNotExist
-from django.utils.translation import LANGUAGE_SESSION_KEY
 from django.core.cache import cache
 
 from portal import sitemap_helper, portal_helper, url_helper
-from deploy.documentation import fetch_and_transform
+from deploy.documentation import transform, fetch_and_transform
 from portal import url_helper
 
 
@@ -39,10 +37,10 @@ def change_version(request):
 
     if content_id:
         if content_id in root_navigation and root_navigation[content_id]:
-            response =  _redirect_first_link_in_contents(request, preferred_version, content_id)
+            response = _redirect_first_link_in_contents(request, preferred_version, content_id)
         else:
             # This version doesn't support this book. Redirect it back to home
-            response =  redirect('/')
+            response = redirect('/')
 
     # If no content service specified, just redirect to first page of root site navigation.
     elif root_navigation and len(root_navigation) > 0:
@@ -104,6 +102,38 @@ def change_lang(request):
     return response
 
 
+def reload_docs(request):
+    try:
+        if not settings.DOC_MODE:
+            raise Exception("Can only reload docs in DOCS_MODE")
+
+        folder_name = request.GET.get('folder_name', None)
+        if folder_name:
+            content_id = portal_helper.content_id_for_folder_name(folder_name)
+        else:
+            content_id = request.GET.get('content_id', None)
+            if content_id:
+                folder_name = portal_helper.folder_name_for_content_id(content_id)
+
+        if not folder_name:
+            raise Exception("Cannot get folder name")
+
+        transform('%s/%s' % (settings.CONTENT_DIR, folder_name),
+                  None,
+                  settings.DEFAULT_DOCS_VERSION)
+
+        sitemap_helper.generate_sitemap(settings.DEFAULT_DOCS_VERSION, 'en')
+        sitemap_helper.generate_sitemap(settings.DEFAULT_DOCS_VERSION, 'zh')
+
+        if content_id:
+            return _redirect_first_link_in_contents(request, settings.DEFAULT_DOCS_VERSION, content_id)
+        else:
+            return redirect('/')
+
+    except Exception as e:
+        return HttpResponseServerError("Cannot reload docs: %s" % e)
+
+
 def _redirect_first_link_in_contents(request, version, content_id):
     """
     Given a version and a content service, redirect to the first link in it's
@@ -118,15 +148,16 @@ def _redirect_first_link_in_contents(request, version, content_id):
         path = _get_first_link_in_contents(content, lang)
 
         if not path:
-            print 'Cannot perform reverse lookup on link: %s' % path
-            return HttpResponseServerError()
+            msg = 'Cannot perform reverse lookup on link: %s' % path
+            raise Exception(msg)
 
         response = redirect(path)
         portal_helper.set_preferred_version(request, response, version)
         return redirect(path)
 
     except Exception as e:
-        return HttpResponseServerError('Cannot get content root url: %s' % e.message)
+        print e.message
+        return redirect('/')
 
 
 def _get_first_link_in_contents(content, lang):
@@ -212,7 +243,7 @@ def static_file_handler(request, path, extension, insecure=False, **kwargs):
     return static.serve(request, path, document_root=document_root, **kwargs)
 
 
-def _render_static_content(request, version, content_id, content_src, additional_context=None):
+def _render_static_content(request, version, content_id, additional_context=None):
     """
     This is the primary function that renders all static content (.html) pages.
     It builds the context and passes it to the only documentation template rendering template.
@@ -223,7 +254,6 @@ def _render_static_content(request, version, content_id, content_src, additional
     context = {
         'static_content': _get_static_content_from_template(static_content_path),
         'content_id': content_id,
-        'content_src': content_src
     }
 
     if additional_context:
@@ -252,7 +282,17 @@ def _get_static_content_from_template(path):
 
 
 def home_root(request):
-    return render(request, 'index.html')
+    if settings.DOC_MODE:
+        return home_root_doc_mode(request)
+    else:
+        return render(request, 'index.html')
+
+
+def home_root_doc_mode(request):
+    context = {
+        'folder_names': portal_helper.get_available_doc_folder_names()
+    }
+    return render(request, 'index_doc_mode.html', context)
 
 
 def blog_root(request):
@@ -271,37 +311,30 @@ def blog_sub_path(request, path):
     })
 
 
-def content_root(request, version, content_id):
-    return _redirect_first_link_in_contents(request, version, content_id)
-
-
 def book_sub_path(request, version, path=None):
     return _render_static_content(request, version, 'book', 'book')
 
 
-def documentation_path(request, version, path=None):
-    # Since only the API section of docs is in "Documentation" book, we only
-    # use the "documentation.html" template for
-    # URLs with /api/ in the path.  Otherwise we use "tutorial.html" template
-    lang = portal_helper.get_preferred_language(request)
-    template = 'documentation'     # TODO[thuan]: do this in a less hacky way
-    allow_search = True
+def content_sub_path(request, version, path=None):
+    content_id = ''
+    additional_context = None
 
-    search_url = None
-    if allow_search:
-        # TODO[thuan]: Implement proper full text search
-        search_url = '%s/search.html' % lang
-    extra_context =  { 'allow_search': allow_search, 'search_url': search_url }
+    if path.startswith(url_helper.DOCUMENTATION_ROOT):
+        content_id = 'documentation'
+        lang = portal_helper.get_preferred_language(request)
+        search_url = '%s/%s/search.html' % (content_id, lang)
+        additional_context = { 'allow_search': True, 'search_url': search_url }
 
-    return _render_static_content(request, version, template, 'docs', extra_context)
+    elif path.startswith(url_helper.BOOK_ROOT):
+        content_id = 'book'
 
+    elif path.startswith(url_helper.MODEL_ROOT):
+        content_id = 'models'
 
-def models_path(request, version, path=None):
-    return _render_static_content(request, version, 'models', None)
+    elif path.startswith(url_helper.MOBILE_ROOT):
+        content_id = 'mobile'
 
-
-def mobile_path(request, version, path=None):
-    return _render_static_content(request, version, 'mobile', None)
+    return _render_static_content(request, version, content_id, additional_context)
 
 
 def other_path(request, version, path=None):
