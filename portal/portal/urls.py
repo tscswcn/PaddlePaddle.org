@@ -35,11 +35,6 @@ urlpatterns = [
     url(r'^%s$' % url_helper.BLOG_ROOT, views.blog_root, name=url_helper.URL_NAME_BLOG_ROOT),
     url(r'^%s(?P<path>.+html)$' % url_helper.BLOG_ROOT, views.blog_sub_path),
 
-    # ---------------
-    # CONTENT ROOT URLS
-    # ---------------
-    url(r'^content-root/(?P<version>.*)/(?P<content_id>.*)$', views.content_root, name=url_helper.URL_NAME_CONTENT_ROOT),
-
     # -------------------
     # OTHER ARBITRARY URLS
     # -------------------

@@ -148,15 +148,16 @@ def _redirect_first_link_in_contents(request, version, content_id):
         path = _get_first_link_in_contents(content, lang)
 
         if not path:
-            print 'Cannot perform reverse lookup on link: %s' % path
-            return HttpResponseServerError()
+            msg = 'Cannot perform reverse lookup on link: %s' % path
+            raise Exception(msg)
 
         response = redirect(path)
         portal_helper.set_preferred_version(request, response, version)
         return redirect(path)
 
     except Exception as e:
-        return HttpResponseServerError('Cannot get content root url: %s' % e.message)
+        print e.message
+        return redirect('/')
 
 
 def _get_first_link_in_contents(content, lang):
@@ -308,10 +309,6 @@ def blog_sub_path(request, path):
     return render(request, 'content.html', {
         'static_content': _get_static_content_from_template(static_content_path)
     })
-
-
-def content_root(request, version, content_id):
-    return _redirect_first_link_in_contents(request, version, content_id)
 
 
 def book_sub_path(request, version, path=None):
