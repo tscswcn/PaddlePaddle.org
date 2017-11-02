@@ -15,7 +15,7 @@ PaddlePaddle.org not only powers [http://paddlepaddle.org](http://paddlepaddle.o
 **Prerequisites**:  Docker is required in order to run PaddlePaddle.org doucmentation viewer.
 [Install Docker Here](https://docs.docker.com/engine/installation/).
 
-####1) Clone Paddle repositories 
+#### 1) Clone Paddle repositories 
 NOTE: Skip this step if you already have a local copy of these repos. 
 ```
 mkdir paddlepaddle
@@ -35,13 +35,13 @@ Now your directories should look like:
     - mobile
 ```
 
-####2) Run PaddlePaddle.org Docker Image within the *paddlepaddle* directory
+#### 2) Run PaddlePaddle.org Docker Image within the *paddlepaddle* directory
 
 ```
 docker run -d -p 8000:8000 -v `pwd`:/var/content nguyenthuan/paddlepaddle.org:latest
 ```
 
-#####3) Open up your browser and navigate to [http://localhost:8000](http://localhost:8000).
+##### 3) Open up your browser and navigate to [http://localhost:8000](http://localhost:8000).
 
 ## Additional Resources
 - To develop on PaddlePaddle.org, please refer to[Full installation instructions](INSTALL.md)
