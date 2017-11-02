@@ -242,7 +242,7 @@ def static_file_handler(request, path, extension, insecure=False, **kwargs):
     return static.serve(request, path, document_root=document_root, **kwargs)
 
 
-def _render_static_content(request, version, content_id, content_src, additional_context=None):
+def _render_static_content(request, version, content_id, additional_context=None):
     """
     This is the primary function that renders all static content (.html) pages.
     It builds the context and passes it to the only documentation template rendering template.
@@ -253,7 +253,6 @@ def _render_static_content(request, version, content_id, content_src, additional
     context = {
         'static_content': _get_static_content_from_template(static_content_path),
         'content_id': content_id,
-        'content_src': content_src
     }
 
     if additional_context:
@@ -319,25 +318,26 @@ def book_sub_path(request, version, path=None):
     return _render_static_content(request, version, 'book', 'book')
 
 
-def documentation_path(request, version, path=None):
-    lang = portal_helper.get_preferred_language(request)
-    allow_search = True
+def content_sub_path(request, version, path=None):
+    content_id = ''
+    additional_context = None
 
-    search_url = None
-    if allow_search:
-        # TODO[thuan]: Implement proper full text search
-        search_url = '%s/search.html' % lang
-    extra_context =  { 'allow_search': allow_search, 'search_url': search_url }
+    if path.startswith(url_helper.DOCUMENTATION_ROOT):
+        content_id = 'documentation'
+        lang = portal_helper.get_preferred_language(request)
+        search_url = '%s/%s/search.html' % (content_id, lang)
+        additional_context = { 'allow_search': True, 'search_url': search_url }
 
-    return _render_static_content(request, version, 'documentation', 'docs', extra_context)
+    elif path.startswith(url_helper.BOOK_ROOT):
+        content_id = 'book'
 
+    elif path.startswith(url_helper.MODEL_ROOT):
+        content_id = 'models'
 
-def models_path(request, version, path=None):
-    return _render_static_content(request, version, 'models', None)
+    elif path.startswith(url_helper.MOBILE_ROOT):
+        content_id = 'mobile'
 
-
-def mobile_path(request, version, path=None):
-    return _render_static_content(request, version, 'mobile', None)
+    return _render_static_content(request, version, content_id, additional_context)
 
 
 def other_path(request, version, path=None):
