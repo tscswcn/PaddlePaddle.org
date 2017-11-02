@@ -51,6 +51,15 @@ docker tag paddlepaddle.org:"$DOCKER_IMAGE_TAG" 330323714104.dkr.ecr.ap-southeas
 docker push 330323714104.dkr.ecr.ap-southeast-1.amazonaws.com/paddlepaddle.org:"$BUILD_TAG"
 fi
 
+if [ $DOCKER_IMAGE_TAG == "latest" ]
+then
+# For latest build, we push to Docker Hub also
+docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+docker tag paddlepaddle.org:latest paddlepaddle/paddlepaddle.org:latest
+docker push paddlepaddle/paddlepaddle.org:latest
+fi
+
+
 # deploy to remote server
 openssl aes-256-cbc -d -a -in $TRAVIS_BUILD_DIR/scripts/travis/ubuntu.pem.enc -out ubuntu.pem -k $DEC_PASSWD
 
