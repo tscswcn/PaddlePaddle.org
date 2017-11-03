@@ -30,7 +30,7 @@ git clone git@github.com:PaddlePaddle/models.git</pre>
         {% else %}
         <h4 class="col-lg-12">{% trans "Select content repo to generate documentation:" %}</h4>
         {% for folder_name in folder_names %}
-        <div class="btn-container col-lg-4">
+        <div class="btn-container col-lg-3">
             <a class="btn btn-light" href="{% url 'reload_docs' %}?folder_name={{ folder_name }}" onclick="return showFullpageSpinnerForContentId('{{ folder_name }}');">{{ folder_name }}</a>
         </div>
         {% endfor %}
