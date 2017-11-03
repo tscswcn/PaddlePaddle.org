@@ -239,7 +239,30 @@ def _book_sitemap_with_lang(original_documentation_dir, generated_documentation_
 
 
 def mobile_sitemap(original_documentation_dir, generated_documentation_dir, version, output_dir_name):
-    sitemap = { 'title': {'en': 'Mobile'}, 'link': { 'en': '/mobile/README.html' } }
+    language = 'en'     # Only support English for now
+
+    root_section = {
+        'title': {language: 'Mobile'},
+        'link': {language: '/mobile/README.html'}
+    }
+
+    sitemap = root_section.copy()
+
+    sitemap['sections'] = [root_section]
+    sub_section = []
+    root_section['sections'] = sub_section
+
+    root_html_path = os.path.join(generated_documentation_dir, 'README.html')
+    with open(root_html_path) as original_html_file:
+        anchor_tags = BeautifulSoup(original_html_file, 'lxml').select('li a[href]')
+
+        # Extract the links and the article titles
+        for tag in anchor_tags:
+            title = {language: tag.text}
+            href = tag['href'].replace('./', 'mobile/', 1)
+            link = {language: href}
+            section = {'title': title, 'link': link}
+            sub_section.append(section)
 
     versioned_dest_dir = _get_destination_documentation_dir(version, output_dir_name)
     if not os.path.isdir(versioned_dest_dir):
