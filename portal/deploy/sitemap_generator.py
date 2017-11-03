@@ -127,6 +127,7 @@ def _inject_operators_link(sitemap, lang):
             # Add new section.
             section['sections'].append({
                 'title': {
+                    # TODO(Jeff): Translate word to Chinese.
                     lang: 'Operators' if lang == 'en' else 'Operators'
                 },
                 'link': {

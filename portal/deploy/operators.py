@@ -7,20 +7,26 @@ from bs4 import BeautifulSoup
 from django.template import Template, Context
 
 
-OPERATOR_TEMPLATE = '<div class="section" id="{{ type }}"><h3>{{ type }}</h3>' + (
-    '<dl class="function"><dd>{% for comment_line in comment %}<p>{{ comment_line }}</p>{% endfor %}') + (
-    '<table class="docutils field-list"><colgroup><col class="field-name"><col class="field-body"></colgroup>') + (
-    '<tbody valign="top">') + (
-    '<tr class="field-odd field"><th class="field-name">Inputs:</th><td class="field-body">') + (
-        '<ul class="first simple">{% for input in inputs %}<li><strong>{{ input.name }}</strong> {% if input.duplicable == 1 %}(<em>Duplicable</em>) {% endif %}{% if input.intermediate == 1 %}(<em>Intermediate</em>) {% endif %}: {{ input.comment }}</li>{% endfor %}</ul>') + (
-    '</td></tr>') + (
-    '<tr class="field-even field"><th class="field-name">Outputs:</th><td class="field-body">') + (
-        '<ul class="first simple">{% for output in outputs %}<li><strong>{{ output.name }}</strong> {% if output.duplicable == 1 %}(<em>Duplicable</em>) {% endif %}{% if output.intermediate == 1 %}(<em>Intermediate</em>) {% endif %}: {{ output.comment }}</li>{% endfor %}</ul>') + (
-    '</td></tr>') + (
-    '{% if attrs|length_is:"0" %}{% else %}<tr class="field-odd field"><th class="field-name">Attributes:</th><td class="field-body">') + (
-        '<ul class="first simple">{% for attr in attrs %}<li><strong>{{ attr.name }}</strong> (<em>Duplicable</em>){% if attr.generated == 1 %} (<em>Generated</em>) {% endif %}: {{ attr.comment }}</li>{% endfor %}</ul>') + (
-    '</td></tr>{% endif %}') + (
-    '</tbody></table></dd></dl></div>')
+OPERATOR_TEMPLATE = '<div class="section" id="{{ type }}">' + (
+        '<h3>{{ type }}</h3>') + (
+        '<dl class="function"><dd>{% for comment_line in comment %}<p>{{ comment_line }}</p>{% endfor %}') + (
+            '<table class="docutils field-list">') + (
+                '<colgroup><col class="field-name"><col class="field-body"></colgroup>') + (
+                '<tbody valign="top">') + (
+                    '<tr class="field-odd field">') + (
+                        '<th class="field-name">Inputs:</th>') + (
+                        '<td class="field-body"><ul class="first simple">{% for input in inputs %}<li><strong>{{ input.name }}</strong> {% if input.duplicable == 1 %}(<em>Duplicable</em>) {% endif %}{% if input.intermediate == 1 %}(<em>Intermediate</em>) {% endif %}: {{ input.comment }}</li>{% endfor %}</ul></td>') + (
+                    '</tr>') + (
+                    '<tr class="field-even field"><th class="field-name">Outputs:</th>') + (
+                        '<td class="field-body"><ul class="first simple">{% for output in outputs %}<li><strong>{{ output.name }}</strong> {% if output.duplicable == 1 %}(<em>Duplicable</em>) {% endif %}{% if output.intermediate == 1 %}(<em>Intermediate</em>) {% endif %}: {{ output.comment }}</li>{% endfor %}</ul></td>') + (
+                    '</tr>') + (
+                    '{% if attrs|length_is:"0" %}{% else %}<tr class="field-odd field"><th class="field-name">Attributes:</th>') + (
+                        '<td class="field-body"><ul class="first simple">{% for attr in attrs %}<li><strong>{{ attr.name }}</strong> (<em>Duplicable</em>){% if attr.generated == 1 %} (<em>Generated</em>) {% endif %}: {{ attr.comment }}</li>{% endfor %}</ul></td>') + (
+                    '</tr>{% endif %}') + (
+                '</tbody>') + (
+            '</table></dd>' + (
+        '</dl>' + (
+    '</div>')
 
 
 OPERATORS_WRAPPER = (
@@ -82,6 +88,8 @@ def clean_json_string(body):
 
     except ValueError, e:
         if str(e).startswith('Invalid control character'):
+            print 'Operators JSON reading/loading failed because: ', e
+
             faulty_character_index = int(re.search(
                 'char (?P<column>\d+)', str(e)).group('column'))
 
