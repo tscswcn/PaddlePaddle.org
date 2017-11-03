@@ -24,8 +24,8 @@ OPERATOR_TEMPLATE = '<div class="section" id="{{ type }}">' + (
                         '<td class="field-body"><ul class="first simple">{% for attr in attrs %}<li><strong>{{ attr.name }}</strong> (<em>Duplicable</em>){% if attr.generated == 1 %} (<em>Generated</em>) {% endif %}: {{ attr.comment }}</li>{% endfor %}</ul></td>') + (
                     '</tr>{% endif %}') + (
                 '</tbody>') + (
-            '</table></dd>' + (
-        '</dl>' + (
+            '</table></dd>') + (
+        '</dl>') + (
     '</div>')
 
 
