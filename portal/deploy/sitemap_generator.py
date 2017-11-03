@@ -30,6 +30,12 @@ def sphinx_sitemap(original_documentation_dir, generated_documentation_dir, vers
 
         sitemap = _create_sphinx_site_map_from_index(index_html_path, lang)
 
+        # Inject operators doc into the sitemap if it exists.
+        try:
+            _inject_operators_link(sitemap, lang, parent_path)
+        except:
+            print 'Failed to build add operators to documentation sitemap'
+
         # Write the sitemap into the specific content directory.
         sitemap_ouput_path = os.path.join(versioned_dest_dir, 'site.%s.json' % lang)
         with open(sitemap_ouput_path, 'w') as outfile:
@@ -112,6 +118,24 @@ def _create_sphinx_site_map(parent_list, node, language):
 
                 for sub_section in sub_sections:
                     _create_sphinx_site_map(node_dict['sections'], sub_section, language)
+
+
+def _inject_operators_link(sitemap, lang):
+    # Iterate through the sitemap, and insert "Operators" under the API section.
+    for section in sitemap['documentation']['sections']:
+        if section['title'][lang] == 'API':
+            # Add new section.
+            section['sections'].append({
+                'title': {
+                    lang: 'Operators' if lang == 'en' else 'Operators'
+                },
+                'link': {
+                    lang: '/documentation/%s/operators.html' % (lang)
+                },
+                'links': [
+                    '/documentation/%s/operators.html' % (lang)
+                ]
+            })
 
 
 def book_sitemap(original_documentation_dir, generated_documentation_dir, version, output_dir_name):
