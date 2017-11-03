@@ -34,7 +34,7 @@
 
                 {% else %}
 
-                <li class="nav-item{% apply_class_if_template 'blog.html' ' active' %}">
+                <li class="nav-item{% if '/blog' in request.path %} active{% endif %}">
                     <a class="nav-link" href="{% url 'blog_root' %}">{% trans "Blog" %}</a>
                 </li>
                 <li class="nav-divider"></li>
