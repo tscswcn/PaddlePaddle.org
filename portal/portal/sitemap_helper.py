@@ -168,17 +168,22 @@ def _transform_urls(version, sitemap, node, all_links_cache, language):
 
     if sitemap and node:
         if 'link' in node and language in node['link']:
-            appended_path = url_helper.append_prefix_to_path(version, node['link'][language])
-            if appended_path:
-                node['link'][language] = appended_path
-            else:
-                appended_path = node['link'][language]
+            transformed_path = node['link'][language]
 
-            all_node_links.append(appended_path)
+            if not transformed_path.startswith('http'):
+                # We only append the document root/version if this is not an absolute URL
+                path_with_prefix = url_helper.append_prefix_to_path(version, transformed_path)
+                if path_with_prefix:
+                    transformed_path = path_with_prefix
+
+            if transformed_path:
+                node['link'][language] = transformed_path
+
+            all_node_links.append(transformed_path)
 
             if all_links_cache != None:
-                key = url_helper.link_cache_key(appended_path)
-                all_links_cache[key] = appended_path
+                key = url_helper.link_cache_key(transformed_path)
+                all_links_cache[key] = transformed_path
 
         if 'sections' in node:
             for child_node in node['sections']:
