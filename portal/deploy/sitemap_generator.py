@@ -32,7 +32,7 @@ def sphinx_sitemap(original_documentation_dir, generated_documentation_dir, vers
 
         # Inject operators doc into the sitemap if it exists.
         try:
-            _inject_operators_link(sitemap, lang, parent_path)
+            _inject_operators_link(sitemap, lang)
         except:
             print 'Failed to build add operators to documentation sitemap'
 
