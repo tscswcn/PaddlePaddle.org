@@ -7,6 +7,8 @@ from bs4 import BeautifulSoup
 from django.conf import settings
 import markdown
 
+from deploy.operators import generate_operators_page
+
 
 def generate_paddle_docs(original_documentation_dir, output_dir_name):
     """
@@ -25,6 +27,12 @@ def generate_paddle_docs(original_documentation_dir, output_dir_name):
 
         if os.path.exists(os.path.dirname(script_path)):
             call([script_path, original_documentation_dir, destination_dir])
+
+            # Now generate operators.
+            operators_api_path = original_documentation_dir + '/operators.json'
+            operators_page_path = generate_operators_page(
+                operators_api_path, destination_dir)
+
             return destination_dir
         else:
             raise Exception('Cannot find script located at %s.' % script_path)
