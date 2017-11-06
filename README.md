@@ -44,8 +44,8 @@ docker run -d -p 8000:8000 -v `pwd`:/var/content paddlepaddle/paddlepaddle.org:l
 ##### 3) Open up your browser and navigate to [http://localhost:8000](http://localhost:8000).
 
 ## Additional Resources
-- To develop on PaddlePaddle.org, please refer to[Full installation instructions](INSTALL.md)
-- Information about how content repositories are structured and consumed:[Content repositories](CONTENT_REPO.md)
+- To develop on PaddlePaddle.org, please refer to [Development Guide](DEVELOPING.md)
+- Information about how content repositories are structured and consumed: [Content repositories](CONTENT_REPO.md)
 
 ## Copyright and License
 
