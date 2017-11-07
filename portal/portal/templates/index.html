@@ -109,15 +109,14 @@
         <p class='pip'>{% blocktrans %}Download {% endblocktrans %}<a href="https://raw.githubusercontent.com/PaddlePaddle/book/develop/01.fit_a_line/fit_a_line.tar" target="_blank">{% blocktrans %}the trained housing prices model{% endblocktrans %}</a>{% blocktrans %} and then install PaddlePaddle on your computer:{% endblocktrans %}</p>
         <pre class='pip'><code>pip install paddlepaddle</code></pre>
 
-        <p class='docker' style="display: none">{% blocktrans %}Download {% endblocktrans %}<a href="https://raw.githubusercontent.com/PaddlePaddle/book/develop/01.fit_a_line/fit_a_line.tar" target="_blank">{% blocktrans %}the trained housing prices model{% endblocktrans %}</a>{% blocktrans %}, and then <a href="https://docs.docker.com/engine/installation/" target="_blank">install Docker</a> on your computer. After installing Docker, create a new file called {% endblocktrans %}<em>housing.py</em>{% blocktrans %} in an new and empty directory:{% endblocktrans %}</p>
+        <p class='docker' style="display: none">{% blocktrans %}Download {% endblocktrans %}{% blocktrans %}, and then <a href="https://docs.docker.com/engine/installation/" target="_blank">install Docker</a> on your computer. After installing Docker, create a new file called {% endblocktrans %}<em>housing.py</em>{% blocktrans %} in an new and empty directory:{% endblocktrans %}</p>
         <pre class='docker' style="display: none"><code>mkdir ~/workspace
-touch housing.py</code></pre>
+cd ~/workspace; touch housing.py</code></pre>
 
         <p class="sidenote pip"><a href="https://pip.pypa.io/en/stable/installing/" target="_blank">{% blocktrans %}Instructions on installing pip{% endblocktrans %}</a></p>
 
         <p class='pip'>{% blocktrans %}Now, create a new file called {% endblocktrans %}<em>housing.py</em>{% blocktrans %}, and paste this Python code{% endblocktrans %}:
-        <p class='docker' style="display: none">{% blocktrans %}Now paste this Python code in the file using your favorite editor{% endblocktrans %}:</p>
-
+        <p class='docker' style="display: none">{% blocktrans %}Now download {% endblocktrans %}<a href="https://raw.githubusercontent.com/PaddlePaddle/book/develop/01.fit_a_line/fit_a_line.tar" target="_blank">{% blocktrans %}the trained housing prices model</a> into the <code>~/workspace</code> directory, and paste this Python code in the file using your favorite editor{% endblocktrans %}:</p>
         <pre><code>import paddle.v2 as paddle
 
 <span class="hljs-comment"># Initialize PaddlePaddle.</span>
@@ -127,17 +126,17 @@ paddle.init(use_gpu=False, trainer_count=1)
 x = paddle.layer.data(name='x', type=paddle.data_type.dense_vector(13))
 y_predict = paddle.layer.fc(input=x, size=1, act=paddle.activation.Linear())
 
-<span class="hljs-comment"># TODO: Load the model by prepending 'fit_a_line.tar' with path on your computer)</span>
-with open('fit_a_line.tar', 'r') as f:
+<span class="hljs-comment"># TODO: Load the model by setting the right path for 'fit_a_line.tar' on your computer or Docker instance)</span>
+with open('/workspace/fit_a_line.tar', 'r') as f:
     parameters = paddle.parameters.Parameters.from_tar(f)
 
 <span class="hljs-comment"># Infer using provided test data.</span>
-test_data = paddle.dataset.uci_housing.test()[0]
 probs = paddle.infer(
-     output_layer=y_predict, parameters=parameters, input= test_data)
+     output_layer=y_predict, parameters=parameters,
+     input=[item for item in paddle.dataset.uci_housing.test()()])
 
 for i in xrange(len(probs)):
-     print "predict=" + str(probs[i][0])
+     print 'Predicted price: ${:,.2f}'.format(probs[i][0] * 1000)
         </code></pre>
 
 
@@ -202,6 +201,10 @@ for i in xrange(len(probs)):
     var allInstallationOptions = ['pip', 'docker'];
 
     $('.quick-start-guide nav ul > li').click(function(event){
+        // The tab is of tag type 'li' and the icon inside is a 'div'
+        if (event.target.tagName == 'DIV')
+            event.target = $(event.target).parent()[0];
+
         var installationToShow = event.target.id;
 
         // Reverse the currently selected nav button and then select this one.
