@@ -8,7 +8,7 @@ from django.template import Template, Context
 
 
 OPERATOR_TEMPLATE = '<div class="section" id="{{ type }}">' + (
-        '<h3>{{ type }}</h3>') + (
+        '<h2>{{ type }}</h2>') + (
         '<dl class="function"><dd>{% for comment_line in comment %}<p>{{ comment_line }}</p>{% endfor %}') + (
             '<table class="docutils field-list">') + (
                 '<colgroup><col class="field-name"><col class="field-body"></colgroup>') + (
@@ -35,44 +35,51 @@ OPERATORS_WRAPPER = (
 )
 
 
-def generate_operators_page(operators_api_path, destination_dir):
-    operators_output = ''
-
+def generate_operators_page_with_path(operators_api_path, destination_dir):
     try:
         # Open the operators API file.
         with open(operators_api_path) as raw_operators_api_file:
             raw_operators_api = raw_operators_api_file.read()
+            generate_operators_page(raw_operators_api, destination_dir)
+    except Exception, e:
+        print 'Failed to build operator docs because: ', e
 
-            operators = clean_json_string(raw_operators_api)
 
-            # Go through all the operators and construct a new HTML object.
-            operator_template = Template(OPERATOR_TEMPLATE)
+def generate_operators_page(raw_operators_api, destination_dir):
+    operators_output = ''
 
-            operators_output += OPERATORS_WRAPPER[0]
+    try:
+        operators = clean_json_string(raw_operators_api)
 
-            for operator in operators:
-                if 'comment' in operator:
-                    operator_comment_lines = operator['comment'].split('\n')
+        # Go through all the operators and construct a new HTML object.
+        operator_template = Template(OPERATOR_TEMPLATE)
 
-                    operator_comment = []
-                    for operator_comment_line in operator_comment_lines:
-                        if len(operator_comment_line) > 0:
-                            operator_comment.append(operator_comment_line)
+        operators_output += OPERATORS_WRAPPER[0]
 
-                    operator['comment'] = operator_comment
+        for operator in operators:
+            if 'comment' in operator:
+                operator_comment_lines = operator['comment'].split('\n')
 
-                operators_output += operator_template.render(Context(operator))
+                operator_comment = []
+                for operator_comment_line in operator_comment_lines:
+                    if len(operator_comment_line) > 0:
+                        operator_comment.append(operator_comment_line)
 
-            operators_output += OPERATORS_WRAPPER[1]
+                operator['comment'] = operator_comment
+
+            operators_output += operator_template.render(Context(operator))
+
+        operators_output += OPERATORS_WRAPPER[1]
 
         for lang in ['en', 'zh']:
             operators_output_path = '%s/%s/operators.html' % (destination_dir, lang)
 
+            print 'Saving operators.html to %s' % operators_output_path
             if not os.path.exists(os.path.dirname(operators_output_path)):
                 os.makedirs(os.path.dirname(operators_output_path))
 
             with codecs.open(operators_output_path, 'w', 'utf-8') as operators_output_file:
-                operators_output_file.write(operators_output)
+                operators_output_file.write('{% verbatim %}' + operators_output + '{% endverbatim %}')
 
     except Exception, e:
         print 'Failed to build operator docs because: ', e
@@ -88,8 +95,6 @@ def clean_json_string(body):
 
     except ValueError, e:
         if str(e).startswith('Invalid control character'):
-            print 'Operators JSON reading/loading failed because: ', e
-
             faulty_character_index = int(re.search(
                 'char (?P<column>\d+)', str(e)).group('column'))
 
