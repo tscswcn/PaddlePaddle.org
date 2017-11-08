@@ -41,7 +41,7 @@ Now your directories should look like:
 docker run -d -p 8000:8000 -v `pwd`:/var/content paddlepaddle/paddlepaddle.org:latest
 ```
 
-##### 3) Open up your browser and navigate to [http://localhost:8000](http://localhost:8000).
+#### 3) Open up your browser and navigate to [http://localhost:8000](http://localhost:8000).
 
 ## Additional Resources
 - To develop on PaddlePaddle.org, please refer to [Development Guide](DEVELOPING.md)
