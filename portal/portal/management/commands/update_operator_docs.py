@@ -23,7 +23,7 @@ class Command(BaseCommand):
         path = '%s/docs' % settings.EXTERNAL_TEMPLATE_DIR
         version_re = re.compile('^[0-9]+\.[0-9]+\.[0-9]+$')
 
-        print 'Running update_operator_docs command on path %s' % path
+        print 'Running update_operator_docs command on path %s ...' % path
 
         for root, dirs, files in os.walk(path):
             if root == path:
@@ -42,6 +42,8 @@ class Command(BaseCommand):
                                 # only update operator docs for versions if site.operators.en.json does not
                                 # already exists
                                 self._update_operator_docs_for_version(full_path, dir)
+
+        print 'Complete update_operator_docs'
 
 
     def _update_operator_docs_for_version(self, path, version):
