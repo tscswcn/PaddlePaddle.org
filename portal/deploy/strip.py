@@ -92,7 +92,7 @@ def reserve_formulas(markdown_body, formula_map):
     place_holder = '<span class="markdown-equation" id="equation-%s"></span>'
     m = re.findall('(\$\$?[^\$]+\$?\$)', markdown_body)
     for i in xrange(len(m)):
-        formula_map['equation-' + str(i)] = str(m[i])
+        formula_map['equation-' + str(i)] = m[i]
         markdown_body = markdown_body.replace(m[i], place_holder % i)
 
     return markdown_body
@@ -146,7 +146,7 @@ def book(generated_documentation_dir, version, output_dir_name):
                         for equation in markdown_equation_placeholders:
                             equation.string = formula_map[equation.get('id')]
 
-                        new_html_partial.write('{% verbatim %}\n' + soup.str() +
+                        new_html_partial.write('{% verbatim %}\n' + unicode(str(soup), 'utf-8') +
                                                '\n{% endverbatim %}')
 
             elif 'image/' in subpath:
