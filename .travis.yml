@@ -21,8 +21,10 @@ before_install:
   - export PATH=$PATH:$HOME/.local/bin # put aws in the path
   - chmod +x scripts/travis/build-docker.sh scripts/travis/deploy-image.sh
 script:
-  - ./scripts/travis/build-docker.sh
-  - ./scripts/travis/deploy-image.sh
+  - |
+    if [ "$TRAVIS_EVENT_TYPE" == "cron" ]; then python portal/manage.py update_operator_docs; exit 0; fi;
+    ./scripts/travis/build-docker.sh
+    ./scripts/travis/deploy-image.sh
 notifications:
   email:
     on_success: change

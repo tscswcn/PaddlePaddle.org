@@ -11,7 +11,7 @@ def sphinx_sitemap(original_documentation_dir, generated_documentation_dir, vers
     """
     Generates a sitemap for all languages for the paddle documentation.
     """
-    versioned_dest_dir = _get_destination_documentation_dir(version, output_dir_name)
+    versioned_dest_dir = get_destination_documentation_dir(version, output_dir_name)
 
     print 'Generating sitemap for Paddle'
 
@@ -32,12 +32,12 @@ def sphinx_sitemap(original_documentation_dir, generated_documentation_dir, vers
 
         # Inject operators doc into the sitemap if it exists.
         try:
-            _inject_operators_link(sitemap, lang)
-        except:
-            print 'Failed to build add operators to documentation sitemap'
+            inject_operators_link(sitemap, lang)
+        except Exception as e:
+            print 'Failed to build add operators to documentation sitemap: %s' % e
 
         # Write the sitemap into the specific content directory.
-        sitemap_ouput_path = os.path.join(versioned_dest_dir, 'site.%s.json' % lang)
+        sitemap_ouput_path = get_sitemap_destination_path(versioned_dest_dir, lang)
         with open(sitemap_ouput_path, 'w') as outfile:
             json.dump(sitemap, outfile)
 
@@ -120,23 +120,23 @@ def _create_sphinx_site_map(parent_list, node, language):
                     _create_sphinx_site_map(node_dict['sections'], sub_section, language)
 
 
-def _inject_operators_link(sitemap, lang):
+def inject_operators_link(sitemap, lang):
     # Iterate through the sitemap, and insert "Operators" under the API section.
-    for section in sitemap['documentation']['sections']:
+    sections = None
+    for section in sitemap['sections']:
         if section['title'][lang] == 'API':
-            # Add new section.
-            section['sections'].append({
-                'title': {
-                    # TODO(Jeff): Translate word to Chinese.
-                    lang: 'Operators' if lang == 'en' else 'Operators'
-                },
-                'link': {
-                    lang: '/documentation/%s/operators.html' % (lang)
-                },
-                'links': [
-                    '/documentation/%s/operators.html' % (lang)
-                ]
-            })
+            sections = section['sections']
+            break
+
+    if sections:
+        sections.append({
+            '$ref': {
+                lang: 'documentation/%s' % get_operator_sitemap_name(lang)
+            }
+        })
+
+def get_operator_sitemap_name(lang):
+    return 'site.operators.%s.json' % lang
 
 
 def book_sitemap(original_documentation_dir, generated_documentation_dir, version, output_dir_name):
@@ -204,30 +204,32 @@ def _create_models_sitemap(generated_documentation_dir, version, html_file_name,
             sections.append(section)
 
     # TODO [Jeff Wang]: Confirm the models sitemap path is correct
-    versioned_dest_dir = _get_destination_documentation_dir(version, output_dir_name)
+    versioned_dest_dir = get_destination_documentation_dir(version, output_dir_name)
     if not os.path.isdir(versioned_dest_dir):
         os.makedirs(versioned_dest_dir)
 
     # Update the models' site.json by writing a new version.
-    sitemap_path = os.path.join(versioned_dest_dir, 'site.%s.json' % language)
+    sitemap_path = get_sitemap_destination_path(versioned_dest_dir, language)
     with open(sitemap_path, 'w') as outfile:
         json.dump(sitemap, outfile)
 
 
-def _get_destination_documentation_dir(version, output_dir_name):
+def get_destination_documentation_dir(version, output_dir_name):
     return '%s/docs/%s/%s' % (settings.EXTERNAL_TEMPLATE_DIR, version, output_dir_name)
+
+
+def get_sitemap_destination_path(versioned_dest_dir, lang):
+    return os.path.join(versioned_dest_dir, 'site.%s.json' % lang)
 
 
 def _book_sitemap_with_lang(original_documentation_dir, generated_documentation_dir, version, output_dir_name, lang):
     title = 'Book'
     root_json_path_template = '.tools/templates/index.html.json'
-    output_file_name = 'site.en.json'
     sections_title = 'Deep Learning 101'
 
     if lang == 'zh':
         title = '专题文章'
         root_json_path_template = '.tools/templates/index.cn.html.json'
-        output_file_name = 'site.zh.json'
         sections_title = '深度学习入门'
 
     sections = []
@@ -253,12 +255,12 @@ def _book_sitemap_with_lang(original_documentation_dir, generated_documentation_
 
         sections.append(parsed_section)
 
-    versioned_dest_dir = _get_destination_documentation_dir(version, output_dir_name)
+    versioned_dest_dir = get_destination_documentation_dir(version, output_dir_name)
     if not os.path.isdir(versioned_dest_dir):
         os.makedirs(versioned_dest_dir)
 
     # Output the json file
-    sitemap_path = os.path.join(versioned_dest_dir, output_file_name)
+    sitemap_path = get_sitemap_destination_path(versioned_dest_dir, lang)
     with open(sitemap_path, 'w') as outfile:
         json.dump(sitemap, outfile)
 
@@ -289,11 +291,11 @@ def mobile_sitemap(original_documentation_dir, generated_documentation_dir, vers
             section = {'title': title, 'link': link}
             sub_section.append(section)
 
-    versioned_dest_dir = _get_destination_documentation_dir(version, output_dir_name)
+    versioned_dest_dir = get_destination_documentation_dir(version, output_dir_name)
     if not os.path.isdir(versioned_dest_dir):
         os.makedirs(versioned_dest_dir)
 
     # Update the mobile site.json by writing a new version.
-    sitemap_path = os.path.join(versioned_dest_dir, 'site.en.json')
+    sitemap_path = get_sitemap_destination_path(versioned_dest_dir, 'en')
     with open(sitemap_path, 'w') as outfile:
         json.dump(sitemap, outfile)
