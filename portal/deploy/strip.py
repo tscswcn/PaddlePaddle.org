@@ -85,14 +85,14 @@ def sphinx(generated_documentation_dir, version, output_dir_name):
                         copyfile(os.path.join(subdir, file), new_path)
 
 
-def reserve_formulas(markdown_body, regex_map):
+def reserve_formulas(markdown_body, formula_map):
     """
-    Store the math formulas to regex_map before markdown conversion
+    Store the math formulas to formula_map before markdown conversion
     """
     place_holder = '<span class="markdown-equation" id="equation-%s"></span>'
     m = re.findall('(\$\$?[^\$]+\$?\$)', markdown_body)
     for i in xrange(len(m)):
-        regex_map['equation-' + str(i)] = str(m[i])
+        formula_map['equation-' + str(i)] = str(m[i])
         markdown_body = markdown_body.replace(m[i], place_holder % i)
 
     return markdown_body
@@ -124,25 +124,30 @@ def book(generated_documentation_dir, version, output_dir_name):
 
                 # Find the markdown element.
                 markdown_body = soup.select('div#markdown')
+
+                # Mathjax formula like $n$ would cause the conversion from markdown to html
+                # mal-formatted. So we first store the existing formulas to formula_map and replace
+                # them with <span></span>. After the conversion, we put them back.
                 markdown_body_str = unicode(str(markdown_body[0]), 'utf-8')
-                regex_map = {}
-                markdown_body_str = reserve_formulas(markdown_body_str, regex_map)
+                formula_map = {}
+                markdown_body_str = reserve_formulas(markdown_body_str, formula_map)
 
                 # NOTE: This ignores the root index files.
                 if len(markdown_body) > 0:
                     with codecs.open(new_path, 'w', 'utf-8') as new_html_partial:
-                        converted_content = '{% verbatim %}\n' + markdown.markdown(
+                        converted_content = markdown.markdown(
                                                 '\n'.join(markdown_body_str.split('\n')[1:-2]),
                                                 extensions=['markdown.extensions.fenced_code',
-                                                            'markdown.extensions.tables']
-                                            ) + '\n{% endverbatim %}'
+                                                            'markdown.extensions.tables'])
 
                         soup = BeautifulSoup(converted_content, 'lxml')
-                        spans = soup.select('.markdown-equation')
-                        for s in spans:
-                            s.string = regex_map[s.get('id')]
+                        markdown_equation_placeholders = soup.select('.markdown-equation')
 
-                        new_html_partial.write(soup.prettify())
+                        for equation in markdown_equation_placeholders:
+                            equation.string = formula_map[equation.get('id')]
+
+                        new_html_partial.write('{% verbatim %}\n' + soup.str() +
+                                               '\n{% endverbatim %}')
 
             elif 'image/' in subpath:
                 copyfile(os.path.join(subdir, file), new_path)
