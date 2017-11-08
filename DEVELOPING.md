@@ -18,12 +18,19 @@ Please see [Installation Guide](INSTALL.md) to get your environment setup for de
 
 We invite contributions to both the codebase of PaddlePaddle.org and individual documentation repos. As noted earlier, the documentation content is stored in individual content repos ([book](https://github.com/PaddlePaddle/book), [models](https://github.com/PaddlePaddle/models), etc.) which are fetched and transformed (on Docker during development, and on a continuous integration server in production) before rendering within the PaddlePaddle.org environment. Content updates must be made using the PR process on individual repos. And thus, contributions to this repository should be related to transformation of the raw repository content, styling, and rendering.
 
-Sometimes, you wish to align content updates with features in PaddlePaddle.org. In such a case, initiate your PR in this repository before your updates to the content - such that PaddlePaddle.org does not break due to major content repo updates.
 
 A high-level overview of the process of local development looks like this:
 
 ![Development contribution](assets/building-deploying-paddlepaddle-dev.org.png)
 
+### Changes to content
+
+Sometimes, you wish to align content updates with features in PaddlePaddle.org. In such a case, initiate your PR in this repository before your updates to the content - such that PaddlePaddle.org does not break due to major content repo updates.
+
+Note that if you decide to change the structure of the content repos alone, or modify any aspect of them that affects their presentation, navigation, or templating, it might very likely affect the process of generating their PaddlePaddle.org versions. Thus, such changes should always be made with simultaneous updates to PaddlePaddle.org's code.
+
+
+### Git branching
 
 PaddlePaddle.org utilizes a branching model focusing on two main branches, **develop** and **master**.
 
