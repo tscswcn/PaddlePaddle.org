@@ -75,6 +75,16 @@ Apart from continuously integrating the website, this repository also plays a ke
 The PaddlePaddle.org repository is pulled and invoked through the management command `deploy_documentation` on individual content repos with their custom inputs of source directory, version, and language. Read the `.travis.yml` configurations on each content repo to see when and how this process in involved.
 
 
+## Extending with new content sources
+
+If you are a part of the core PaddlePaddle team and are tasked with introducing a new content repository to show up as documentation on the website, you may consider the following steps:
+- Extending `portal/assets/sitemaps/sitemap_tmpl.json` with a reference to your new repo's sitemap file (which will be generated in a later step).
+- Writing a generator (or using an existing Markdown one), stripper, and sitemap generator to build its generated HTML directory from repo contents. The logic for these should is dependent on how content of different languages is organized in the source repo.
+- Updating the URL building tooling in `portal/portal/urls.py` and `portal/portal/url_helper.py`.
+- Determining how content should be deployed (based on versioning and branching of the source repo), and using that insight to write the Travis CI configuration in the source repo. You may use one of the existing repos as a reference point.
+- Extending documentation for people using a Docker-building process locally to clone the new repo to view the built documentation as they edit it.
+
+
 ## Design considerations
 
 Our intention is to keep PaddlePaddle.org's styling and brand consistent with https://ai.baidu.com, when it comes to typography, colors, and visual elements. When in doubt, use that website as a visual reference point.
@@ -83,3 +93,5 @@ Our intention is to keep PaddlePaddle.org's styling and brand consistent with ht
 ## Reporting bugs and feature requests
 
 If you do not feel comfortable contributing to the codebase yourself, but have suggestions, feedback, or wish to report bugs, we invite you to do so in the "Issues" section of this repository. Feedback provided on informal channels has a tendency to get lost.
+
+Critical production-related issues may be reported directly to [any of the top contributors](https://github.com/PaddlePaddle/PaddlePaddle.org/graphs/contributors) of this repo.
