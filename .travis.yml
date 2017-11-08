@@ -22,7 +22,7 @@ before_install:
   - chmod +x scripts/travis/build-docker.sh scripts/travis/deploy-image.sh
 script:
   - |
-    if [ "$TRAVIS_EVENT_TYPE" == "cron" ]; then cd portal; sudo pip install -r requirements.txt; python manage.py update_operator_docs; exit 0; fi;
+    if [ "$TRAVIS_EVENT_TYPE" == "cron" ]; then export CONTENT_DIR=/var/content; cd portal; sudo pip install -r requirements.txt; python manage.py update_operator_docs; exit 0; fi;
     ./scripts/travis/build-docker.sh
     ./scripts/travis/deploy-image.sh
 notifications:
