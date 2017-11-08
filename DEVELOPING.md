@@ -4,7 +4,7 @@ Welcome to PaddlePaddle.org (PPO) development guide.  This guide is intended for
 
 ## Technology
 
-This website is built using the Python framework [Django](https://www.djangoproject.com/)  (1.8.11). All the content is served from built assets, and as a result, the website setup does not require any database infrastructure.
+This website is built using the Python framework [Django](https://www.djangoproject.com/) (1.8.11) and [Skeleton](http://getskeleton.com/). All the content is served from built assets, and as a result, the website setup does not require any database infrastructure.
 
 The webserver running the site is Gunicorn tied with [Nginx](https://www.nginx.com/). We use a Docker container to deploy it to a public cloud.
 
@@ -16,9 +16,11 @@ Please see [Installation Guide](INSTALL.md) to get your environment setup for de
 
 ## Contributing using Git
 
-We invite contributions to both the codebase of PaddlePaddle.org and individual documentation repos. As noted earlier, the documentation content is stored in individual content repos ([book](https://github.com/PaddlePaddle/book), [models](https://github.com/PaddlePaddle/models), etc.) which are fetched and transformed (on Docker during development, and on a continuous integration server in production) before rendering within the PaddlePaddle.org environment. Thus, contributions to this repository should be related to transformation of the raw repository content, styling, and rendering.
+We invite contributions to both the codebase of PaddlePaddle.org and individual documentation repos. As noted earlier, the documentation content is stored in individual content repos ([book](https://github.com/PaddlePaddle/book), [models](https://github.com/PaddlePaddle/models), etc.) which are fetched and transformed (on Docker during development, and on a continuous integration server in production) before rendering within the PaddlePaddle.org environment. Content updates must be made using the PR process on individual repos. And thus, contributions to this repository should be related to transformation of the raw repository content, styling, and rendering.
 
-An high-level overview of the process of local development looks like this:
+Sometimes, you wish to align content updates with features in PaddlePaddle.org. In such a case, initiate your PR in this repository before your updates to the content - such that PaddlePaddle.org does not break due to major content repo updates.
+
+A high-level overview of the process of local development looks like this:
 
 ![Development contribution](assets/building-deploying-paddlepaddle-dev.org.png)
 
@@ -53,10 +55,21 @@ As there is no automated testing process currently, please consider the followin
 PaddlePaddle.org utilizes Travis-CI to provide for a continuous integration testing environment with every code checking.  PaddlePaddle.org monitors three branches:
 
 - **develop**:  Checkin to this branch will deploy PaddlePaddle.org to the development environment at [http://staging.paddlepaddle.org:82](http://staging.paddlepaddle.org:82)
-- **release-&ast;**:  Checkin to this branch will deploy PaddlePaddle.org to the development environment at [http://staging.paddlepaddle.org](http://staging.paddlepaddle.org)
-- **develop**:  Checkin to this branch will deploy PaddlePaddle.org to the development environment at [http://www.paddlepaddle.org](http://www.paddlepaddle.org)
+- **release-&ast;**:  Checkin to this branch will deploy PaddlePaddle.org to the staging environment at [http://staging.paddlepaddle.org](http://staging.paddlepaddle.org)
+- **master**:  Checkin to this branch will deploy PaddlePaddle.org to the production environment at [http://www.paddlepaddle.org](http://www.paddlepaddle.org)
+
+
+A high-level overview of the process of deployment looks like this:
+
+![Development contribution](assets/building-deploying-paddlepaddle-prod.org.png)
+
 
 Please see [Deployment Guide](DEPLOY.md) for more details.
+
+
+## Design considerations
+
+Our intention is to keep PaddlePaddle.org's styling and brand consistent with https://ai.baidu.com, when it comes to typography, colors, and visual elements. When in doubt, use that website as a visual reference point.
 
 
 ## Reporting bugs and feature requests
