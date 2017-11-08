@@ -50,7 +50,7 @@ As there is no automated testing process currently, please consider the followin
 
 
 
-## Testing Environments
+## Testing Environments & Deployment
 
 PaddlePaddle.org utilizes Travis-CI to provide for a continuous integration testing environment with every code checking.  PaddlePaddle.org monitors three branches:
 
@@ -58,13 +58,21 @@ PaddlePaddle.org utilizes Travis-CI to provide for a continuous integration test
 - **release-&ast;**:  Checkin to this branch will deploy PaddlePaddle.org to the staging environment at [http://staging.paddlepaddle.org](http://staging.paddlepaddle.org)
 - **master**:  Checkin to this branch will deploy PaddlePaddle.org to the production environment at [http://www.paddlepaddle.org](http://www.paddlepaddle.org)
 
+Please see [Deployment Guide](DEPLOY.md) for more details.
 
-A high-level overview of the process of deployment looks like this:
+### Production environment
+
+The production server for PaddlePaddle.org is an AWS-Asia-hosted Ubuntu 16.04 server running the website in a Docker instance, which can be scaled using AWS's load balancer as per need and traffic. Content is deployed into a persistent block storage volume that gets "mounted" to the Docker instance (through the VM), and updated through the a VM mount during continuous integration builds.
+
+### Continuous integration
+
+As stated above, PaddlePaddle.org is continuously deployed through the Travis CI service. See [the config](.travis.yml) for more details.
+
+Apart from continuously integrating the website, this repository also plays a key role in the process of deployment of individual content repos. A high-level overview of this process of deployment looks like this:
 
 ![Development contribution](assets/building-deploying-paddlepaddle-prod.org.png)
 
-
-Please see [Deployment Guide](DEPLOY.md) for more details.
+The PaddlePaddle.org repository is pulled and invoked through the management command `deploy_documentation` on individual content repos with their custom inputs of source directory, version, and language. Read the `.travis.yml` configurations on each content repo to see when and how this process in involved.
 
 
 ## Design considerations
