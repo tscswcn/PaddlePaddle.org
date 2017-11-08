@@ -27,14 +27,8 @@ cd portal/
 
 sudo pip install -r requirements.txt
 
-if [ -d ./tmp ]
-then
-    rm -rf ./tmp
-fi
-
-mkdir ./tmp
 python manage.py deploy_documentation --source=$SOURCE_DIR --dest_gen_docs_dir=$GENERATED_DOCS_DIR --doc_version=$GITHUB_BRANCH
-
+python manage.py update_operator_docs
 
 # deploy to remote server
 openssl aes-256-cbc -d -a -in ../scripts/deploy/content_mgr.pem.enc -out content_mgr.pem -k $DEC_PASSWD
