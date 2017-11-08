@@ -103,6 +103,9 @@ body
             padding: $sidebar-padding
             height: 100%
 
+            .chapter
+                margin: 0px
+
             .search-form
                 .query
                     width: 100%
@@ -135,9 +138,14 @@ body
                 &.active
                     color: $accent-color
 
-            ul
+            ul, ol
                 li
-                    padding: 8px 0 8px 0
+                    line-height: 20px
+                    padding-bottom: 10px
+
+                    .panel-collapse
+                        padding-top: 10px
+
 
             a
                 color: $primary-text-color
