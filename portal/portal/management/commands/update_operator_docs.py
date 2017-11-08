@@ -23,6 +23,8 @@ class Command(BaseCommand):
         path = '%s/docs' % settings.EXTERNAL_TEMPLATE_DIR
         version_re = re.compile('^[0-9]+\.[0-9]+\.[0-9]+$')
 
+        print 'Running update_operator_docs command on path %s' % path
+
         for root, dirs, files in os.walk(path):
             if root == path:
                 for dir in dirs:
