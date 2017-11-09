@@ -17,7 +17,7 @@ PaddlePaddle.org not only powers [http://paddlepaddle.org](http://paddlepaddle.o
 
 ### Documentation Viewer Only Tool
 
-####1) Run PaddlePaddle.org Docker Image. 
+#### 1) Run PaddlePaddle.org Docker Image. 
 ```
 docker run -d -p 8000:8000 paddlepaddle/paddlepaddle.org:latest
 ```
