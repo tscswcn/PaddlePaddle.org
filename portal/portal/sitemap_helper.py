@@ -242,12 +242,14 @@ def get_available_versions():
     # string based: EX: develop
     string_based_version = []
     number_based_version = []
-    for version in versions:
-        normalized_version = version.split('.')
-        if len(normalized_version) > 1:
-            number_based_version.append(version)
-        else:
-            string_based_version.append(version)
+
+    if versions:
+        for version in versions:
+            normalized_version = version.split('.')
+            if len(normalized_version) > 1:
+                number_based_version.append(version)
+            else:
+                string_based_version.append(version)
 
     # Sort both versions
     number_based_version.sort(key = lambda s: list(map(int, s.split('.'))))
@@ -262,3 +264,11 @@ def get_all_links_cache_key(version, lang):
 
 def get_external_file_path(sub_path):
     return '%s/%s' % (settings.EXTERNAL_TEMPLATE_DIR, sub_path)
+
+
+def remove_all_resolved_sitemaps():
+    try:
+        if os.path.exists(settings.RESOLVED_SITEMAP_DIR):
+            os.rmdir(settings.RESOLVED_SITEMAP_DIR)
+    except os.error as e:
+        print 'Cannot remove resolved sitemaps: %s' % e

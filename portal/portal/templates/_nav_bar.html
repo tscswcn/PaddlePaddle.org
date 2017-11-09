@@ -21,7 +21,7 @@
                     {% endif %}
                 {% endfor %}
 
-                {% if settings.DOC_MODE %}
+                {% if settings.CURRENT_PPO_MODE == settings.PPO_MODES.DOC_EDIT_MODE %}
 
                 <li>
                     <a class="nav-link" href="{{ lang_def.link }}&path={{ request.path|urlencode }}&content_id={{ content_id }}">{{ lang_def.label}}</a>

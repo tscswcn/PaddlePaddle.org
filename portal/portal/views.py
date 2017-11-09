@@ -12,6 +12,7 @@ from django.http import Http404, HttpResponse, HttpResponseServerError
 from django.views import static
 from django.template import TemplateDoesNotExist
 from django.core.cache import cache
+from django.http import JsonResponse
 
 from portal import sitemap_helper, portal_helper, url_helper
 from deploy.documentation import transform, fetch_and_transform
@@ -104,7 +105,7 @@ def change_lang(request):
 
 def reload_docs(request):
     try:
-        if not settings.DOC_MODE:
+        if settings.CURRENT_PPO_MODE != settings.PPO_MODES.DOC_EDIT_MODE:
             raise Exception("Can only reload docs in DOCS_MODE")
 
         folder_name = request.GET.get('folder_name', None)
@@ -282,17 +283,28 @@ def _get_static_content_from_template(path):
 
 
 def home_root(request):
-    if settings.DOC_MODE:
-        return home_root_doc_mode(request)
+    if settings.CURRENT_PPO_MODE == settings.PPO_MODES.DOC_EDIT_MODE:
+        context = {
+            'folder_names': portal_helper.get_available_doc_folder_names()
+        }
+        return render(request, 'index_doc_mode.html', context)
+
+    elif settings.CURRENT_PPO_MODE == settings.PPO_MODES.DOC_VIEW_MODE:
+        if portal_helper.has_downloaded_workspace_file():
+            preferred_version = portal_helper.get_preferred_version(request)
+            return _redirect_first_link_in_contents(request, preferred_version, 'documentation')
+        else:
+            response = render(request, 'index_doc_view_mode.html')
+            portal_helper.set_preferred_version(request, response, 'develop')
+            return response
+
     else:
         return render(request, 'index.html')
 
 
-def home_root_doc_mode(request):
-    context = {
-        'folder_names': portal_helper.get_available_doc_folder_names()
-    }
-    return render(request, 'index_doc_mode.html', context)
+def download_latest_doc_workspace(request):
+    portal_helper.download_and_extract_workspace()
+    return redirect('/')
 
 
 def blog_root(request):
