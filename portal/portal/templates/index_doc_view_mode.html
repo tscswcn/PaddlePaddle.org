@@ -1,0 +1,40 @@
+{% extends "content.html" %}
+
+{% load i18n %}
+
+{% block head %}
+{{ block.super }}
+    <link href="/static/stylesheets/home.css" media="screen, projection" rel="stylesheet" type="text/css" />
+{% endblock %}
+
+{% load app_tags %}
+
+{% block content %}
+
+<div class="container home-doc-mode doc-content">
+    <div class="row">
+        <h3 class="col-lg-12">{% trans "Welcome to PaddlePaddle.org Document Viewer" %}</h3>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+{{ block.super }}
+
+<script>
+    function showFullpageSpinnerForDocumentLoading() {
+        var message = '{% trans "Downloading latest documentation, this could take several minutes..." %}';
+        $('.spinner-container').show();
+        $('.spinner-label').text(message);
+        return true;
+    }
+
+    (function() {
+        // Immediately show spinner and start downloading latest documentation
+        showFullpageSpinnerForDocumentLoading();
+        window.location = '{% url "download_latest_doc_workspace" %}';
+    })();
+</script>
+
+{% endblock %}

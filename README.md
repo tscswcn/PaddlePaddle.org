@@ -8,12 +8,23 @@ We appreciate contribution to various aspects of the platform and supporting con
 
 You may fork or clone this repository, or begin asking questions and providing feedback and leave bug reports on Github Issues.
 
-## PaddlePaddle.org  Document Generation and Viewer Tool
-
-PaddlePaddle.org not only powers [http://paddlepaddle.org](http://paddlepaddle.org), it can be used as a tool for documentation creators to generate and view their documentation on their local machine.  To run PaddlePaddle.org as a Document tool, please follow the instructions below:
+## PaddlePaddle.org Document Generation and Viewer Tool
 
 **Prerequisites**:  Docker is required in order to run PaddlePaddle.org doucmentation viewer.
 [Install Docker Here](https://docs.docker.com/engine/installation/).
+
+PaddlePaddle.org not only powers [http://paddlepaddle.org](http://paddlepaddle.org), it can be used as a tool for documentation creators to generate and view their documentation on their local machine.  To run PaddlePaddle.org as a Document tool, please follow the instructions below:
+
+### Documentation Viewer Only Tool
+
+####1) Run PaddlePaddle.org Docker Image. 
+```
+docker run -d -p 8000:8000 paddlepaddle/paddlepaddle.org:latest
+```
+
+#### 2) Open up your browser and navigate to [http://localhost:8000](http://localhost:8000).
+
+### Documentation Generation and Viewer Tool (For Documentation creators)
 
 #### 1) Clone Paddle repositories 
 NOTE: Skip this step if you already have a local copy of these repos. 
@@ -35,7 +46,8 @@ Now your directories should look like:
     - mobile
 ```
 
-#### 2) Run PaddlePaddle.org Docker Image within the *paddlepaddle* directory
+#### 2) Run PaddlePaddle.org Docker Image within the *paddlepaddle* directory.
+**Note:** PaddlePaddle.org will read the content repos specified in the -v (volume) flag of the docker run command
 
 ```
 docker run -d -p 8000:8000 -v `pwd`:/var/content paddlepaddle/paddlepaddle.org:latest
