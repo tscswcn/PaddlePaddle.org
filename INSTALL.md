@@ -44,7 +44,7 @@ gem install compass
 
 ##### Setup virtual environment and install requirements
 ```
-cd paddlepaddle-portal/portal
+cd PaddlePaddle.org/portal
 virtualenv venv
 ```
 
