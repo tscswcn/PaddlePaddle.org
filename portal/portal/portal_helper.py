@@ -1,7 +1,10 @@
 import os
+import tarfile
 
+import requests
 from django.utils.translation import LANGUAGE_SESSION_KEY
 from django.conf import settings
+from portal import sitemap_helper
 
 
 CONTENT_ID_TO_FOLDER_MAP = {
@@ -19,7 +22,8 @@ def get_preferred_version(request):
     Observes the user's session to find the preferred documentation version.
     """
     preferred_version = request.COOKIES.get(settings.PREFERRED_VERSION_NAME, settings.DEFAULT_DOCS_VERSION)
-    if settings.DOC_MODE:
+    if settings.CURRENT_PPO_MODE == settings.PPO_MODES.DOC_EDIT_MODE:
+        # In document generation mode, we only allow for 'doc_test' version
         preferred_version = settings.DEFAULT_DOCS_VERSION
 
     return preferred_version
@@ -82,3 +86,28 @@ def folder_name_for_content_id(content_id):
 def content_id_for_folder_name(folder_name):
     # TODO[Thuan]: Get this from configuration file
     return FOLDER_MAP_TO_CONTENT_ID.get(folder_name, None)
+
+
+def has_downloaded_workspace_file():
+    dest_file_path = '%s/%s' % (settings.CONTENT_DIR, settings.WORKSPACE_ZIP_FILE_NAME)
+    return os.path.isfile(dest_file_path)
+
+
+def download_and_extract_workspace():
+    dest_file_path = '%s/%s' % (settings.CONTENT_DIR, settings.WORKSPACE_ZIP_FILE_NAME)
+
+    if not os.path.isfile(dest_file_path):
+        r = requests.get(settings.WORKSPACE_DOWNLOAD_URL, stream=True)
+        with open(dest_file_path, 'wb') as f:
+            for chunk in r.iter_content(chunk_size=1024):
+                if chunk: # filter out keep-alive new chunks
+                    f.write(chunk)
+
+        tar = tarfile.open(dest_file_path)
+        tar.extractall(settings.CONTENT_DIR)
+        tar.close()
+
+    # Regenerate sitemaps
+    sitemap_helper.remove_all_resolved_sitemaps()
+    sitemap_helper.generate_sitemap('develop', 'en')
+    sitemap_helper.generate_sitemap('develop', 'zh')

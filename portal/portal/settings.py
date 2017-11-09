@@ -25,19 +25,43 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'secret')
 
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 
+
+class PPO_MODES:
+    '''
+    PPO has 3 modes:
+    1)  Default:  Default website mode.
+    2)  DOC_EDIT_MODE: Document editor mode.  This will allow document editors to generate and view
+        their documentation.  This mode is activated if there is no 'ENV' environment variable set and
+        HAS_MOUNT is NOT set or set to '1' (ie:  We have mounted a volume to /var/content in Docker).
+    3)  DOC_VIEW_MODE: Document viewer mode.  This will allow users to view the latest PaddlePaddle
+        documentation.  This mode is activated if there is no 'ENV' environment variable set AND
+        'HAS_MOUNT' is set to 0 (meaning there is no mount set for the content directory)
+    '''
+    Default, DOC_EDIT_MODE, DOC_VIEW_MODE = range(3)
+
+CURRENT_PPO_MODE = PPO_MODES.Default
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
-DOC_MODE = False
 
 ENV = os.environ.get('ENV', None)
+HAS_MOUNT = os.environ.get('HAS_MOUNT', '1')
+
+WORKSPACE_ZIP_FILE_NAME = 'workspace.tar.gz'
+WORKSPACE_DOWNLOAD_URL = 'https://s3-ap-southeast-1.amazonaws.com/paddlepaddle.org/%s' % WORKSPACE_ZIP_FILE_NAME
 
 if not ENV:
-    DOC_MODE = True
+    if HAS_MOUNT == '0':
+        CURRENT_PPO_MODE = PPO_MODES.DOC_VIEW_MODE
+    else:
+        CURRENT_PPO_MODE = PPO_MODES.DOC_EDIT_MODE
+
     DEBUG = True
+
 elif ENV == 'development':
     DEBUG = True
 
-DEFAULT_DOCS_VERSION = 'develop' if not DOC_MODE else 'doc_test'
+DEFAULT_DOCS_VERSION = 'develop' if CURRENT_PPO_MODE != PPO_MODES.DOC_EDIT_MODE else 'doc_test'
 
 if DEBUG:
     ALLOWED_HOSTS = ['localhost', '127.0.0.1']
@@ -100,7 +124,7 @@ TEMPLATES = [
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-        'TIMEOUT': 5 if DEBUG else 300
+        'TIMEOUT': 0 if DEBUG else 300
     }
 }
 
