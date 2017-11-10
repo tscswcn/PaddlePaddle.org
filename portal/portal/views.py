@@ -260,7 +260,11 @@ def _render_static_content(request, version, content_id, additional_context=None
     if additional_context:
         context.update(additional_context)
 
-    response = render(request, 'content_panel.html', context)
+    template = 'content_panel.html'
+    if content_id in ['models', 'mobile']:
+        template = 'content_doc.html'
+
+    response = render(request, template, context)
     if version:
         portal_helper.set_preferred_version(request, response, version)
 
