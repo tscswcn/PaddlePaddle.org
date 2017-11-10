@@ -1,6 +1,6 @@
 #!/bin/bash
 set -e
-
+echo "HERE"
 # deploy to remote server
 openssl aes-256-cbc -d -a -in $TRAVIS_BUILD_DIR/scripts/travis/ubuntu.pem.enc -out ubuntu.pem -k $DEC_PASSWD
 
