@@ -20,3 +20,4 @@ EOF
 
 chmod 644 ubuntu.pem
 rm ubuntu.pem
+
