@@ -6,6 +6,7 @@ branches:
     - develop
     - master
     - /^release.*$/
+    - add_scrip_for_cron
 os:
   - linux
 services:
