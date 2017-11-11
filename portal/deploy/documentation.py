@@ -48,7 +48,7 @@ def transform(original_documentation_dir, generated_docs_dir, version):
         # Or if this seems like a request to build/transform the book.
         elif path_base_name.lower() == 'book':
             doc_generator = documentation_generator.generate_book_docs
-            convertor = strip.book
+            convertor = strip.default
             sm_generator = sitemap_generator.book_sitemap
             output_dir_name = path_base_name.lower()
 
