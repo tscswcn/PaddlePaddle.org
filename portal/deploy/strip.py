@@ -1,5 +1,4 @@
 import os
-import re
 from shutil import copyfile, copytree, rmtree
 import codecs
 
@@ -83,74 +82,6 @@ def sphinx(generated_documentation_dir, version, output_dir_name):
                         copyfile(os.path.join(subdir, file), new_path)
                     elif 'searchindex.js' in subpath:
                         copyfile(os.path.join(subdir, file), new_path)
-
-
-def reserve_formulas(markdown_body, formula_map):
-    """
-    Store the math formulas to formula_map before markdown conversion
-    """
-    place_holder = '<span class="markdown-equation" id="equation-%s"></span>'
-    m = re.findall('(\$\$?[^\$]+\$?\$)', markdown_body)
-    for i in xrange(len(m)):
-        formula_map['equation-' + str(i)] = m[i]
-        markdown_body = markdown_body.replace(m[i], place_holder % i)
-
-    return markdown_body
-
-
-def book(generated_documentation_dir, version, output_dir_name):
-    """
-    Strip out the static and extract the body contents, ignoring the TOC,
-    headers, and body.
-    """
-    # Traverse through all the HTML pages of the dir, and take contents in the "markdown" section
-    # and transform them using a markdown library.
-    destination_documentation_dir = _get_destination_documentation_dir(version, output_dir_name)
-
-    for subdir, dirs, all_files in os.walk(generated_documentation_dir):
-        for file in all_files:
-            subpath = os.path.join(subdir, file)[len(
-                generated_documentation_dir):]
-            new_path = '%s/%s' % (destination_documentation_dir, subpath)
-
-            if '.html' in file or 'image/' in subpath:
-                if not os.path.exists(os.path.dirname(new_path)):
-                    os.makedirs(os.path.dirname(new_path))
-
-            if '.html' in file:
-                # Soup the body of the HTML file.
-                with open(os.path.join(subdir, file)) as original_html_file:
-                    soup = BeautifulSoup(original_html_file, 'html.parser')
-
-                # Find the markdown element.
-                markdown_body = soup.select('div#markdown')
-
-                # Mathjax formula like $n$ would cause the conversion from markdown to html
-                # mal-formatted. So we first store the existing formulas to formula_map and replace
-                # them with <span></span>. After the conversion, we put them back.
-                markdown_body_str = unicode(str(markdown_body[0]), 'utf-8')
-                formula_map = {}
-                markdown_body_str = reserve_formulas(markdown_body_str, formula_map)
-
-                # NOTE: This ignores the root index files.
-                if len(markdown_body) > 0:
-                    with codecs.open(new_path, 'w', 'utf-8') as new_html_partial:
-                        converted_content = markdown.markdown(
-                                                '\n'.join(markdown_body_str.split('\n')[1:-2]),
-                                                extensions=['markdown.extensions.fenced_code',
-                                                            'markdown.extensions.tables'])
-
-                        soup = BeautifulSoup(converted_content, 'lxml')
-                        markdown_equation_placeholders = soup.select('.markdown-equation')
-
-                        for equation in markdown_equation_placeholders:
-                            equation.string = formula_map[equation.get('id')]
-
-                        new_html_partial.write('{% verbatim %}\n' + unicode(str(soup), 'utf-8') +
-                                               '\n{% endverbatim %}')
-
-            elif 'image/' in subpath:
-                copyfile(os.path.join(subdir, file), new_path)
 
 
 def default(generated_documentation_dir, version, output_dir_name):
