@@ -15,7 +15,6 @@ docker build -t paddlepaddle.org .
 ```
 
 ##### Run Docker Image
-**Note:**  Please contact product team (Varun, Jeff, Daming, Thuan) for the external_template_dir
 
 ###### Create portal.env file with the following variables
 
