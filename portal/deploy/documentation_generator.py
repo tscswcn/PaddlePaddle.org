@@ -7,6 +7,7 @@ from subprocess import call
 from bs4 import BeautifulSoup
 from django.conf import settings
 import markdown
+import re
 
 from deploy.operators import generate_operators_page
 
@@ -71,14 +72,39 @@ def generate_models_docs(original_documentation_dir, output_dir_name):
                 with open(os.path.join(subdir, file)) as original_md_file:
                     markdown_body = original_md_file.read()
 
+                    # This is to solve the issue where <s> and <e> are interpreted as HTML tags
+                    markdown_body = markdown_body.replace('\<s>', '&lt;s&gt;').replace('\<e>', '&lt;e&gt;')
+
                     with codecs.open(new_path, 'w', 'utf-8') as new_html_partial:
                         # Strip out the wrapping HTML
-                        new_html_partial.write(
-                            '{% verbatim %}\n' + markdown.markdown(
-                                unicode(markdown_body, 'utf-8'),
-                                extensions=MARKDOWN_EXTENSIONS
-                            ) + '\n{% endverbatim %}'
+                        html = markdown.markdown(
+                            unicode(markdown_body, 'utf-8'),
+                            extensions=MARKDOWN_EXTENSIONS
                         )
+
+                        github_url = 'https://github.com/PaddlePaddle/models/tree/'
+                        soup = BeautifulSoup(html, 'lxml')
+                        all_local_links = soup.select('a[href^=%s]' % github_url)
+                        for link in all_local_links:
+                            link_path, md_extension = os.path.splitext(link['href'])
+
+                            # Remove the github link and version.
+                            link_path = link_path.replace(github_url, '')
+                            link_path = re.sub(r"^v?[0-9]+\.[0-9]+\.[0-9]+/|^develop/", '', link_path)
+
+                            # TODO[thuan]:  Since all markdown are named README.md, we need to hardcode this for now, regardless of language.
+                            # We need to communicate this with the team to get it corrected
+                            if not md_extension:
+                                link['href'] = link_path + '/README.html'
+
+                        try:
+                            # NOTE: The 6:-7 removes the opening and closing body tag.
+                            new_html_partial.write('{% verbatim %}\n' + unicode(
+                                str(soup.select('body')[0])[6:-7], 'utf-8'
+                            ) + '\n{% endverbatim %}')
+                        except:
+                            print 'Cannot generated a page for: ' + subpath
+
 
             elif 'images' in subpath:
                 shutil.copyfile(os.path.join(subdir, file), new_path)
