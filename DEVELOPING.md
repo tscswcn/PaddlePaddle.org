@@ -69,21 +69,17 @@ Please see [Deployment Guide](DEPLOY.md) for more details.
 
 ## Local Developing Modes:
 
-PaddlePaddle.org 
+PaddlePaddle.org has 3 modes. 
+- 'Website Mode': just runs the website.
+- 'Doc Editor Mode': PPO can be used as a tool for documentation creators to generate and view their documentation on their local machine.()
+- 'Doc Viewer Mode': PPO can be used as a standalone document viewer for PaddlePaddle.
 
-- **Website Mode**:  
-  - ENV=development
-  - CONTENT_DIR=\<the dir where content repos sit\>
-  - SECRET_KEY=SHOULDBEASTRING
-     
-- **Doc Editor Mode**:
-  - NO ENV should be set
-  - CONTENT_DIR=\<the dir where content repos sit\>
-  - HAS_MOUNT=1
-  
-- **Doc Viewer Mode**:
-  - NO ENV should be set
-  - HAS_MOUNT=0
+| Mode | Environment Variable |
+| :-----------: |:------------------:|
+Website | ENV=(development or production) \n CONTENT_DIR=\<the dir where content repos sit\> \n SECRET_KEY=SHOULDBEASTRING |
+Doc Editor | NO ENV should be set \n CONTENT_DIR=\<the dir where content repos sit\> \n HAS_MOUNT=1 |
+Doc Viewer | NO ENV should be set \n HAS_MOUNT=0 |
+
 
 ### Production environment
 
