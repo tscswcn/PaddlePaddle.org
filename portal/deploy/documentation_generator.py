@@ -18,7 +18,7 @@ MARKDOWN_EXTENSIONS = [
 ]
 
 
-def enhance_markdown(markdown_body):
+def sanitize_markdown(markdown_body):
     """
     There are some symbols used in the markdown body, which when go through Markdown -> HTML
     conversion, break. This does a global replace on markdown strings for these symbols.
@@ -83,7 +83,7 @@ def generate_models_docs(original_documentation_dir, output_dir_name):
             if '.md' in file:
                 # Convert the contents of the MD file.
                 with open(os.path.join(subdir, file)) as original_md_file:
-                    markdown_body = enhance_markdown(original_md_file.read())
+                    markdown_body = sanitize_markdown(original_md_file.read())
 
                     with codecs.open(new_path, 'w', 'utf-8') as new_html_partial:
                         # Strip out the wrapping HTML
@@ -149,7 +149,7 @@ def generate_mobile_docs(original_documentation_dir, output_dir_name):
             if '.md' in file:
                 # Convert the contents of the MD file.
                 with open(os.path.join(subdir, file)) as original_md_file:
-                    markdown_body = enhance_markdown(original_md_file.read())
+                    markdown_body = sanitize_markdown(original_md_file.read())
 
                     with codecs.open(new_path, 'w', 'utf-8') as new_html_partial:
                         # Strip out the wrapping HTML
@@ -233,7 +233,7 @@ def generate_book_docs(original_documentation_dir, output_dir_name):
                 if '.md' in file:
                     # Convert the contents of the MD file.
                     with open(os.path.join(subdir, file)) as original_md_file:
-                        markdown_body = enhance_markdown(original_md_file.read())
+                        markdown_body = sanitize_markdown(original_md_file.read())
 
                     # Mathjax formula like $n$ would cause the conversion from markdown to html
                     # mal-formatted. So we first store the existing formulas to formula_map and replace
