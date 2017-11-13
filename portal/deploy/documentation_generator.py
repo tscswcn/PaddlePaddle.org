@@ -25,10 +25,10 @@ def sanitize_markdown(markdown_body):
     """
     return markdown_body.replace(
         # This is to solve the issue where <s> and <e> are interpreted as HTML tags
-        '\<s>', '&lt;s&gt;').replace(
-        '\<e>', '&lt;e&gt;').replace(
         '&lt;', '<').replace(
-        '&gt;', '>')
+        '&gt;', '>').replace(
+        '\<s>', '&lt;s&gt;').replace(
+        '\<e>', '&lt;e&gt;')
 
 
 def generate_paddle_docs(original_documentation_dir, output_dir_name):
