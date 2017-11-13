@@ -67,6 +67,17 @@ PaddlePaddle.org utilizes Travis-CI to provide for a continuous integration test
 
 Please see [Deployment Guide](DEPLOY.md) for more details.
 
+## Local Developing Modes:
+
+PaddlePaddle.org has 3 modes. 
+
+| Mode | Environment Variable | Description |
+| :----------- | :------------------------------------------------------------------------------------ | :------------------ |
+Website | ENV=(development or production) <br> CONTENT_DIR=\<the dir where content repos sit\> <br> SECRET_KEY=SHOULDBEASTRING | just runs the website. |
+Doc Editor | NO ENV should be set <br> CONTENT_DIR=\<the dir where content repos sit\> <br> HAS_MOUNT=1 | PPO can be used as a tool for documentation <br> creators to generate and view their <br> documentation on their local machine. | 
+Doc Viewer | NO ENV should be set <br> HAS_MOUNT=0 | PPO can be used as a standalone document <br> viewer for PaddlePaddle. |
+
+
 ### Production environment
 
 The production server for PaddlePaddle.org is an AWS-Asia-hosted Ubuntu 16.04 server running the website in a Docker instance, which can be scaled using AWS's load balancer as per need and traffic. Content is deployed into a persistent block storage volume that gets "mounted" to the Docker instance (through the VM), and updated through the a VM mount during continuous integration builds.
