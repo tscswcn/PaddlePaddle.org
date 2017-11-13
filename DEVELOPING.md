@@ -74,8 +74,8 @@ PaddlePaddle.org has 3 modes.
 | Mode | Environment Variable | Description |
 | :----------- | :------------------------------------------------------------------------------------ | :------------------ |
 Website | ENV=(development or production) <br> CONTENT_DIR=\<the dir where content repos sit\> <br> SECRET_KEY=SHOULDBEASTRING | just runs the website. |
-Doc Editor | NO ENV should be set <br> CONTENT_DIR=\<the dir where content repos sit\> <br> HAS_MOUNT=1 | PPO can be used as a tool for documentation creators to generate and view their documentation on their local machine. | 
-Doc Viewer | NO ENV should be set <br> HAS_MOUNT=0 | PPO can be used as a standalone document viewer for PaddlePaddle. |
+Doc Editor | NO ENV should be set <br> CONTENT_DIR=\<the dir where content repos sit\> <br> HAS_MOUNT=1 | PPO can be used as a tool for documentation creators <br> to generate and view their documentation on their local machine. | 
+Doc Viewer | NO ENV should be set <br> HAS_MOUNT=0 | PPO can be used as a standalone document viewer for <br> PaddlePaddle. |
 
 
 ### Production environment
