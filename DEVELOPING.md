@@ -71,7 +71,7 @@ Please see [Deployment Guide](DEPLOY.md) for more details.
 
 PaddlePaddle.org has 3 modes. 
 - 'Website Mode': just runs the website.
-- 'Doc Editor Mode': PPO can be used as a tool for documentation creators to generate and view their documentation on their local machine.()
+- 'Doc Editor Mode': PPO can be used as a tool for documentation creators to generate and view their documentation on their local machine.
 - 'Doc Viewer Mode': PPO can be used as a standalone document viewer for PaddlePaddle.
 
 | Mode | Environment Variable |
