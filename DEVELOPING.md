@@ -75,7 +75,7 @@ PaddlePaddle.org has 3 modes.
 - 'Doc Viewer Mode': PPO can be used as a standalone document viewer for PaddlePaddle.
 
 | Mode | Environment Variable |
-| :-----------: |:------------------:|
+| :----------- |:------------------|
 Website | ENV=(development or production) <br> CONTENT_DIR=\<the dir where content repos sit\> <br> SECRET_KEY=SHOULDBEASTRING |
 Doc Editor | NO ENV should be set <br> CONTENT_DIR=\<the dir where content repos sit\> <br> HAS_MOUNT=1 |
 Doc Viewer | NO ENV should be set <br> HAS_MOUNT=0 |
