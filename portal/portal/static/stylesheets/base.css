@@ -1,81 +1,50 @@
 @media (max-width: 550px) {
-  /* line 5, ../sass/base.sass */
+  /* line 5, ../sass/base.scss */
   .skeleton .u-pull-right {
     float: left;
   }
 }
-/* line 8, ../sass/base.sass */
+/* line 9, ../sass/base.scss */
 .bg-primary {
   background-color: #597cf1 !important;
 }
 
-/* line 12, ../sass/base.sass */
-body, h1, h2, h3, h4, h5, h6, p, blockquote, pre, hr, dl, dd, ol, ul, figure {
-  font: 14px 16px "Roboto", "Lato", "proxima-nova", "Helvetica Neue", Arial, sans-serif;
+/* line 13, ../sass/base.scss */
+body, h1, h2, h3, h4, h5, h6,
+p, blockquote, pre, hr,
+dl, dd, ol, ul, figure {
+  font: 400 16px tahoma, arial, Hiragino Sans GB, Microsoft YaHei;
 }
 
-/* line 15, ../sass/base.sass */
+/* line 19, ../sass/base.scss */
 body {
   background-color: #fff;
 }
 
-/* line 20, ../sass/base.sass */
+/* line 24, ../sass/base.scss */
 .row-no-padding [class*="col-"] {
   padding-left: 0 !important;
   padding-right: 0 !important;
 }
 
-/* line 24, ../sass/base.sass */
+/* line 30, ../sass/base.scss */
 a {
   color: #597cf1;
   text-decoration: none;
   cursor: pointer;
 }
-/* line 29, ../sass/base.sass */
+/* line 35, ../sass/base.scss */
 a:visited, a:hover {
   color: #597cf1;
   text-decoration: none;
   cursor: pointer;
 }
 
-/* line 34, ../sass/base.sass */
+/* line 42, ../sass/base.scss */
 .btn-default {
   margin: 4px;
   color: #333;
   border-color: #ccc;
 }
 
-/* line 39, ../sass/base.sass */
-.fixed-left {
-  position: relative;
-  overflow: hidden;
-}
-
-/* line 43, ../sass/base.sass */
-.fixed-right {
-  position: relative;
-  overflow: hidden;
-}
-
-/* line 47, ../sass/base.sass */
-input:focus, select:focus, textarea:focus, button:focus {
-  outline: none;
-}
-
-@media (min-width: 992px) {
-  /* line 51, ../sass/base.sass */
-  .fixed-left {
-    position: fixed;
-    left: 0;
-    z-index: 1020;
-    overflow: auto;
-  }
-
-  /* line 57, ../sass/base.sass */
-  .fixed-right {
-    position: fixed;
-    right: 0;
-    z-index: 1020;
-    overflow: auto;
-  }
-}
+/*# sourceMappingURL=home.css.map*/

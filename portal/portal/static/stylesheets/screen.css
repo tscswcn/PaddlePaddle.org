@@ -324,16 +324,15 @@ body.invert .footer-nav {
   margin: 0;
   display: block;
   width: 100%;
-  height: 100%;
   margin: 30px 16px 0 16px;
 }
-/* line 209, ../sass/navigation.sass */
+/* line 208, ../sass/navigation.sass */
 .permalinks-nav ol, .permalinks-nav ul {
   padding-left: 12px;
   margin-bottom: 0px;
   border-left: 2px solid #000;
 }
-/* line 214, ../sass/navigation.sass */
+/* line 213, ../sass/navigation.sass */
 .permalinks-nav ol a, .permalinks-nav ul a {
   width: 100%;
   display: block;
@@ -342,42 +341,43 @@ body.invert .footer-nav {
   overflow: hidden;
   color: #000;
 }
-/* line 221, ../sass/navigation.sass */
+/* line 220, ../sass/navigation.sass */
 .permalinks-nav ol a:hover, .permalinks-nav ol a.active, .permalinks-nav ul a:hover, .permalinks-nav ul a.active {
   color: #597cf1;
 }
-/* line 225, ../sass/navigation.sass */
+/* line 224, ../sass/navigation.sass */
 .permalinks-nav ol li a, .permalinks-nav ul li a {
   padding-left: 15px;
 }
 
 @media (min-width: 992px) {
-  /* line 230, ../sass/navigation.sass */
+  /* line 229, ../sass/navigation.sass */
   .panel-layout .sidebar-container {
     display: inline;
     width: 300px;
     float: left;
   }
-  /* line 235, ../sass/navigation.sass */
+  /* line 234, ../sass/navigation.sass */
   .panel-layout .sidebar-container .sidebar {
     top: 60px;
     width: 300px;
     padding-bottom: 120px;
   }
-  /* line 240, ../sass/navigation.sass */
+  /* line 239, ../sass/navigation.sass */
   .panel-layout .panel-content {
     margin-left: 300px;
   }
 
-  /* line 243, ../sass/navigation.sass */
+  /* line 242, ../sass/navigation.sass */
   .with-permalink-nav {
     width: -moz-calc(100% - 200px);
     width: -webkit-calc(100% - 200px);
     width: calc(100% - 200px);
   }
 
-  /* line 246, ../sass/navigation.sass */
+  /* line 245, ../sass/navigation.sass */
   .permalinks-nav {
+    height: 100%;
     width: 200px;
     float: right;
     padding-left: 0px;
