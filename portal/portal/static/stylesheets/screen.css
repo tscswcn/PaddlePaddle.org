@@ -306,12 +306,13 @@ body.invert .footer-nav {
 .panel-layout .panel-content .panel-inner {
   display: block;
 }
+
 /* line 192, ../sass/navigation.sass */
-.panel-layout .panel-content .panel-inner .doc-content {
+.doc-content {
   display: block;
 }
 /* line 195, ../sass/navigation.sass */
-.panel-layout .panel-content .panel-inner .doc-content h1:before, .panel-layout .panel-content .panel-inner .doc-content h2:before {
+.doc-content h1:before, .doc-content h2:before {
   display: block;
   content: " ";
   margin-top: -60px;
