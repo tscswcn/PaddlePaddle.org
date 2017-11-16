@@ -306,6 +306,11 @@ def home_root(request):
         return render(request, 'index.html')
 
 
+def cn_home_root(request):
+    portal_helper.set_preferred_language(request, None, 'zh')
+    return redirect('/')
+
+
 def download_latest_doc_workspace(request):
     portal_helper.download_and_extract_workspace()
     return redirect('/')
