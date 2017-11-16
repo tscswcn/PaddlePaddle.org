@@ -28,7 +28,7 @@ urlpatterns = [
     # HOME PAGE URLS
     # ---------------
     url(r'^$', views.home_root, name='home'),
-    url(r'^index.cn.html$', views.cn_home_root, name='home'),
+    url(r'^index.cn.html', views.cn_home_root, name='home'),
 
     # ---------------
     # BLOG URLS

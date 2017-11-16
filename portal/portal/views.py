@@ -307,8 +307,9 @@ def home_root(request):
 
 
 def cn_home_root(request):
-    portal_helper.set_preferred_language(request, None, 'zh')
-    return redirect('/')
+    response = redirect('/')
+    portal_helper.set_preferred_language(request, response, 'zh')
+    return response
 
 
 def download_latest_doc_workspace(request):

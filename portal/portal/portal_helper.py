@@ -69,8 +69,7 @@ def set_preferred_language(request, response, lang):
     Sets the preferred documentation version in the user's session AND cookie.
     """
     request.session[LANGUAGE_SESSION_KEY] = lang
-    if response:
-        response.set_cookie(settings.LANGUAGE_COOKIE_NAME, lang)
+    response.set_cookie(settings.LANGUAGE_COOKIE_NAME, lang)
     request.session.modified = True
 
 
