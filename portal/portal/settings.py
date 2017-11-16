@@ -66,7 +66,7 @@ DEFAULT_DOCS_VERSION = 'develop' if CURRENT_PPO_MODE != PPO_MODES.DOC_EDIT_MODE 
 if DEBUG:
     ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 else:
-    ALLOWED_HOSTS = ['.paddlepaddle.org', '.ap-southeast-1.compute.amazonaws.com']
+    ALLOWED_HOSTS = ['.paddlepaddle.org', '.ap-southeast-1.elb.amazonaws.com', '.ap-southeast-1.compute.amazonaws.com']
 
 # Application definition
 
