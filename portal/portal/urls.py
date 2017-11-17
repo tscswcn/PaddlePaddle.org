@@ -33,8 +33,9 @@ urlpatterns = [
     # ---------------
     # BLOG URLS
     # ---------------
-    url(r'^%s$' % url_helper.BLOG_ROOT, views.blog_root, name=url_helper.URL_NAME_BLOG_ROOT),
-    url(r'^%s(?P<path>.+html)$' % url_helper.BLOG_ROOT, views.blog_sub_path),
+    # NOTE: Temporary remove the links to Blog. Wait until we have more contents.
+    # url(r'^%s$' % url_helper.BLOG_ROOT, views.blog_root, name=url_helper.URL_NAME_BLOG_ROOT),
+    # url(r'^%s(?P<path>.+html)$' % url_helper.BLOG_ROOT, views.blog_sub_path),
 
     # -------------------
     # OTHER ARBITRARY URLS
