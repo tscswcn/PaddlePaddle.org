@@ -10,6 +10,8 @@ import markdown
 import re
 
 from deploy.operators import generate_operators_page
+from deploy.utils import reserve_formulas
+
 
 MARKDOWN_EXTENSIONS = [
     'markdown.extensions.tables',
@@ -183,19 +185,6 @@ def generate_mobile_docs(original_documentation_dir, output_dir_name):
                 shutil.copyfile(os.path.join(subdir, file), new_path)
 
     return destination_documentation_dir
-
-
-def reserve_formulas(markdown_body, formula_map):
-    """
-    Store the math formulas to formula_map before markdown conversion
-    """
-    place_holder = '<span class="markdown-equation" id="equation-%s"></span>'
-    m = re.findall('(\$\$?[^\$]+\$?\$)', markdown_body)
-    for i in xrange(len(m)):
-        formula_map['equation-' + str(i)] = m[i]
-        markdown_body = markdown_body.replace(m[i], place_holder % i)
-
-    return markdown_body
 
 
 def generate_book_docs(original_documentation_dir, output_dir_name):
