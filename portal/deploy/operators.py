@@ -6,10 +6,11 @@ import codecs
 from bs4 import BeautifulSoup
 from django.template import Template, Context
 
+from deploy.utils import reserve_formulas
 
 OPERATOR_TEMPLATE = '<div class="section" id="{{ type }}">' + (
         '<h2>{{ type }}</h2>') + (
-        '<dl class="function"><dd>{% for comment_line in comment %}<p>{{ comment_line }}</p>{% endfor %}') + (
+        '<dl class="function"><dd>{% for comment_line in comment %}<p>{{ comment_line|safe }}</p>{% endfor %}') + (
             '<table class="docutils field-list">') + (
                 '<colgroup><col class="field-name"><col class="field-body"></colgroup>') + (
                 '<tbody valign="top">') + (
@@ -58,12 +59,28 @@ def generate_operators_page(raw_operators_api, destination_dir):
 
         for operator in operators:
             if 'comment' in operator:
-                operator_comment_lines = operator['comment'].split('\n')
+
+                formula_map = {}
+                comment = reserve_formulas(operator['comment'], formula_map,
+                                           only_reserve_double_dollar=True)
+
+                operator_comment_lines = comment.split('\n')
 
                 operator_comment = []
                 for operator_comment_line in operator_comment_lines:
                     if len(operator_comment_line) > 0:
-                        operator_comment.append(operator_comment_line)
+                        if 'markdown-equation' in operator_comment_line:
+                            soup = BeautifulSoup('<p>' + operator_comment_line + '</p>', 'lxml')
+                            markdown_equation_placeholders = soup.select('.markdown-equation')
+
+                            for equation in markdown_equation_placeholders:
+                                equation.string = formula_map[equation.get('id')]
+
+                            operator_comment.append(unicode(
+                                str(soup.select('body')[0])[6:-7], 'utf-8'
+                            ))
+                        else:
+                            operator_comment.append(operator_comment_line)
 
                 operator['comment'] = operator_comment
 
