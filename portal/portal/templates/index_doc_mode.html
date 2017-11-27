@@ -33,6 +33,9 @@ git clone git@github.com:PaddlePaddle/models.git</pre>
         <div class="btn-container col-lg-3">
             <a class="btn btn-light" href="{% url 'reload_docs' %}?folder_name={{ folder_name }}" onclick="return showFullpageSpinnerForContentId('{{ folder_name }}');">{{ folder_name }}</a>
         </div>
+        {% if folder_name == 'Paddle' %}
+        {% include '_paddle_operators_reload_modal.html' %}
+        {% endif %}
         {% endfor %}
 
         {% endif %}

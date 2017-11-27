@@ -2,6 +2,7 @@ import json
 import os
 import collections
 import traceback
+import shutil
 
 from django.conf import settings
 from django.core.cache import cache
@@ -269,6 +270,6 @@ def get_external_file_path(sub_path):
 def remove_all_resolved_sitemaps():
     try:
         if os.path.exists(settings.RESOLVED_SITEMAP_DIR):
-            os.rmdir(settings.RESOLVED_SITEMAP_DIR)
+            shutil.rmtree(settings.RESOLVED_SITEMAP_DIR)
     except os.error as e:
         print 'Cannot remove resolved sitemaps: %s' % e
