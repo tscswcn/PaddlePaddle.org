@@ -13,11 +13,19 @@ from django.views import static
 from django.template import TemplateDoesNotExist
 from django.core.cache import cache
 from django.http import JsonResponse
+from django import forms
 
 from portal import sitemap_helper, portal_helper, url_helper
 from deploy.documentation import transform, fetch_and_transform
+from deploy.sitemap_generator import get_destination_documentation_dir, generate_operators_sitemap
+from deploy.operators import generate_operators_page
 from portal import url_helper
 from portal_helper import Content
+
+
+class PaddleOperatorsForm(forms.Form):
+    operatorsJson = forms.CharField(widget=forms.Textarea, required=True, label='Operators JSON')
+
 
 def change_version(request):
     """
@@ -288,8 +296,26 @@ def _get_static_content_from_template(path):
 
 def home_root(request):
     if settings.CURRENT_PPO_MODE == settings.PPO_MODES.DOC_EDIT_MODE:
+        if request.method == 'POST':
+            form = PaddleOperatorsForm(request.POST)
+
+            if form.is_valid():
+                print 'PROCESSING PADDLE OPERATORS'
+                output_path = get_destination_documentation_dir('doc_test', 'documentation')
+                generate_operators_page(form['operatorsJson'].data, output_path)
+
+                for lang in ['en', 'zh']:
+                    generate_operators_sitemap(output_path, lang)
+
+                sitemap_helper.remove_all_resolved_sitemaps()
+
+                return redirect('/docs/%s/documentation/en/operators.html' % settings.DEFAULT_DOCS_VERSION)
+        else:
+            form = PaddleOperatorsForm()
+
         context = {
-            'folder_names': portal_helper.get_available_doc_folder_names()
+            'folder_names': portal_helper.get_available_doc_folder_names(),
+            'form': form
         }
         return render(request, 'index_doc_mode.html', context)
 

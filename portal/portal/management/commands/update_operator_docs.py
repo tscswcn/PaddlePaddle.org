@@ -8,7 +8,7 @@ import docker
 
 from deploy.operators import generate_operators_page
 from deploy.sitemap_generator import get_destination_documentation_dir, get_sitemap_destination_path, \
-    get_operator_sitemap_name
+    get_operator_sitemap_name, generate_operators_sitemap
 
 
 DOCKER_IMAGE_NAME_TEMPLATE = 'paddlepaddle/paddle:%s'
@@ -68,27 +68,7 @@ class Command(BaseCommand):
 
             print 'Generating operators sitemap...'
             for lang in ['en', 'zh']:
-                self._generate_sitemap(output_path, lang)
+                generate_operators_sitemap(output_path, lang)
 
         except Exception as e:
             print 'Cannot update operator docs for path %s: %s' % (path, e)
-
-
-    def _generate_sitemap(self, versioned_dest_dir, lang):
-        sitemap_ouput_path = '%s/%s' % (versioned_dest_dir, get_operator_sitemap_name(lang))
-
-        sitemap = {
-            'title': {
-                # TODO(Jeff): Translate word to Chinese.
-                lang: 'Operators' if lang == 'en' else 'Operators'
-            },
-            'link': {
-                lang: '/documentation/%s/operators.html' % (lang)
-            },
-            'links': [
-                '/documentation/%s/operators.html' % (lang)
-            ]
-        }
-
-        with open(sitemap_ouput_path, 'w') as outfile:
-            json.dump(sitemap, outfile)
