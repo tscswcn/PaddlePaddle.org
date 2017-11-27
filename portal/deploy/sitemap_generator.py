@@ -294,3 +294,23 @@ def mobile_sitemap(original_documentation_dir, generated_documentation_dir, vers
     sitemap_path = get_sitemap_destination_path(versioned_dest_dir, 'en')
     with open(sitemap_path, 'w') as outfile:
         json.dump(sitemap, outfile)
+
+
+def generate_operators_sitemap(versioned_dest_dir, lang):
+    sitemap_ouput_path = '%s/%s' % (versioned_dest_dir, get_operator_sitemap_name(lang))
+
+    sitemap = {
+        'title': {
+            # TODO(Jeff): Translate word to Chinese.
+            lang: 'Operators' if lang == 'en' else 'Operators'
+        },
+        'link': {
+            lang: '/documentation/%s/operators.html' % (lang)
+        },
+        'links': [
+            '/documentation/%s/operators.html' % (lang)
+        ]
+    }
+
+    with open(sitemap_ouput_path, 'w') as outfile:
+        json.dump(sitemap, outfile)
