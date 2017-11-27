@@ -61,7 +61,7 @@ class Command(BaseCommand):
             client.images.pull(docker_image_name)
 
             print 'Generating operator docs...'
-            operator_doc_json_string = client.containers.run(docker_image_name, 'print_operators_doc')
+            operator_doc_json_string = client.containers.run(docker_image_name, 'print_operators_doc 2>/dev/null')
 
             output_path = get_destination_documentation_dir(version, 'documentation')
             generate_operators_page(operator_doc_json_string, output_path)
