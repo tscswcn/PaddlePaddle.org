@@ -13,13 +13,10 @@ You may fork or clone this repository, or begin asking questions and providing f
 **Prerequisites**:  Docker is required in order to run PaddlePaddle.org doucmentation viewer.
 [Install Docker Here](https://docs.docker.com/engine/installation/).
 
-PaddlePaddle.org not only powers [http://paddlepaddle.org](http://paddlepaddle.org), it can be used as a tool for documentation creators to generate and view their documentation on their local machine.  To run PaddlePaddle.org as a Document tool, please take a look of the  tutorial video or follow the instructions below:
+PaddlePaddle.org not only powers [http://paddlepaddle.org](http://paddlepaddle.org), it can be used as a tool for documentation creators to generate and view their documentation on their local machine.  To run PaddlePaddle.org as a Document tool, please take a look of the [tutorial video](https://github.com/bobateadev/images/raw/master/viewer_tool_demo.mp4) or follow the instructions below:
 
 ### Documentation Viewer Only Tool
 
-##### Video Tutorial
-https://github.com/bobateadev/images/raw/master/viewer_tool_demo_cn.mp4 (Chinese version)
-https://github.com/bobateadev/images/raw/master/viewer_tool_demo.mp4 (English version)
 #### 1) Run PaddlePaddle.org Docker Image. 
 ```
 docker run -it -p 8000:8000 paddlepaddle/paddlepaddle.org:latest
@@ -56,6 +53,29 @@ Now your directories should look like:
 docker run -it -p 8000:8000 -v `pwd`:/var/content paddlepaddle/paddlepaddle.org:latest
 ```
 
+#### 3) Open up your browser and navigate to [http://localhost:8000](http://localhost:8000).
+
+### Don't want to use Docker?
+You can also run through Django framework directly to activate the tool server. Use the following commands to run it.
+
+#### 1) Clone Paddle repositories 
+```
+mkdir paddlepaddle
+cd paddlepaddle
+git clone git@github.com:PaddlePaddle/Paddle.git
+git clone git@github.com:PaddlePaddle/book.git
+git clone git@github.com:PaddlePaddle/models.git
+git clone git@github.com:PaddlePaddle/PaddlePaddle.org.git
+```
+
+#### 2) Run PaddlePaddle.org through Django within the *paddlepaddle* directory.
+```
+export CONTENT_DIR=<path_to_paddlepaddle_working_directory> 
+export ENV=''
+cd PaddlePaddle.org/portal/
+pip install -r requirements.txt
+python manage.py runserver
+```
 #### 3) Open up your browser and navigate to [http://localhost:8000](http://localhost:8000).
 
 ## Additional Resources
