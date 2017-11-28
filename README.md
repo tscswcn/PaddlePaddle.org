@@ -58,6 +58,29 @@ docker run -it -p 8000:8000 -v `pwd`:/var/content paddlepaddle/paddlepaddle.org:
 
 #### 3) Open up your browser and navigate to [http://localhost:8000](http://localhost:8000).
 
+### Don't want to use Docker?
+You can also run through Django framework directly to activate the tool server. Use the following commends to run it.
+
+#### 1) Clone Paddle repositories 
+```
+mkdir paddlepaddle
+cd paddlepaddle
+git clone git@github.com:PaddlePaddle/Paddle.git
+git clone git@github.com:PaddlePaddle/book.git
+git clone git@github.com:PaddlePaddle/models.git
+git clone git@github.com:PaddlePaddle/PaddlePaddle.org.git
+```
+
+#### 2) Run PaddlePaddle.org through Django within the *paddlepaddle* directory.
+```
+export CONTENT_DIR=<path_to_paddlepaddle_working_directory> 
+export ENV=''
+cd PaddlePaddle.org/portal/
+pip install -r requirements.txt
+python manage.py runserver
+```
+#### 3) Open up your browser and navigate to [http://localhost:8000](http://localhost:8000).
+
 ## Additional Resources
 - To develop on PaddlePaddle.org, please refer to [Development Guide](DEVELOPING.md)
 - Information about how content repositories are structured and consumed: [Content repositories](CONTENT_REPO.md)
