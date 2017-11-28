@@ -56,7 +56,7 @@ docker run -it -p 8000:8000 -v `pwd`:/var/content paddlepaddle/paddlepaddle.org:
 #### 3) Open up your browser and navigate to [http://localhost:8000](http://localhost:8000).
 
 ### Don't want to use Docker?
-You can also run through Django framework directly to activate the tool server. Use the following commends to run it.
+You can also run through Django framework directly to activate the tool server. Use the following commands to run it.
 
 #### 1) Clone Paddle repositories 
 ```

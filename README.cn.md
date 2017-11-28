@@ -1,6 +1,6 @@
 # PaddlePaddle.org
 
-**PaddlePaddle.org** 是库网站 [PaddlePaddle](https://github.com/PaddlePaddle/Paddle) 的开源项目：一个易于使用的，高效的，可扩展的分布式平台的深度学习。我们的目标是提供一个统一的网络 访问所有代码和PaddlePaddle项目相关的文档。该网站的目的是产生均匀的用户体验和提供关于PaddlePaddle最新的信息。
+**PaddlePaddle.org** 是库网站 [PaddlePaddle](https://github.com/PaddlePaddle/Paddle) 的开源项目：一个易于使用的，高效的，可扩展的分布式平台的深度学习。我们的目标是提供一个统一的网络 访问所有代码和PaddlePaddle项目相关的文档。该网站的目的是给用户提供统一一致的用户体验和提供关于PaddlePaddle最新的信息。
 ## 贡献 PaddlePaddle.org
 
 我们感謝各个方面的贡献。
@@ -12,7 +12,7 @@
 **前提**: 我们推荐使用 Docker 来执行文档生成和查看器工具
 [安装Docker](https://docs.docker.com/engine/installation/).
 
-paddlepaddle.org不仅权架构 [http://paddlepaddle.org](http://paddlepaddle.org)，它也可以生成文件并在本地机器上查看文档。运行文档工具，请看看 [视频教程](https://github.com/bobateadev/images/raw/master/viewer_tool_demo_cn.mp4)
+paddlepaddle.org不仅可以运行 [http://paddlepaddle.org](http://paddlepaddle.org)，它也可以生成文件并在本地机器上查看文档。运行文档工具，请看看 [视频教程](https://github.com/bobateadev/images/raw/master/viewer_tool_demo_cn.mp4)
 或按照下面的说明：
 
 ### 文档查看器工具
