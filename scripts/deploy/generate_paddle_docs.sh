@@ -24,6 +24,7 @@ fi
 # Compile Documentation only.
 cmake "$DOCS_LOCATION" -DCMAKE_Fortran_COMPILER=gfortran -DCMAKE_BUILD_TYPE=Debug -DWITH_GPU=OFF -DWITH_MKLDNN=OFF -DWITH_MKLML=OFF -DWITH_DOC=ON
 make -j $processors gen_proto_py
+make -j $processors paddle_python
 make -j $processors paddle_docs paddle_docs_cn
 
 mkdir -p $DESTINATION_DIR
