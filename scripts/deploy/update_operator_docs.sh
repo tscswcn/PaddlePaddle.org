@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-git clone git@github.com:PaddlePaddle/Paddle.git
+git clone https://github.com/PaddlePaddle/Paddle.git
 cd Paddle
 docker run -it -v `pwd`:/paddle paddlepaddle/paddle:latest-dev bash
 cd /paddle
