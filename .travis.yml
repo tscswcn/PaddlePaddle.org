@@ -22,7 +22,7 @@ before_install:
   - chmod +x scripts/travis/build-docker.sh scripts/travis/deploy-image.sh scripts/travis/upload_workspace_to_s3.sh
 script:
   - |
-    if [ "$TRAVIS_EVENT_TYPE" == "cron" ]; then $TRAVIS_BUILD_DIR/scripts/travis/upload_workspace_to_s3.sh; exit 0; fi;
+    if [ "$TRAVIS_EVENT_TYPE" == "cron" ]; then $TRAVIS_BUILD_DIR/scripts/travis/upload_workspace_to_s3.sh; $TRAVIS_BUILD_DIR/scripts/deploy/update_operator_docs.sh; exit 0; fi;
     ./scripts/travis/build-docker.sh
     ./scripts/travis/deploy-image.sh
 notifications:
