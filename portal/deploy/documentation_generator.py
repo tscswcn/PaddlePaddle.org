@@ -10,14 +10,7 @@ import markdown
 import re
 
 from deploy.operators import generate_operators_page
-from deploy.utils import reserve_formulas
-
-
-MARKDOWN_EXTENSIONS = [
-    'markdown.extensions.tables',
-    'pymdownx.superfences',
-    'pymdownx.escapeall'
-]
+from deploy.utils import reserve_formulas, MARKDOWN_EXTENSIONS
 
 
 def sanitize_markdown(markdown_body):
