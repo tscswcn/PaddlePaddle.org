@@ -1,6 +1,12 @@
 import re
 
 
+MARKDOWN_EXTENSIONS = [
+    'markdown.extensions.tables',
+    'pymdownx.superfences',
+    'pymdownx.escapeall'
+]
+
 def reserve_formulas(markdown_body, formula_map, only_reserve_double_dollar=False):
     """
     Store the math formulas to formula_map before markdown conversion
@@ -16,4 +22,3 @@ def reserve_formulas(markdown_body, formula_map, only_reserve_double_dollar=Fals
         markdown_body = markdown_body.replace(m[i], place_holder % i)
 
     return markdown_body
-

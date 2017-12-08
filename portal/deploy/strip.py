@@ -60,7 +60,7 @@ def sphinx(generated_documentation_dir, version, output_dir_name):
                         new_path_map[version][subpath_language_dir]
                         + subpath[len(subpath_language_dir):])
 
-                    if '.html' in file or '_images' in subpath or '.txt' in file:
+                    if '.html' in file or '_images' in subpath or '.txt' in file or '.json' in file:
                         if not os.path.exists(os.path.dirname(new_path)):
                             os.makedirs(os.path.dirname(new_path))
 
@@ -77,7 +77,7 @@ def sphinx(generated_documentation_dir, version, output_dir_name):
                             document = soup.select('div.document')[0]
                         with open(new_path, 'w') as new_html_partial:
                             new_html_partial.write(document.encode("utf-8"))
-                    elif '_images' in subpath or '.txt' in file:
+                    elif '_images' in subpath or '.txt' in file or '.json' in file:
                         # Copy to images directory.
                         copyfile(os.path.join(subdir, file), new_path)
                     elif 'searchindex.js' in subpath:
