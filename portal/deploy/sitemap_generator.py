@@ -42,6 +42,9 @@ def sphinx_sitemap(original_documentation_dir, generated_documentation_dir, vers
         with open(sitemap_ouput_path, 'w') as outfile:
             json.dump(sitemap, outfile)
 
+    for lang in ['en', 'zh']:
+        generate_operators_sitemap(versioned_dest_dir, lang)
+
 
 def _create_sphinx_site_map_from_index(index_html_path, language):
     """

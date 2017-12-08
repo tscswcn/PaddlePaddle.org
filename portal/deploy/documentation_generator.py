@@ -9,15 +9,7 @@ from django.conf import settings
 import markdown
 import re
 
-from deploy.operators import generate_operators_page
-from deploy.utils import reserve_formulas
-
-
-MARKDOWN_EXTENSIONS = [
-    'markdown.extensions.tables',
-    'pymdownx.superfences',
-    'pymdownx.escapeall'
-]
+from deploy.utils import reserve_formulas, MARKDOWN_EXTENSIONS
 
 
 def sanitize_markdown(markdown_body):
@@ -108,6 +100,13 @@ def generate_models_docs(original_documentation_dir, output_dir_name):
                             # We need to communicate this with the team to get it corrected
                             if not md_extension:
                                 link['href'] = link_path + '/README.html'
+
+                        # Note: Some files have links to local md files. Change those links to local html files
+                        all_local_links_with_relative_path = soup.select('a[href^=%s]' % './')
+                        for link in all_local_links_with_relative_path:
+                            link_path, md_extension = os.path.splitext(link['href'])
+                            if md_extension == '.md':
+                                link['href'] = link_path + '.html'
 
                         try:
                             # NOTE: The 6:-7 removes the opening and closing body tag.
