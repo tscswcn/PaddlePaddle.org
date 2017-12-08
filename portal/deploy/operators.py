@@ -9,6 +9,7 @@ import markdown
 
 from deploy.utils import reserve_formulas, MARKDOWN_EXTENSIONS
 
+
 OPERATOR_TEMPLATE = '<div class="section" id="{{ type }}">' + (
         '<h2>{{ type }}</h2>') + (
         '<dl class="function"><dd>{{ comment|safe }}') + (
@@ -32,9 +33,23 @@ OPERATOR_TEMPLATE = '<div class="section" id="{{ type }}">' + (
 
 
 OPERATORS_WRAPPER = (
-    '<div class="document"><h1>Operators</h1><div class="section" id="operators">',
-    '</div></div>'
+    '<div class="document">{% verbatim %}<h1>Operators</h1><div class="section" id="operators">',
+    '</div>{% endverbatim %}</div>'
 )
+
+OPERATORS_JSON_PATH_TEMPLATE = '%s/en/html/operators.json'
+
+
+def generate_operators_docs_with_generated_doc_dir(generated_docs_dir, output_dir_name):
+    try:
+        operators_json_path = OPERATORS_JSON_PATH_TEMPLATE % (generated_docs_dir)
+        if not os.path.exists(operators_json_path):
+            raise Exception('operators.json does not exists in %s' % operators_json_path)
+
+        generate_operators_page_with_path(operators_json_path, generated_docs_dir)
+    except Exception, e:
+        print 'Failed to build operator docs because: ', e
+
 
 
 def generate_operators_page_with_path(operators_api_path, destination_dir):
@@ -42,12 +57,12 @@ def generate_operators_page_with_path(operators_api_path, destination_dir):
         # Open the operators API file.
         with open(operators_api_path) as raw_operators_api_file:
             raw_operators_api = raw_operators_api_file.read()
-            generate_operators_page(raw_operators_api, destination_dir)
+            generate_operators_page(raw_operators_api, destination_dir, ['en/html', 'cn/html'])
     except Exception, e:
         print 'Failed to build operator docs because: ', e
 
 
-def generate_operators_page(raw_operators_api, destination_dir):
+def generate_operators_page(raw_operators_api, destination_dir, lang_dirs):
     operators_output = ''
 
     try:
@@ -86,7 +101,7 @@ def generate_operators_page(raw_operators_api, destination_dir):
 
         operators_output += OPERATORS_WRAPPER[1]
 
-        for lang in ['en', 'zh']:
+        for lang in lang_dirs:
             operators_output_path = '%s/%s/operators.html' % (destination_dir, lang)
 
             print 'Saving operators.html to %s' % operators_output_path
@@ -94,7 +109,7 @@ def generate_operators_page(raw_operators_api, destination_dir):
                 os.makedirs(os.path.dirname(operators_output_path))
 
             with codecs.open(operators_output_path, 'w', 'utf-8') as operators_output_file:
-                operators_output_file.write('{% verbatim %}' + operators_output + '{% endverbatim %}')
+                operators_output_file.write(operators_output)
 
     except Exception, e:
         print 'Failed to build operator docs because: ', e

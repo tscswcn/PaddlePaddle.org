@@ -9,7 +9,6 @@ from django.conf import settings
 import markdown
 import re
 
-from deploy.operators import generate_operators_page
 from deploy.utils import reserve_formulas, MARKDOWN_EXTENSIONS
 
 
