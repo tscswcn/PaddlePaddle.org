@@ -302,7 +302,7 @@ def home_root(request):
             if form.is_valid():
                 print 'PROCESSING PADDLE OPERATORS'
                 output_path = get_destination_documentation_dir('doc_test', 'documentation')
-                generate_operators_page(form['operatorsJson'].data, output_path)
+                generate_operators_page(form['operatorsJson'].data, output_path, ['en', 'zh'])
 
                 for lang in ['en', 'zh']:
                     generate_operators_sitemap(output_path, lang)

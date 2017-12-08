@@ -7,6 +7,7 @@ from urlparse import urlparse
 from django.conf import settings
 
 from deploy import documentation_generator, strip, sitemap_generator
+from deploy.operators import generate_operators_docs_with_generated_doc_dir
 from portal import sitemap_helper
 from portal.portal_helper import Content
 from portal import portal_helper
@@ -27,6 +28,7 @@ def transform(original_documentation_dir, generated_docs_dir, version):
         doc_generator = None
         convertor = None
         sm_generator = None
+        post_generator = None
         output_dir_name = None
 
         if original_documentation_dir:
@@ -45,6 +47,7 @@ def transform(original_documentation_dir, generated_docs_dir, version):
             doc_generator = documentation_generator.generate_paddle_docs
             convertor = strip.sphinx
             sm_generator = sitemap_generator.sphinx_sitemap
+            post_generator = generate_operators_docs_with_generated_doc_dir
 
         # Or if this seems like a request to build/transform the book.
         elif content_id == Content.BOOK:
@@ -82,6 +85,10 @@ def transform(original_documentation_dir, generated_docs_dir, version):
             print 'Generating documentation at %s' % original_documentation_dir
             if doc_generator:
                 generated_docs_dir = doc_generator(original_documentation_dir, output_dir_name)
+
+        if post_generator:
+            # Run any post generator steps
+            post_generator(generated_docs_dir, output_dir_name)
 
         print 'Stripping documentation at %s, version %s' % (generated_docs_dir, version)
         if convertor:
