@@ -95,20 +95,13 @@ def generate_models_docs(original_documentation_dir, output_dir_name):
                             # Remove the github link and version.
                             link_path = link_path.replace(github_url, '')
                             link_path = re.sub(r"^v?[0-9]+\.[0-9]+\.[0-9]+/|^develop/", '', link_path)
-
-                            # TODO[thuan]:  Since all markdown are named README.md, we need to hardcode this for now, regardless of language.
-                            # We need to communicate this with the team to get it corrected
-                            if not md_extension:
-                                link['href'] = link_path + '/README.html'
-                            else:
-                                link['href'] = link_path + '.html'
+                            link['href'] = _update_link_path(link_path, md_extension)
 
                         # Note: Some files have links to local md files. Change those links to local html files
                         all_local_links_with_relative_path = soup.select('a[href^=%s]' % './')
                         for link in all_local_links_with_relative_path:
                             link_path, md_extension = os.path.splitext(link['href'])
-                            if md_extension == '.md':
-                                link['href'] = link_path + '.html'
+                            link['href'] = _update_link_path(link_path, md_extension)
 
                         try:
                             # NOTE: The 6:-7 removes the opening and closing body tag.
@@ -161,23 +154,26 @@ def generate_mobile_docs(original_documentation_dir, output_dir_name):
                             extensions=MARKDOWN_EXTENSIONS
                         )
 
-                        # TODO: Go through all URLs, and if their href matches a
-                        # pattern of the Github repo pulled from Mobile,
-                        # Replace it's .md extension with .html.
                         soup = BeautifulSoup(html, 'lxml')
                         all_local_links = soup.select('a[href^="."]')
 
                         for link in all_local_links:
-                            # Since this is a Github repo, the default page should
-                            # pick from a README.md instead of the webserver
-                            # expected index.html.
-                            if link['href'].endswith('/'):
-                                link['href'] += 'README.md'
-
                             link_path, md_extension = os.path.splitext(link['href'])
+                            link['href'] = _update_link_path(link_path, md_extension)
 
-                            if md_extension == '.md':
-                                link['href'] = link_path + '.html'
+                        # There are several links to the Paddle folder.
+                        # We first extract those links and update them according to the languages.
+                        github_url = 'https://github.com/PaddlePaddle/Paddle/blob/develop/doc/'
+                        all_paddle_doc_links = soup.select('a[href^=%s]' % github_url)
+                        for link in all_paddle_doc_links:
+                            link_path, md_extension = os.path.splitext(link['href'])
+                            link_path = _update_link_path(link_path, md_extension)
+                            if link_path.endswith('cn.html'):
+                                link_path = link_path.replace(github_url, '../documentation/zh/')
+                            elif link_path.endswith('en.html'):
+                                link_path = link_path.replace(github_url, '../documentation/en/')
+
+                            link['href'] = link_path
 
                         new_html_partial.write(
                             '{% verbatim %}\n' + unicode(str(soup), 'utf-8') + '\n{% endverbatim %}')
@@ -291,3 +287,16 @@ def _get_destination_documentation_dir(output_dir_name):
     if not os.path.exists(documentation_dir):
         os.makedirs(documentation_dir)
     return documentation_dir
+
+
+def _update_link_path(link_path, md_extension):
+    if link_path.endswith('/'):
+        link_path += 'README.html'
+    elif md_extension == '.md':
+        link_path += '.html'
+    elif md_extension == '':
+        link_path += '/README.html'
+    else:
+        link_path += md_extension
+
+    return link_path
