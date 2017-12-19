@@ -383,7 +383,7 @@ def content_sub_path(request, version, path=None):
     return _render_static_content(request, version, content_id, additional_context)
 
 
-def content_root_path(request, version, path=None):
+def content_root_path(request, version, path):
     content_id = ''
     path = path + '/'
 
