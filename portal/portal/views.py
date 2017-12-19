@@ -383,6 +383,25 @@ def content_sub_path(request, version, path=None):
     return _render_static_content(request, version, content_id, additional_context)
 
 
+def content_root_path(request, version, path):
+    content_id = ''
+    path = path + '/'
+
+    if path == url_helper.DOCUMENTATION_ROOT:
+        content_id = Content.DOCUMENTATION
+
+    elif path == url_helper.BOOK_ROOT:
+        content_id = Content.BOOK
+
+    elif path == url_helper.MODEL_ROOT:
+        content_id = Content.MODELS
+
+    elif path == url_helper.MOBILE_ROOT:
+        content_id = Content.MOBILE
+
+    return _redirect_first_link_in_contents(request, version, content_id)
+
+
 def other_path(request, version, path=None):
     """
     Try to find the template associated with this path.
