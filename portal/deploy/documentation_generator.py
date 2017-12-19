@@ -79,15 +79,26 @@ def generate_models_docs(original_documentation_dir, output_dir_name):
                 with open(os.path.join(subdir, file)) as original_md_file:
                     markdown_body = sanitize_markdown(original_md_file.read())
 
+                    # Preserve all formula
+                    formula_map = {}
+                    markdown_body = reserve_formulas(markdown_body, formula_map)
+
                     with codecs.open(new_path, 'w', 'utf-8') as new_html_partial:
                         # Strip out the wrapping HTML
-                        html = markdown.markdown(
+                        converted_content = markdown.markdown(
                             unicode(markdown_body, 'utf-8'),
                             extensions=MARKDOWN_EXTENSIONS
                         )
 
                         github_url = 'https://github.com/PaddlePaddle/models/tree/'
-                        soup = BeautifulSoup(html, 'lxml')
+
+                        soup = BeautifulSoup(converted_content, 'lxml')
+
+                        # Insert the preserved formulas
+                        markdown_equation_placeholders = soup.select('.markdown-equation')
+                        for equation in markdown_equation_placeholders:
+                            equation.string = formula_map[equation.get('id')]
+
                         all_local_links = soup.select('a[href^=%s]' % github_url)
                         for link in all_local_links:
                             link_path, md_extension = os.path.splitext(link['href'])
