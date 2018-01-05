@@ -12,7 +12,7 @@ from portal import sitemap_helper
 from portal.portal_helper import Content
 from portal import portal_helper
 
-def transform(original_documentation_dir, generated_docs_dir, version):
+def transform(original_documentation_dir, generated_docs_dir, version, options=None):
     """
     Given a raw repo directory contents, perform the following steps (conditional to the repo):
     - Generate the output HTML contents from its source content generator engine.
@@ -84,7 +84,7 @@ def transform(original_documentation_dir, generated_docs_dir, version):
             # If we have not already generated the documentation, then run the document generator
             print 'Generating documentation at %s' % original_documentation_dir
             if doc_generator:
-                generated_docs_dir = doc_generator(original_documentation_dir, output_dir_name)
+                generated_docs_dir = doc_generator(original_documentation_dir, output_dir_name, options)
 
         if post_generator:
             # Run any post generator steps
