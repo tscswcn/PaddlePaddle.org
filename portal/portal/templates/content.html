@@ -86,6 +86,8 @@ MathJax.Hub.Config({
                         '{% trans ". This may take a few minutes, please wait..." %}';
         $('.spinner-container').show();
         $('.spinner-label').text(message);
+
+        $('#paddleOperatorsModal').hide();
         return true;
     }
 
