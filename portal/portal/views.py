@@ -323,6 +323,10 @@ def cn_home_root(request):
     return response
 
 
+def book_home(request):
+    return _redirect_first_link_in_contents(request, 'develop', Content.BOOK)
+
+
 def download_latest_doc_workspace(request):
     portal_helper.download_and_extract_workspace()
     return redirect('/')
