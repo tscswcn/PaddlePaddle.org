@@ -16,6 +16,7 @@ GITHUB_ROOT = 'https://raw.githubusercontent.com'
 URL_NAME_CONTENT_ROOT = 'content_root'
 URL_NAME_CONTENT = 'content_path'
 URL_NAME_BLOG_ROOT = 'blog_root'
+URL_NAME_BOOK_ROOT = 'book_root'
 URL_NAME_OTHER = 'other_path'
 
 

@@ -25,7 +25,7 @@ def sanitize_markdown(markdown_body):
         '\<e>', '&lt;e&gt;')
 
 
-def generate_paddle_docs(original_documentation_dir, output_dir_name):
+def generate_paddle_docs(original_documentation_dir, output_dir_name, options=None):
     """
     Given a Paddle doc directory, invoke a script to generate docs using Sphinx
     and after parsing the code base based on given config, into an output dir.
@@ -40,8 +40,12 @@ def generate_paddle_docs(original_documentation_dir, output_dir_name):
         settings_path = settings.PROJECT_ROOT
         script_path = settings_path + '/../../scripts/deploy/generate_paddle_docs.sh'
 
+        build_type = None
+        if options and 'build_type' in options:
+            build_type = options['build_type']
+
         if os.path.exists(os.path.dirname(script_path)):
-            call([script_path, original_documentation_dir, destination_dir])
+            call([script_path, original_documentation_dir, destination_dir, build_type])
 
             return destination_dir
         else:
@@ -50,7 +54,7 @@ def generate_paddle_docs(original_documentation_dir, output_dir_name):
         raise Exception('Cannot generate documentation, directory %s does not exists.' % original_documentation_dir)
 
 
-def generate_models_docs(original_documentation_dir, output_dir_name):
+def generate_models_docs(original_documentation_dir, output_dir_name, options=None):
     """
     Strip out the static and extract the body contents, headers, and body.
     """
@@ -129,7 +133,7 @@ def generate_models_docs(original_documentation_dir, output_dir_name):
     return destination_documentation_dir
 
 
-def generate_mobile_docs(original_documentation_dir, output_dir_name):
+def generate_mobile_docs(original_documentation_dir, output_dir_name, options=None):
     """
     Simply convert the markdown to HTML.
     """
@@ -195,7 +199,7 @@ def generate_mobile_docs(original_documentation_dir, output_dir_name):
     return destination_documentation_dir
 
 
-def generate_book_docs(original_documentation_dir, output_dir_name):
+def generate_book_docs(original_documentation_dir, output_dir_name, options=None):
     """
     Strip out the static and extract the body contents, headers, and body.
     """
@@ -268,7 +272,7 @@ def generate_book_docs(original_documentation_dir, output_dir_name):
     return destination_documentation_dir
 
 
-def generate_blog_docs(original_documentation_dir, output_dir_name):
+def generate_blog_docs(original_documentation_dir, output_dir_name, options=None):
     # Unlike 'book', 'models' or 'Paddle', for 'blog' we do the strip first then build
     BLOG_TEMPLATE = '<div class="page-content"><div class="wrapper">{{ content }}</div></div>'
 

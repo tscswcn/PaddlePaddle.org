@@ -23,10 +23,6 @@ from portal import url_helper
 from portal_helper import Content
 
 
-class PaddleOperatorsForm(forms.Form):
-    operatorsJson = forms.CharField(widget=forms.Textarea, required=True, label='Operators JSON')
-
-
 def change_version(request):
     """
     Change current documentation version.
@@ -117,6 +113,12 @@ def reload_docs(request):
             raise Exception("Can only reload docs in DOCS_MODE")
 
         folder_name = request.GET.get('folder_name', None)
+        build_type = request.GET.get('build_type', None)
+
+        options = None
+        if build_type:
+            options = { 'build_type': build_type }
+
         if folder_name:
             content_id = portal_helper.content_id_for_folder_name(folder_name)
         else:
@@ -129,7 +131,8 @@ def reload_docs(request):
 
         transform('%s/%s' % (settings.CONTENT_DIR, folder_name),
                   None,
-                  settings.DEFAULT_DOCS_VERSION)
+                  settings.DEFAULT_DOCS_VERSION,
+                  options)
 
         sitemap_helper.generate_sitemap(settings.DEFAULT_DOCS_VERSION, 'en')
         sitemap_helper.generate_sitemap(settings.DEFAULT_DOCS_VERSION, 'zh')
@@ -296,26 +299,8 @@ def _get_static_content_from_template(path):
 
 def home_root(request):
     if settings.CURRENT_PPO_MODE == settings.PPO_MODES.DOC_EDIT_MODE:
-        if request.method == 'POST':
-            form = PaddleOperatorsForm(request.POST)
-
-            if form.is_valid():
-                print 'PROCESSING PADDLE OPERATORS'
-                output_path = get_destination_documentation_dir('doc_test', 'documentation')
-                generate_operators_page(form['operatorsJson'].data, output_path, ['en', 'zh'])
-
-                for lang in ['en', 'zh']:
-                    generate_operators_sitemap(output_path, lang)
-
-                sitemap_helper.remove_all_resolved_sitemaps()
-
-                return redirect('/docs/%s/documentation/en/operators.html' % settings.DEFAULT_DOCS_VERSION)
-        else:
-            form = PaddleOperatorsForm()
-
         context = {
-            'folder_names': portal_helper.get_available_doc_folder_names(),
-            'form': form
+            'folder_names': portal_helper.get_available_doc_folder_names()
         }
         return render(request, 'index_doc_mode.html', context)
 
@@ -336,6 +321,10 @@ def cn_home_root(request):
     response = redirect('/')
     portal_helper.set_preferred_language(request, response, 'zh')
     return response
+
+
+def book_home(request):
+    return _redirect_first_link_in_contents(request, 'develop', Content.BOOK)
 
 
 def download_latest_doc_workspace(request):

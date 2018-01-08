@@ -1,0 +1,24 @@
+<div id="paddleOperatorsModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form action="/" method="post">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title">Please choose which Paddle documentation to build:</h5>
+                </div>
+                <div class="modal-body">
+                    <a class="btn btn-light" href="{% url 'reload_docs' %}?content_id=documentation&build_type=DOC_LITE" onclick="return showFullpageSpinnerForContentId('documentation');">
+                        Paddle Lite (5 minutues)
+                    </a><div>&nbsp;</div>
+                    <a class="btn btn-light" href="{% url 'reload_docs' %}?content_id=documentation&build_type=DOC_FULL" onclick="return showFullpageSpinnerForContentId('documentation');">
+                        Paddle Full (15-30 minutues)
+                    </a>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
