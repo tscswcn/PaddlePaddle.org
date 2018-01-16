@@ -158,6 +158,7 @@ APPEND_SLASH = True
 
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'portal/static/'),
+    os.path.join(BASE_DIR, 'visualDL/static/'),
 )
 
 STATIC_ROOT = 'static/'

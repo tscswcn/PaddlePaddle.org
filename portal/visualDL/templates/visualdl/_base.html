@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+{% load i18n %}
+{% load app_tags %}
+
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta charset="utf-8">
+        <title>VisualDL - Visualize your deep learning training and data flawlessly</title>
+        <link rel="icon" type="image/png" href="/static/images/favicon.ico">
+        <!-- TODO: set og: meta attributes-->
+        {% block head %}
+        <link href="/static/stylesheets/reset.css" media="screen, projection" rel="stylesheet" type="text/css" />
+        <link href="/static/stylesheets/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css" />
+        <link href="/static/stylesheets/bootstrap.min.css" media="screen, projection" rel="stylesheet" type="text/css" />
+        {% endblock %}
+        <script>
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "//hm.baidu.com/hm.js?b9a314ab40d04d805655aab1deee08ba";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+
+        </script>
+    </head>
+
+    <body>
+        {% block pre_content %}{% endblock %}
+
+        {% block content_root %}
+            <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+                <div class="container-fluid">
+                    <a class="navbar-brand" href="/"><img src="/static/visualdl/images/logo.png"/></a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                        <ul class="navbar-nav ml-auto">
+                            <li><a class="nav-link" href="https://github.com/PaddlePaddle/VisualDL">
+                                Github
+                            </a></li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+
+            <div id="content">
+                {% block content %}{{ static_content|safe }}{% endblock %}
+            </div>
+
+            <footer class="footer-nav">
+                {% block footer %}
+                <p class="copyright">Created by PaddlePaddle and ECharts teams, and licensed under Apache License 2.0</p>
+                {% endblock %}
+            </footer>
+        {% endblock %}
+
+        {% block post_content %}{% endblock %}
+
+        {% block scripts %}
+        <script src="/static/js/popper.min.js"></script>
+        <script src="/static/js/jquery-3.2.1.min.js"></script>
+        <script src="/static/js/bootstrap.min.js"></script>
+        {% endblock %}
+    </body>
+
+</html>

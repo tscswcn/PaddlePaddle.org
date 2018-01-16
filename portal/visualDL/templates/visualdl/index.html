@@ -1,0 +1,132 @@
+{% extends "visualdl/_base.html" %}
+
+{% load i18n %}
+
+{% block post_content %}
+<link href="/static/visualdl/stylesheets/home.css" media="screen, projection" rel="stylesheet" type="text/css" />
+{% endblock %}
+
+{% get_current_language as LANGUAGE_CODE %}
+
+{% block content %}
+<div class="home">
+    <section class="banner-color">
+        <div class="container banner">
+            <div class="row">
+                <div class="col-lg-5">
+                <h1>Visualize your deep learning training and data flawlessly</h1>
+                <p class="caption">VisualDL is an open-source cross-framework web dashboard that richly visualizes the performance and data flowing through your neural network training.</p>
+                <span>
+                    <nav>
+                        <ul>
+                            <li>
+                                <a class='button quick-start' href="https://github.com/PaddlePaddle/VisualDL/blob/develop/docs/quick_start_en.md">Getting Started</a>
+                            </li>
+                            <li>
+                                <a class='button view-github' href="https://github.com/PaddlePaddle/VisualDL">View on Github</a>
+                            </li>
+                        </ul>
+                    </nav>
+                    <div class="extra-info">
+                        <p>Visualizes:</p>
+                        <ul>
+                            <li>
+                                <svg fill="#ffffff" height="24" viewBox="0 0 24 24" width="24">
+                                    <path d="M0 0h24v24H0z" fill="none"/>
+                                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                                </svg>
+                                Scalars and Histograms
+                            </li>
+                            <li>
+                                <svg fill="#ffffff" height="24" viewBox="0 0 24 24" width="24">
+                                    <path d="M0 0h24v24H0z" fill="none"/>
+                                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                                </svg>
+                                Computation Graphs for ONNX Models
+                            </li>
+                            <li>
+                                <svg fill="#ffffff" height="24" viewBox="0 0 24 24" width="24">
+                                    <path d="M0 0h24v24H0z" fill="none"/>
+                                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                                </svg>
+                                Image data
+                            </li>
+                        </ul>
+                    </div>
+                </span>
+            </div>
+
+            <div class="col-lg-7">
+                <div class="cover-img"/>
+            </div>
+        </div>
+    </section>
+
+    <section class="container services">
+        <div class="row">
+            <h3 class="col-lg-12 sub-title">Works with:</h3>
+        </div>
+        <div class="row">
+            <div class="col-lg-15">
+                <div class="app inactive">
+                    <img src="/static/visualdl/images/tensorflow.svg"/>
+                    <span>COMING SOON</span>
+                </div>
+            </div>
+            <div class="col-lg-15">
+                <div class="app">
+                    <img src="/static/visualdl/images/paddle.svg"/>
+                </div>
+            </div>
+            <div class="col-lg-15">
+                <div class="app">
+                    <img src="/static/visualdl/images/mxnet.svg"/>
+                </div>
+            </div>
+            <div class="col-lg-15">
+                <div class="app inactive">
+                    <img src="/static/visualdl/images/keras.svg"/>
+                    <span>COMING SOON</span>
+                </div>
+            </div>
+            <div class="col-lg-15">
+                <div class="app">
+                    <img src="/static/visualdl/images/pytorch.svg"/>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="how-to">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-15 how-to-step">
+                    <img src="/static/visualdl/images/feature-code.svg"/>
+                    <span class="description">Write your deep neural network training in Python or C++</span>
+                </div>
+                <div class="col-lg-15">
+                    <svg class="arrow" viewBox="0 0 39 28"><defs><style>.cls-1{fill:#ccc;}</style></defs><title>arrow</title><path class="cls-1" d="M0,10v8H24.75l-10,10h10.5l14-14-14-14H14.75l10,10Z"/></svg>
+                </div>
+                <div class="col-lg-15 how-to-step">
+                    <img src="/static/visualdl/images/feature-train.svg"/>
+                    <span class="description">
+Plug in the VisualDL SDK to log metrics and data produced during training</span>
+                </div>
+                <div class="col-lg-15">
+                   <svg class="arrow" viewBox="0 0 39 28"><defs><style>.cls-1{fill:#ccc;}</style></defs><title>arrow</title><path class="cls-1" d="M0,10v8H24.75l-10,10h10.5l14-14-14-14H14.75l10,10Z"/></svg>
+                </div>
+                <div class="col-lg-15 how-to-step">
+                    <img src="/static/visualdl/images/feature-app.svg"/>
+                    <span class="description">Run the web-app with one command and instantly visualize the results. Train again, and refresh results.</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</div>
+
+{% endblock %}
+{% block scripts %}
+{{ block.super }}
+
+{% endblock %}

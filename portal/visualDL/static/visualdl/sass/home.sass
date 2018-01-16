@@ -1,0 +1,237 @@
+@import "_mixins.sass"
+@import "_variables.sass"
+
+.col-xs-15, .col-sm-15, .col-md-15, .col-lg-15
+  position: relative
+  min-height: 1px
+  padding-right: 10px
+  padding-left: 10px
+
+.col-xs-15
+  width: 20%
+  float: left
+
+@media (min-width: 768px)
+  .col-sm-15
+    width: 20%
+    float: left
+
+@media (min-width: 992px)
+  .col-md-15
+    width: 20%
+    loat: left
+
+@media (min-width: 1200px)
+  .col-lg-15
+    width: 20%
+    float: left
+
+body
+  >#content
+    margin-top: $primary-nav-height
+
+.navbar
+  background-color: $theme-color
+  padding: 0px 8px
+
+  .navbar-brand
+    font-size: $font-xxlarge
+    text-decoration: none
+    padding-top: 0px
+    padding-bottom: 0px
+
+    img
+      height: $primary-nav-height
+      width: auto
+      padding: 18px 0 18px 0
+
+    .navbar-toggler
+      margin-top: 0
+
+  &.navbar-dark
+    .navbar-nav
+      .active
+        >.nav-link
+          color: $white
+          font-weight: $font-bold
+      .nav-link
+        color: $white
+
+        &.border
+          border: 1px solid white
+
+.footer-nav
+  color: #666
+  font-size: 14px
+  margin: 0px 30px
+  border-top: 1px solid #eee
+
+  .copyright
+    width: 100%
+    text-align: center
+    padding: 20px 0 20px
+    margin-bottom: 0px
+
+    > a
+      color: #fff
+
+.home
+  color: #666
+  font-size: 14px
+
+  hr
+    display: block
+
+  p
+    font-size: $font-small
+    font-weight: 100
+    color: #666
+    margin: 0px
+
+  .banner-color
+    background-color: #303a3a
+
+  .banner
+    color: white
+    background-color: #3a3a3a
+    background: url(./../images/circles.svg) no-repeat center center
+    background-size: cover
+    padding: 48px 32px 48px 32px
+
+    h1
+      margin-bottom: 21px
+
+    p
+      color: white
+
+    nav
+      margin: 36px 0
+
+      ul
+        overflow: hidden
+
+        li
+          float: left
+
+          &:first-child
+            margin-right: 12px
+
+
+    .extra-info
+      margin-bottom: 20px
+      font-size: 14px
+      color: #fff
+
+      p
+        font-size: 14px
+        margin-bottom: 20px
+
+      svg
+        width: 18px
+        height: 18px
+
+    ul
+      li
+        line-height: 18px
+
+    .cover-img
+      background-image: url(./../images/screenshot.png)
+      background-repeat: no-repeat
+      min-height: 400px
+      margin: 6px
+      box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.5)
+
+    .button
+      display: inline-block
+      line-height: 48px
+      color: #ffffff
+      font-size: 18px
+      width: 192px
+      text-align: center
+      transition: all .15s ease-in-out
+      text-decoration: none
+
+      &.quick-start
+        border: 1px solid #0073eb
+        background-color: #0073eb
+        &:hover
+          color: #fff
+          background-color: #3095ff
+
+      &.view-github
+        border: 1px solid white
+
+  .services
+    padding-top: 36px
+    padding-bottom: 36px
+
+    .sub-title
+      text-align: center
+      color: #666
+
+    .app
+      width: 100%
+      padding: 16px
+      text-align: center
+
+      &.inactive
+        opacity: 0.35
+
+      img
+        width: 100%
+
+  .how-to
+    background-color: #f2f2f2
+    padding: 48px 0 48px 0
+    text-align: center
+
+    .how-to-step
+      img
+        display: block
+        margin: 36px auto 36px auto
+        width: 156px
+        height: 137px
+
+      .description
+        text-align: center
+
+    .arrow
+      width: 39px
+      height: 28px
+      margin-top: 100px
+      text-align: center
+
+
+@media (min-width: 992px)
+  .home
+    h1
+      font-size: $font-xxxlarge
+
+    h2
+      font-size: $font-xxlarge
+
+    h3
+      font-size: $font-xlarge
+
+    hr
+      display: none
+
+    p
+      font-size: $font-medium
+      font-weight: 100
+      color: #666
+      margin: 0px
+
+    .banner
+      color: white
+
+      .tag-line
+        padding-top: $home-line-spacing * 6
+        margin-bottom: $home-line-spacing * 3
+
+  .how-to
+    .arrow
+      width: 39px
+      height: 28px
+      margin-top: 100px
+
