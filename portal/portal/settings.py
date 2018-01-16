@@ -77,7 +77,8 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'portal'
+    'portal',
+    'visualDL',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -86,6 +87,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'portal.middleware.subdomain.SubdomainMiddleware',
 )
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
@@ -156,6 +158,7 @@ APPEND_SLASH = True
 
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'portal/static/'),
+    os.path.join(BASE_DIR, 'visualDL/static/'),
 )
 
 STATIC_ROOT = 'static/'
