@@ -13,6 +13,7 @@
 
 {% if settings.CURRENT_PPO_MODE == settings.PPO_MODES.DOC_EDIT_MODE %}
 {% include '_paddle_docs_modal.html' %}
+{% include '_paddle_operators_reload_modal.html' %}
 {% endif %}
 
 <div class="container home-doc-mode doc-content">
@@ -37,7 +38,7 @@ git clone git@github.com:PaddlePaddle/models.git</pre>
         {% for folder_name in folder_names %}
         <div class="btn-container col-lg-3">
             {% if folder_name == 'Paddle' %}
-            <a href="#" class="btn btn-light" data-toggle="modal" data-target="#paddleOperatorsModal">{{ folder_name }}</a>
+            <a href="#" class="btn btn-light" data-toggle="modal" data-target="#paddleDocsModal">{{ folder_name }}</a>
             {% else %}
             <a class="btn btn-light" href="{% url 'reload_docs' %}?folder_name={{ folder_name }}" onclick="return showFullpageSpinnerForContentId('{{ folder_name }}');">{{ folder_name }}</a>
             {% endif %}
