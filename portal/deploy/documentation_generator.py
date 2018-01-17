@@ -40,7 +40,7 @@ def generate_paddle_docs(original_documentation_dir, output_dir_name, options=No
         settings_path = settings.PROJECT_ROOT
         script_path = settings_path + '/../../scripts/deploy/generate_paddle_docs.sh'
 
-        build_type = None
+        build_type = 'DOC_LITE'
         if options and 'build_type' in options:
             build_type = options['build_type']
 

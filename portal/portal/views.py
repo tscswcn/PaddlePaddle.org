@@ -23,6 +23,10 @@ from portal import url_helper
 from portal_helper import Content
 
 
+class PaddleOperatorsForm(forms.Form):
+    operatorsJson = forms.CharField(widget=forms.Textarea, required=True, label='Operators JSON')
+
+
 def change_version(request):
     """
     Change current documentation version.
@@ -299,8 +303,26 @@ def _get_static_content_from_template(path):
 
 def home_root(request):
     if settings.CURRENT_PPO_MODE == settings.PPO_MODES.DOC_EDIT_MODE:
+        if request.method == 'POST':
+            form = PaddleOperatorsForm(request.POST)
+
+            if form.is_valid():
+                print 'PROCESSING PADDLE OPERATORS'
+                output_path = get_destination_documentation_dir('doc_test', 'documentation')
+                generate_operators_page(form['operatorsJson'].data, output_path, ['en', 'zh'])
+
+                for lang in ['en', 'zh']:
+                    generate_operators_sitemap(output_path, lang)
+
+                sitemap_helper.remove_all_resolved_sitemaps()
+
+                return redirect('/docs/%s/documentation/en/operators.html' % settings.DEFAULT_DOCS_VERSION)
+        else:
+            form = PaddleOperatorsForm()
+
         context = {
-            'folder_names': portal_helper.get_available_doc_folder_names()
+            'folder_names': portal_helper.get_available_doc_folder_names(),
+            'form': form
         }
         return render(request, 'index_doc_mode.html', context)
 
@@ -352,7 +374,7 @@ def blog_sub_path(request, path):
 
 def content_sub_path(request, version, path=None):
     content_id = ''
-    additional_context = None
+    additional_context = {}
 
     if path.startswith(url_helper.DOCUMENTATION_ROOT):
         content_id = Content.DOCUMENTATION
@@ -368,6 +390,9 @@ def content_sub_path(request, version, path=None):
 
     elif path.startswith(url_helper.MOBILE_ROOT):
         content_id = Content.MOBILE
+
+    if settings.CURRENT_PPO_MODE == settings.PPO_MODES.DOC_EDIT_MODE:
+        additional_context['form'] = PaddleOperatorsForm()
 
     return _render_static_content(request, version, content_id, additional_context)
 

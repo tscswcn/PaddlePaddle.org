@@ -6,23 +6,29 @@
   min-height: 1px
   padding-right: 10px
   padding-left: 10px
+  width: 100%
 
 .col-xs-15
   width: 20%
   float: left
 
-@media (min-width: 768px)
+@media (min-width: 576px)
   .col-sm-15
     width: 20%
     float: left
 
-@media (min-width: 992px)
+@media (min-width: 768px)
   .col-md-15
+    width: 20%
+    float: left
+
+@media (min-width: 992px)
+  .col-lg-15
     width: 20%
     loat: left
 
 @media (min-width: 1200px)
-  .col-lg-15
+  .col-xl-15
     width: 20%
     float: left
 
@@ -150,6 +156,7 @@ body
       text-align: center
       transition: all .15s ease-in-out
       text-decoration: none
+      margin: 8px 0
 
       &.quick-start
         border: 1px solid #0073eb
@@ -198,9 +205,13 @@ body
     .arrow
       width: 39px
       height: 28px
-      margin-top: 100px
+      margin-top: 42px
       text-align: center
-
+      -webkit-transform: rotate(90deg)
+      -moz-transform: rotate(90deg)
+      -ms-transform: rotate(90deg)
+      -o-transform: rotate(90deg)
+      transform: rotate(90deg)
 
 @media (min-width: 992px)
   .home
@@ -229,9 +240,14 @@ body
         padding-top: $home-line-spacing * 6
         margin-bottom: $home-line-spacing * 3
 
-  .how-to
-    .arrow
-      width: 39px
-      height: 28px
-      margin-top: 100px
+    .how-to
+      .arrow
+        width: 39px
+        height: 28px
+        margin-top: 100px
+        -webkit-transform: rotate(0deg)
+        -moz-transform: rotate(0deg)
+        -ms-transform: rotate(0deg)
+        -o-transform: rotate(0deg)
+        transform: rotate(0deg)
 
