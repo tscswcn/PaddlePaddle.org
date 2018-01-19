@@ -264,11 +264,21 @@ def _book_sitemap_with_lang(original_documentation_dir, generated_documentation_
 
 
 def mobile_sitemap(original_documentation_dir, generated_documentation_dir, version, output_dir_name):
-    language = 'en'     # Only support English for now
+    _mobile_sitemap_with_lang(original_documentation_dir, generated_documentation_dir, version, output_dir_name, 'en')
+    _mobile_sitemap_with_lang(original_documentation_dir, generated_documentation_dir, version, output_dir_name, 'zh')
+
+
+def _mobile_sitemap_with_lang(original_documentation_dir, generated_documentation_dir, version, output_dir_name, lang):
+    title = 'Mobile'
+    root_json_path_template = '/%s/README.html' % Content.MOBILE
+
+    if lang == 'zh':
+        title = '移动'
+        root_json_path_template = '/%s/README.cn.html' % Content.MOBILE
 
     root_section = {
-        'title': {language: 'Mobile'},
-        'link': {language: '/%s/README.html' % Content.MOBILE}
+        'title': {lang: title},
+        'link': {lang: root_json_path_template}
     }
 
     sitemap = root_section.copy()
@@ -283,9 +293,9 @@ def mobile_sitemap(original_documentation_dir, generated_documentation_dir, vers
 
         # Extract the links and the article titles
         for tag in anchor_tags:
-            title = {language: tag.text}
+            title = {lang: tag.text}
             href = tag['href'].replace('./', '%s/' % Content.MOBILE, 1)
-            link = {language: href}
+            link = {lang: href}
             section = {'title': title, 'link': link}
             sub_section.append(section)
 
@@ -294,7 +304,7 @@ def mobile_sitemap(original_documentation_dir, generated_documentation_dir, vers
         os.makedirs(versioned_dest_dir)
 
     # Update the mobile site.json by writing a new version.
-    sitemap_path = get_sitemap_destination_path(versioned_dest_dir, 'en')
+    sitemap_path = get_sitemap_destination_path(versioned_dest_dir, lang)
     with open(sitemap_path, 'w') as outfile:
         json.dump(sitemap, outfile)
 
