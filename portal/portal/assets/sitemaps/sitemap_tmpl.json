@@ -19,7 +19,8 @@
     },
     "mobile": {
         "$ref": {
-            "en": "mobile/site.en.json"
+            "en": "mobile/site.en.json",
+            "zh": "mobile/site.zh.json"
         }
     }
 }
