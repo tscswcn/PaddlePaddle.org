@@ -273,7 +273,7 @@ def _mobile_sitemap_with_lang(original_documentation_dir, generated_documentatio
     root_json_path_template = '/%s/README.html' % Content.MOBILE
 
     if lang == 'zh':
-        title = '移动'
+        title = '移动端'
         root_json_path_template = '/%s/README.cn.html' % Content.MOBILE
 
     root_section = {
