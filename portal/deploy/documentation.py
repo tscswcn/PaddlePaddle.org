@@ -46,7 +46,7 @@ def transform(original_documentation_dir, generated_docs_dir, version, options=N
         if content_id == Content.DOCUMENTATION:
             doc_generator = documentation_generator.generate_paddle_docs
             convertor = strip.sphinx
-            sm_generator = sitemap_generator.sphinx_sitemap
+            sm_generator = sitemap_generator.paddle_sphinx_sitemap
             post_generator = generate_operators_docs_with_generated_doc_dir
 
         # Or if this seems like a request to build/transform the book.
@@ -74,6 +74,11 @@ def transform(original_documentation_dir, generated_docs_dir, version, options=N
 
             # sm_generator = sitemap_generator.models_sitemap
             sm_generator = None
+
+        elif content_id == Content.VISUALDL:
+            doc_generator = documentation_generator.generate_visualdl_docs
+            convertor = strip.sphinx
+            sm_generator = sitemap_generator.visualdl_sphinx_sitemap
 
         else:
             raise Exception('Unsupported content.')

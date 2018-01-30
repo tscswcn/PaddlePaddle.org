@@ -1,20 +1,32 @@
 # -*- coding: utf-8 -*-
 import os
-import re
 import json
-from collections import OrderedDict, Mapping
+from collections import OrderedDict
 from django.conf import settings
 from bs4 import BeautifulSoup
 from portal.portal_helper import Content
 
 
-def sphinx_sitemap(original_documentation_dir, generated_documentation_dir, version, output_dir_name):
+class SphinxContent:
+    PADDLE = 'paddle'
+    VISUALDL = 'visualdl'
+
+
+def paddle_sphinx_sitemap(original_documentation_dir, generated_documentation_dir, version, output_dir_name):
+    _sphinx_sitemap(original_documentation_dir, generated_documentation_dir, version, output_dir_name, SphinxContent.PADDLE)
+
+
+def visualdl_sphinx_sitemap(original_documentation_dir, generated_documentation_dir, version, output_dir_name):
+    _sphinx_sitemap(original_documentation_dir, generated_documentation_dir, version, output_dir_name, SphinxContent.VISUALDL)
+
+
+def _sphinx_sitemap(original_documentation_dir, generated_documentation_dir, version, output_dir_name, sphinx_content):
     """
     Generates a sitemap for all languages for the paddle documentation.
     """
     versioned_dest_dir = get_destination_documentation_dir(version, output_dir_name)
 
-    print 'Generating sitemap for Paddle'
+    print 'Generating sitemap for %s' % sphinx_content
 
     parent_path_map = { 'en': '/en/html/',
                         'zh': '/cn/html/' }
@@ -29,24 +41,28 @@ def sphinx_sitemap(original_documentation_dir, generated_documentation_dir, vers
 
         index_html_path = '%s/%s/index.html' % (generated_documentation_dir, parent_path)
 
-        sitemap = _create_sphinx_site_map_from_index(index_html_path, lang)
+        if sphinx_content == SphinxContent.PADDLE:
+            sitemap = _create_paddle_sphinx_site_map_from_index(index_html_path, lang)
 
-        # Inject operators doc into the sitemap if it exists.
-        try:
-            inject_operators_link(sitemap, lang)
-        except Exception as e:
-            print 'Failed to build add operators to documentation sitemap: %s' % e
+            # Inject operators doc into the sitemap if it exists.
+            try:
+                inject_operators_link(sitemap, lang)
+            except Exception as e:
+                print 'Failed to build add operators to documentation sitemap: %s' % e
+        elif sphinx_content == SphinxContent.VISUALDL:
+            sitemap = _create_visualdl_sphinx_site_map_from_index(index_html_path, lang)
 
         # Write the sitemap into the specific content directory.
         sitemap_ouput_path = get_sitemap_destination_path(versioned_dest_dir, lang)
         with open(sitemap_ouput_path, 'w') as outfile:
             json.dump(sitemap, outfile)
 
-    for lang in ['en', 'zh']:
-        generate_operators_sitemap(versioned_dest_dir, lang)
+    if sphinx_content == SphinxContent.PADDLE:
+        for lang in ['en', 'zh']:
+            generate_operators_sitemap(versioned_dest_dir, lang)
 
 
-def _create_sphinx_site_map_from_index(index_html_path, language):
+def _create_paddle_sphinx_site_map_from_index(index_html_path, language):
     """
     Given an index.html generated from running Sphinx on a doc directory, parse
     the HTML tree to get the links from the navigation menu.
@@ -90,14 +106,36 @@ def _create_sphinx_site_map_from_index(index_html_path, language):
             if chapters_container:
 
                 for chapter in chapters_container.find_all('li', recursive=False):
-                    _create_sphinx_site_map(chapters, chapter, language)
+                    _create_sphinx_site_map(chapters, chapter, language, Content.DOCUMENTATION)
         else:
             print 'Cannot generate sphinx sitemap, nav.doc-menu-vertical not found in %s' % index_html_path
 
         return sitemap
 
 
-def _create_sphinx_site_map(parent_list, node, language):
+def _create_visualdl_sphinx_site_map_from_index(index_html_path, language):
+    with open(index_html_path) as html:
+        chapters = []
+
+        sitemap = OrderedDict()
+        sitemap['title'] = OrderedDict( { 'en': 'Documentation', 'zh': '文档'} )
+        sitemap['sections'] = chapters
+
+        navs = BeautifulSoup(html, 'lxml').findAll('nav', class_='wy-nav-side')
+
+        if len(navs) > 0:
+            chapters_container = navs[0].find('ul', recursive=True)
+            if chapters_container:
+
+                for chapter in chapters_container.find_all('li', recursive=False):
+                    _create_sphinx_site_map(chapters, chapter, language, Content.VISUALDL)
+        else:
+            print 'Cannot generate sphinx sitemap, nav.wy-nav-side not found in %s' % index_html_path
+
+        return sitemap
+
+
+def _create_sphinx_site_map(parent_list, node, language, content_id):
     """
     Recursive function to append links to a new parent list object by going down the
     nested lists inside the HTML, using BeautifulSoup tree parser.
@@ -109,7 +147,7 @@ def _create_sphinx_site_map(parent_list, node, language):
 
         first_link = node.find('a')
         if first_link:
-            link_url = '/%s/%s/%s' % (Content.DOCUMENTATION, language, first_link['href'])
+            link_url = '/%s/%s/%s' % (content_id, language, first_link['href'])
             node_dict['title'] = OrderedDict({ language: first_link.text })
             node_dict['link'] = OrderedDict({ language: link_url})
 
@@ -121,7 +159,7 @@ def _create_sphinx_site_map(parent_list, node, language):
                 node_dict['sections'] = []
 
                 for sub_section in sub_sections:
-                    _create_sphinx_site_map(node_dict['sections'], sub_section, language)
+                    _create_sphinx_site_map(node_dict['sections'], sub_section, language, content_id)
 
 
 def inject_operators_link(sitemap, lang):
@@ -273,7 +311,7 @@ def _mobile_sitemap_with_lang(original_documentation_dir, generated_documentatio
     root_json_path_template = '/%s/README.html' % Content.MOBILE
 
     if lang == 'zh':
-        title = '移动'
+        title = '移动端'
         root_json_path_template = '/%s/README.cn.html' % Content.MOBILE
 
     root_section = {

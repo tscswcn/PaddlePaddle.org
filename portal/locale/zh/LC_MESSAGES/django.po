@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-11-10 22:06+0000\n"
+"POT-Creation-Date: 2018-01-30 23:05+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,31 +17,29 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: portal/settings.py:139
+#: portal/settings.py:141
 msgid "English"
 msgstr ""
 
-#: portal/settings.py:140
+#: portal/settings.py:142
 msgid "Chinese"
 msgstr ""
 
-#: portal/templates/_base.html:10
+#: portal/templates/_base.html:11
 msgid "PaddlePaddle - Train and deploy deep learning at scale"
 msgstr ""
 
-#: portal/templates/_nav_bar.html:31
+#: portal/templates/_nav_bar.html:37 portal/templates/_nav_bar.html.py:41
 msgid "Refresh Content"
 msgstr "刷新内容"
 
-#: portal/templates/_nav_bar.html:38
-msgid "Blog"
-msgstr "博客"
-
-#: portal/templates/content.html:91
+#: portal/templates/content.html:85
+#: visualDL/templates/visualdl/content.html:85
 msgid "Refreshing "
 msgstr "刷新"
 
-#: portal/templates/content.html:92
+#: portal/templates/content.html:86
+#: visualDL/templates/visualdl/content.html:86
 msgid ". This may take a few minutes, please wait..."
 msgstr "中。这可能需要几分钟，请稍候…"
 
@@ -230,30 +228,30 @@ msgid ""
 "storage to accelerate the training process."
 msgstr "全面支持多核、多GPU、多机环境。轻松应对大规模训练需求"
 
-#: portal/templates/index_doc_mode.html:16
+#: portal/templates/index_doc_mode.html:21
 msgid "PaddlePaddle Document Viewer"
 msgstr "PaddlePaddle 文档查看器"
 
-#: portal/templates/index_doc_mode.html:19
+#: portal/templates/index_doc_mode.html:24
 msgid ""
 "Welcome to PaddlePaddle.org document viewer.  To get started, please clone "
 "one or more documentation repos."
 msgstr ""
 "欢迎使用paddlepaddle.org文档查看器。一开始，请先复制一个或多个文件代码库。"
 
-#: portal/templates/index_doc_mode.html:25
+#: portal/templates/index_doc_mode.html:30
 msgid "Start PaddlePaddle.org document viewer"
 msgstr "启动paddlepaddle.org文档查看器"
 
-#: portal/templates/index_doc_mode.html:27
+#: portal/templates/index_doc_mode.html:32
 msgid "Refresh This page"
 msgstr "刷新本页"
 
-#: portal/templates/index_doc_mode.html:28
+#: portal/templates/index_doc_mode.html:33
 msgid "Refresh"
 msgstr "刷新"
 
-#: portal/templates/index_doc_mode.html:31
+#: portal/templates/index_doc_mode.html:36
 msgid "Select content repo to generate documentation:"
 msgstr "选择内容代码库以生成文档："
 
@@ -264,6 +262,70 @@ msgstr "启动paddlepaddle.org文档查看器"
 #: portal/templates/index_doc_view_mode.html:27
 msgid "Downloading latest documentation, this could take several minutes..."
 msgstr ""
+
+#: visualDL/templates/visualdl/index.html:17
+msgid "Visualize your deep learning training and data flawlessly"
+msgstr "完美图视化你的深度学习训练和数据"
+
+#: visualDL/templates/visualdl/index.html:18
+msgid ""
+"VisualDL is an open-source cross-framework web dashboard that richly "
+"visualizes the performance and data flowing through your neural network "
+"training."
+msgstr ""
+"VisualDL 是一个开源的跨框架Web可视化工具，可以将神经网络训练表现和流通数据丰"
+"富的图视化。"
+
+#: visualDL/templates/visualdl/index.html:23
+msgid "Getting Started"
+msgstr "入门手册"
+
+#: visualDL/templates/visualdl/index.html:26
+msgid "View on Github"
+msgstr "在GitHub上查看"
+
+#: visualDL/templates/visualdl/index.html:31
+msgid "Visualizes:"
+msgstr "可视化"
+
+#: visualDL/templates/visualdl/index.html:38
+msgid "Scalars and Histograms"
+msgstr "Scalars和Histograms"
+
+#: visualDL/templates/visualdl/index.html:45
+msgid "Computation Graphs for ONNX Models"
+msgstr "对于 ONNX 模型计算图"
+
+#: visualDL/templates/visualdl/index.html:52
+msgid "Image data"
+msgstr "图像数据"
+
+#: visualDL/templates/visualdl/index.html:67
+msgid "Works with:"
+msgstr "适用於"
+
+#: visualDL/templates/visualdl/index.html:73
+#: visualDL/templates/visualdl/index.html:89
+msgid "COMING SOON"
+msgstr "敬请期待"
+
+#: visualDL/templates/visualdl/index.html:105
+msgid "Write your deep neural network training in Python or C++"
+msgstr "用Python或C++写下你的深层神经网络训练"
+
+#: visualDL/templates/visualdl/index.html:113
+msgid ""
+"Plug in the VisualDL SDK to log metrics and data produced during training"
+msgstr "在训练过程中利用 VisualDL SDK 纪录下数据日志"
+
+#: visualDL/templates/visualdl/index.html:120
+msgid ""
+"Run the web-app with one command and instantly visualize the results. Train "
+"again, and refresh results."
+msgstr "运行Web应用程序，即可立即可视化结果。再次训练，并刷新结果。"
+
+#~ msgid "Blog"
+#~ msgstr "博客"
 
 #~ msgid " in a new and empty directory:"
 #~ msgstr " 在一个新的空目录中："
