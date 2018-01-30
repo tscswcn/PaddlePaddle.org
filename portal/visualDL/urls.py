@@ -14,8 +14,13 @@ Including another URLconf
 """
 from django.conf.urls import url
 
+from portal import url_helper
+
+
 import views
 
 urlpatterns = [
     url(r'^$', views.home_root, name='visualdl-home'),
+    url(r'^docs/(?P<version>[^/]+)/(?P<path>.*)$', views.content_sub_path, name=url_helper.URL_NAME_CONTENT),
+    url(r'^change-lang$', views.change_lang, name='change_lang'),
 ]

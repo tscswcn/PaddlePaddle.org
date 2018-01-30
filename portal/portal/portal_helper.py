@@ -13,6 +13,7 @@ class Content:
     BOOK = 'book'
     MOBILE = 'mobile'
     BLOG = 'blog'
+    VISUALDL = 'visualdl'
     OTHER = 'other'
 
 CONTENT_ID_TO_FOLDER_MAP = {
@@ -20,7 +21,8 @@ CONTENT_ID_TO_FOLDER_MAP = {
     Content.MODELS: 'models',
     Content.BOOK: 'book',
     Content.MOBILE: 'Mobile',
-    Content.BLOG: 'blog'
+    Content.BLOG: 'blog',
+    Content.VISUALDL: 'VisualDL'
 }
 
 # Invert the keys and value.  This assumes that the values are all unique
