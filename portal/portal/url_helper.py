@@ -11,6 +11,7 @@ BOOK_ROOT = 'book/'
 DOCUMENTATION_ROOT = 'documentation/'
 MODEL_ROOT = 'models/'
 MOBILE_ROOT = 'mobile/'
+VISUALDL_ROOT = 'visualdl/'
 GITHUB_ROOT = 'https://raw.githubusercontent.com'
 
 URL_NAME_CONTENT_ROOT = 'content_root'

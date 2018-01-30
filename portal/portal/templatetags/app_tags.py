@@ -11,6 +11,11 @@ from portal import url_helper
 register = template.Library()
 
 
+@register.assignment_tag(takes_context=False)
+def get_dict_item(dictionary, key):
+    return dictionary.get(key)
+
+
 @register.simple_tag(takes_context=True)
 def translation(context, leaf_node):
     """
@@ -60,6 +65,10 @@ def nav_bar(context):
         portal_helper.get_preferred_version(context.request),
         current_lang_code
     )
+
+    # TODO[thuan]: This is kinda hacky, need to find better way of removing visualdl docs from PPO
+    if 'visualdl' in root_navigation:
+        root_navigation.pop('visualdl')
 
     # Since we default to english, we set the change lang toggle to chinese
     lang_label = u'中文'

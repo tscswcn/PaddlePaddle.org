@@ -1,0 +1,106 @@
+{% extends "visualdl/_base.html" %}
+
+{% load i18n %}
+{% load app_tags %}
+
+{% get_current_language as LANGUAGE_CODE %}
+
+{% block head %}
+
+    <!-- code highlighter -->
+    <link href="//cdn.bootcss.com/highlight.js/9.9.0/styles/darcula.min.css" rel="stylesheet">
+    <link href="/static/stylesheets/content.css" media="screen, projection" rel="stylesheet" type="text/css" />
+
+{% if settings.CURRENT_PPO_MODE != settings.PPO_MODES.Default %}
+    <link href="/static/stylesheets/spinner.css" media="screen, projection" rel="stylesheet" type="text/css" />
+{% endif %}
+
+{{ block.super }}
+{% endblock %}
+
+{% block content_root %}
+{% if settings.CURRENT_PPO_MODE != settings.PPO_MODES.Default %}
+{% include '_full_page_spinner.html' %}
+{% endif %}
+{{ block.super }}
+{% endblock %}
+
+
+{% block scripts %}
+{{ block.super }}
+<script src="/static/js/popper.min.js"></script>
+<script src="/static/js/permalink-nav.js"></script>
+<script src="//cdn.bootcss.com/highlight.js/9.9.0/highlight.min.js"></script>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+});
+</script>
+
+<script>
+    // Highlight the code, please.
+    hljs.initHighlightingOnLoad();
+</script>
+
+<script>
+    // Use javascript to highlight active links on the side navigation. Since the server does not get the "#" in the
+    // request url, we cannot process the command "if request.path == section_link" reliably.
+    function highlightSideNavActiveLink(link) {
+        var fullPathWithHash = link;
+        if (fullPathWithHash == null) {
+            fullPathWithHash = location.pathname + location.hash;
+        }
+
+        $('#sidebar-nav .chapter').each(function(index) {
+            var chapter = $(this);
+            chapter.find('.section a[href]').each(function(index) {
+                link = $(this);
+                address = link.attr('href');
+                if (address == fullPathWithHash) {
+                    link.addClass('active');
+                } else {
+                    link.removeClass('active');
+                }
+            });
+        });
+    }
+
+    (function() {
+        $('#sidebar-nav .chapter a[href]').each(function(index) {
+            var link = $(this);
+            link.click(function(){
+                //event.preventDefault();
+                highlightSideNavActiveLink(link.attr('href'));
+            });
+        });
+        highlightSideNavActiveLink();
+    })();
+</script>
+
+{% if settings.CURRENT_PPO_MODE != settings.PPO_MODES.Default %}
+<script>
+    function showFullpageSpinnerForContentId(folderName) {
+        var message = '{% trans "Refreshing " %}' + folderName +
+                        '{% trans ". This may take a few minutes, please wait..." %}';
+        $('.spinner-container').show();
+        $('.spinner-label').text(message);
+
+        $('#paddleDocsModal').hide();
+        $('#paddleOperatorsModal').hide();
+        return true;
+    }
+
+    function hideFullpageSpinner() {
+        $('spinner-container').hide();
+        return true;
+    }
+</script>
+{% endif %}
+
+{% if allow_search %}
+{% include '_search.html' %}
+{% endif %}
+
+{% endblock %}

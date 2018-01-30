@@ -1,0 +1,138 @@
+@import "_mixins.sass"
+@import "_variables.sass"
+
+
+.bg-primary
+  background-color: $accent-color !important
+
+
+body, h1, h2, h3, h4, h5, h6, p, blockquote, pre, hr, dl, dd, ol, ul, figure
+  font: 14px $font-medium $primary-font-family
+
+body
+  background-color: $primary-background-color
+
+
+.row-no-padding
+  [class*="col-"]
+    padding-left: 0 !important
+    padding-right: 0 !important
+
+a
+  color: $accent-color
+  text-decoration: none
+  cursor: pointer
+
+  &:visited,&:hover
+    color: $accent-color
+    text-decoration: none
+    cursor: pointer
+
+.btn-default
+  margin: 4px
+  color: #333
+  border-color: #ccc
+
+.fixed-left
+  position: relative
+  overflow: hidden
+
+.fixed-right
+  position: relative
+  overflow: hidden
+
+input:focus, select:focus, textarea:focus, button:focus
+  outline: none
+
+@media (min-width: 992px)
+  .fixed-left
+    position: fixed
+    left: 0
+    z-index: 1020
+    overflow: auto
+
+  .fixed-right
+    position: fixed
+    right: 0
+    z-index: 1020
+    overflow: auto
+
+.col-xs-15, .col-sm-15, .col-md-15, .col-lg-15
+  position: relative
+  min-height: 1px
+  padding-right: 10px
+  padding-left: 10px
+  width: 100%
+
+.col-xs-15
+  width: 20%
+  float: left
+
+@media (min-width: 576px)
+  .col-sm-15
+    width: 20%
+    float: left
+
+@media (min-width: 768px)
+  .col-md-15
+    width: 20%
+    float: left
+
+@media (min-width: 992px)
+  .col-lg-15
+    width: 20%
+    loat: left
+
+@media (min-width: 1200px)
+  .col-xl-15
+    width: 20%
+    float: left
+
+body
+  >#content
+    margin-top: $primary-nav-height
+
+.navbar
+  background-color: $theme-color
+  padding: 0px 8px
+
+  .navbar-brand
+    font-size: $font-xxlarge
+    text-decoration: none
+    padding-top: 0px
+    padding-bottom: 0px
+
+    img
+      height: $primary-nav-height
+      width: auto
+      padding: 18px 0 18px 0
+
+    .navbar-toggler
+      margin-top: 0
+
+  &.navbar-dark
+    .navbar-nav
+      .active
+        >.nav-link
+          color: $white
+          font-weight: $font-bold
+      .nav-link
+        color: $white
+
+        &.border
+          border: 1px solid white
+
+.footer-nav
+  color: #666
+  font-size: 14px
+  margin: 0px 30px
+  border-top: 1px solid #eee
+
+  .copyright
+    width: 100%
+    text-align: center
+    padding: 20px 0 20px
+    margin-bottom: 0px
+
+    > a
+      color: #fff
