@@ -54,6 +54,31 @@ def generate_paddle_docs(original_documentation_dir, output_dir_name, options=No
         raise Exception('Cannot generate documentation, directory %s does not exists.' % original_documentation_dir)
 
 
+def generate_visualdl_docs(original_documentation_dir, output_dir_name, options=None):
+    """
+    Given a Paddle doc directory, invoke a script to generate docs using Sphinx
+    and after parsing the code base based on given config, into an output dir.
+    """
+    # Remove old generated docs directory
+    destination_dir = _get_destination_documentation_dir(output_dir_name)
+    if os.path.exists(destination_dir) and os.path.isdir(destination_dir):
+        shutil.rmtree(destination_dir)
+
+    if os.path.exists(os.path.dirname(original_documentation_dir)):
+        destination_dir = _get_destination_documentation_dir(output_dir_name)
+        settings_path = settings.PROJECT_ROOT
+        script_path = settings_path + '/../../scripts/deploy/generate_visualdl_docs.sh'
+
+        if os.path.exists(os.path.dirname(script_path)):
+            call([script_path, original_documentation_dir, destination_dir])
+
+            return destination_dir
+        else:
+            raise Exception('Cannot find script located at %s.' % script_path)
+    else:
+        raise Exception('Cannot generate documentation, directory %s does not exists.' % original_documentation_dir)
+
+
 def generate_models_docs(original_documentation_dir, output_dir_name, options=None):
     """
     Strip out the static and extract the body contents, headers, and body.

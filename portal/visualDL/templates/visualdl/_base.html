@@ -14,6 +14,8 @@
         <link href="/static/stylesheets/reset.css" media="screen, projection" rel="stylesheet" type="text/css" />
         <link href="/static/stylesheets/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css" />
         <link href="/static/stylesheets/bootstrap.min.css" media="screen, projection" rel="stylesheet" type="text/css" />
+        <link href="/static/visualdl/stylesheets/base.css" media="screen, projection" rel="stylesheet" type="text/css" />
+        <link href="/static/visualdl/stylesheets/navigation.css" media="screen, projection" rel="stylesheet" type="text/css" />
         {% endblock %}
         <script>
         var _hmt = _hmt || [];
@@ -31,33 +33,13 @@
         {% block pre_content %}{% endblock %}
 
         {% block content_root %}
-            <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
-                <div class="container-fluid">
-                    <a class="navbar-brand" href="/"><img src="/static/visualdl/images/logo.png"/></a>
-                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-                            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-
-                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                        <ul class="navbar-nav ml-auto">
-                            <li><a class="nav-link" href="https://github.com/PaddlePaddle/VisualDL">
-                                Github
-                            </a></li>
-                        </ul>
-                    </div>
-                </div>
-            </nav>
+            {% include "visualdl/_nav_bar.html" %}
 
             <div id="content">
                 {% block content %}{{ static_content|safe }}{% endblock %}
             </div>
 
-            <footer class="footer-nav">
-                {% block footer %}
-                <p class="copyright">Created by PaddlePaddle and ECharts teams, and licensed under Apache License 2.0</p>
-                {% endblock %}
-            </footer>
+            {% include "visualdl/_footer.html" %}
         {% endblock %}
 
         {% block post_content %}{% endblock %}

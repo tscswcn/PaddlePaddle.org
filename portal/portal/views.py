@@ -382,6 +382,9 @@ def content_sub_path(request, version, path=None):
         search_url = '%s/%s/search.html' % (content_id, lang)
         additional_context = { 'allow_search': True, 'search_url': search_url }
 
+    elif path.startswith(url_helper.VISUALDL_ROOT):
+        content_id = Content.VISUALDL
+
     elif path.startswith(url_helper.BOOK_ROOT):
         content_id = Content.BOOK
 

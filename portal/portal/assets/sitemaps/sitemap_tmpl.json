@@ -22,5 +22,11 @@
             "en": "mobile/site.en.json",
             "zh": "mobile/site.zh.json"
         }
+    },
+    "visualdl": {
+        "$ref": {
+            "en": "visualdl/site.en.json",
+            "zh": "visualdl/site.zh.json"
+        }
     }
 }
