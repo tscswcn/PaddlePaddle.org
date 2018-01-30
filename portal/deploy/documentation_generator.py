@@ -56,7 +56,7 @@ def generate_paddle_docs(original_documentation_dir, output_dir_name, options=No
 
 def generate_visualdl_docs(original_documentation_dir, output_dir_name, options=None):
     """
-    Given a Paddle doc directory, invoke a script to generate docs using Sphinx
+    Given a VisualDL doc directory, invoke a script to generate docs using Sphinx
     and after parsing the code base based on given config, into an output dir.
     """
     # Remove old generated docs directory
