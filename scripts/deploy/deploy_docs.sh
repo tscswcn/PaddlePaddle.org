@@ -15,7 +15,7 @@ DEPLOY_DOCS_DIR=$CONTENT_DIR/.ppo_workspace
 
 ### pull PaddlePaddle.org app and run the deploy_documentation command
 
-PPO_BRANCH=develop
+PPO_BRANCH=master
 
 curl -LOk https://github.com/PaddlePaddle/PaddlePaddle.org/archive/$PPO_BRANCH.zip
 
