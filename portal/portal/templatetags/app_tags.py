@@ -67,7 +67,8 @@ def nav_bar(context):
     )
 
     # TODO[thuan]: This is kinda hacky, need to find better way of removing visualdl docs from PPO
-    root_navigation.pop('visualdl')
+    if 'visualdl' in root_navigation:
+        root_navigation.pop('visualdl')
 
     # Since we default to english, we set the change lang toggle to chinese
     lang_label = u'中文'
