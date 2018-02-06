@@ -259,14 +259,14 @@ def get_sitemap_destination_path(versioned_dest_dir, lang):
 
 
 def _book_sitemap_with_lang(original_documentation_dir, generated_documentation_dir, version, output_dir_name, lang):
-    title = 'Book'
+    title = 'Deep Learning 101'
     root_json_path_template = '.tools/templates/index.html.json'
     sections_title = 'Deep Learning 101'
 
     if lang == 'zh':
-        title = '教程'
+        title = '深度学习101'
         root_json_path_template = '.tools/templates/index.cn.html.json'
-        sections_title = '深度学习入门'
+        sections_title = '深度学习101'
 
     sections = []
     sitemap = { 'title': {lang: title}, 'sections': [{'title':{lang: sections_title}, 'sections':sections}]}
