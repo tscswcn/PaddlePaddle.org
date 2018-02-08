@@ -60,7 +60,12 @@ def sphinx(generated_documentation_dir, version, output_dir_name):
 
                         if '.html' in file or '_images' in subpath or '.txt' in file or '.json' in file:
                             if not os.path.exists(os.path.dirname(new_path)):
-                                os.makedirs(os.path.dirname(new_path))
+                                try:
+                                    # os.path.exists sometimes doesn't work with relative paths, so we just prevent app
+                                    # from crashing if the path exists method fails
+                                    os.makedirs(os.path.dirname(new_path))
+                                except Exception as e:
+                                    print(e)
 
                         if '.html' in file:
                             # Soup the body of the HTML file.

@@ -8,7 +8,7 @@
     "api": {
         "$ref": {
             "en": "api/site.en.json",
-            "zh": "api/site.en.json"
+            "zh": "api/site.zh.json"
         }
     },
     "book": {
