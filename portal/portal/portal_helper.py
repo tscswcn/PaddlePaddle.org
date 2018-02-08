@@ -9,6 +9,7 @@ from portal import sitemap_helper
 
 class Content:
     DOCUMENTATION = 'documentation'
+    API = 'api'
     MODELS = 'models'
     BOOK = 'book'
     MOBILE = 'mobile'

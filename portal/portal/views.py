@@ -394,6 +394,9 @@ def content_sub_path(request, version, path=None):
     elif path.startswith(url_helper.MOBILE_ROOT):
         content_id = Content.MOBILE
 
+    elif path.startswith(url_helper.API_ROOT):
+        content_id = Content.API
+
     if settings.CURRENT_PPO_MODE == settings.PPO_MODES.DOC_EDIT_MODE:
         additional_context['form'] = PaddleOperatorsForm()
 

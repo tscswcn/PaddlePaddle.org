@@ -24,6 +24,7 @@ def sphinx(generated_documentation_dir, version, output_dir_name):
         'develop': {
             '/en/html/': '/en/',
             '/cn/html/': '/zh/',
+            '/api/en/html': '/../api/en/'
         },
         '0.10.0': {
             '/en/html/':    '/en/',
@@ -46,42 +47,39 @@ def sphinx(generated_documentation_dir, version, output_dir_name):
             subpath = os.path.join(subdir, file)[len(
                 generated_documentation_dir):]
             subpath_language_dir = None
+
             if version in new_path_map:
-                new_path_map_prefixes = new_path_map[version].keys()
-                subpath_language_dirs = [new_path_map_prefixes[0], new_path_map_prefixes[1]]
+                subpath_language_dirs = new_path_map[version].keys()
 
-                if subpath.startswith(subpath_language_dirs[0]):
-                    subpath_language_dir = subpath_language_dirs[0]
-                elif subpath.startswith(subpath_language_dirs[1]):
-                    subpath_language_dir = subpath_language_dirs[1]
+                for subpath_language_dir in subpath_language_dirs:
+                    # Check if the we should process the file or not
+                    if subpath_language_dir and subpath.startswith(subpath_language_dir):
+                        new_path = destination_documentation_dir + (
+                            new_path_map[version][subpath_language_dir]
+                            + subpath[len(subpath_language_dir):])
 
-                if subpath_language_dir:
-                    new_path = destination_documentation_dir + (
-                        new_path_map[version][subpath_language_dir]
-                        + subpath[len(subpath_language_dir):])
+                        if '.html' in file or '_images' in subpath or '.txt' in file or '.json' in file:
+                            if not os.path.exists(os.path.dirname(new_path)):
+                                os.makedirs(os.path.dirname(new_path))
 
-                    if '.html' in file or '_images' in subpath or '.txt' in file or '.json' in file:
-                        if not os.path.exists(os.path.dirname(new_path)):
-                            os.makedirs(os.path.dirname(new_path))
+                        if '.html' in file:
+                            # Soup the body of the HTML file.
+                            with open(os.path.join(subdir, file)) as original_html_file:
+                                soup = BeautifulSoup(original_html_file, 'lxml')
 
-                    if '.html' in file:
-                        # Soup the body of the HTML file.
-                        with open(os.path.join(subdir, file)) as original_html_file:
-                            soup = BeautifulSoup(original_html_file, 'lxml')
-
-                        document = None
-                        # Find the .document element.
-                        if version == '0.9.0':
-                            document = soup.select('div.body')[0]
-                        else:
-                            document = soup.select('div.document')[0]
-                        with open(new_path, 'w') as new_html_partial:
-                            new_html_partial.write(document.encode("utf-8"))
-                    elif '_images' in subpath or '.txt' in file or '.json' in file:
-                        # Copy to images directory.
-                        copyfile(os.path.join(subdir, file), new_path)
-                    elif 'searchindex.js' in subpath:
-                        copyfile(os.path.join(subdir, file), new_path)
+                            document = None
+                            # Find the .document element.
+                            if version == '0.9.0':
+                                document = soup.select('div.body')[0]
+                            else:
+                                document = soup.select('div.document')[0]
+                            with open(new_path, 'w') as new_html_partial:
+                                new_html_partial.write(document.encode("utf-8"))
+                        elif '_images' in subpath or '.txt' in file or '.json' in file:
+                            # Copy to images directory.
+                            copyfile(os.path.join(subdir, file), new_path)
+                        elif 'searchindex.js' in subpath:
+                            copyfile(os.path.join(subdir, file), new_path)
 
 
 def default(generated_documentation_dir, version, output_dir_name):
