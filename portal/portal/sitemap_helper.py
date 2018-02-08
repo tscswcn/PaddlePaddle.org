@@ -192,7 +192,7 @@ def _transform_urls(version, sitemap, node, all_links_cache, language):
                 all_node_links.extend(child_node_links)
 
         node['links'] = all_node_links
-        if ('link' not in node or not node['link'][language]):
+        if ('link' not in node or language not in node['link']):
             # After we process the node's children, we check if the node has a default link.
             # If not, then we set the node's first link
             if len(all_node_links) > 0:
