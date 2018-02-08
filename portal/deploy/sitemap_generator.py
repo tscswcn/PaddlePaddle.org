@@ -47,26 +47,38 @@ def _sphinx_sitemap(original_documentation_dir, generated_documentation_dir, ver
                             'zh': '/doc_cn/'}
 
     for lang, parent_path in parent_path_map.items():
+        sitemap = None
         # Using the index.html of the generated Sphinx HTML documentation,
         # separately for each language, generate a sitemap.
         index_html_path = '%s/%s/index.html' % (generated_documentation_dir, parent_path)
 
         if sphinx_content == SphinxContent.PADDLE:
             sitemap = _create_paddle_sphinx_site_map_from_index(index_html_path, lang, Content.DOCUMENTATION)
+            _write_sphinx_sitemap(sitemap, versioned_dest_dir, lang)
         elif sphinx_content == SphinxContent.PADDLE_API:
             if lang == 'en':
                 sitemap = _create_paddle_sphinx_site_map_from_index(index_html_path, lang, Content.API)
+                _write_sphinx_sitemap(sitemap, versioned_dest_dir, lang)
+
+                # Make a copy of EN documentation for now, since we only have API docs in english
+                # We override the link language prefix
+                # TODO(thuan): Fix this once we have chinese API documentation
+                sitemap = _create_paddle_sphinx_site_map_from_index(index_html_path, 'zh', Content.API, 'en')
+                _write_sphinx_sitemap(sitemap, versioned_dest_dir, 'zh')
         elif sphinx_content == SphinxContent.VISUALDL:
             sitemap = _create_visualdl_sphinx_site_map_from_index(index_html_path, lang)
-
-        # Write the sitemap into the specific content directory.
-        if sitemap:
-            sitemap_ouput_path = get_sitemap_destination_path(versioned_dest_dir, lang)
-            with open(sitemap_ouput_path, 'w') as outfile:
-                json.dump(sitemap, outfile)
+            _write_sphinx_sitemap(sitemap, versioned_dest_dir, lang)
 
 
-def _create_paddle_sphinx_site_map_from_index(index_html_path, language, content_id):
+def _write_sphinx_sitemap(sitemap, versioned_dest_dir, lang):
+    # Write the sitemap into the specific content directory.
+    if sitemap:
+        sitemap_ouput_path = get_sitemap_destination_path(versioned_dest_dir, lang)
+        with open(sitemap_ouput_path, 'w') as outfile:
+            json.dump(sitemap, outfile)
+
+
+def _create_paddle_sphinx_site_map_from_index(index_html_path, language, content_id, link_language_prefix=None):
     """
     Given an index.html generated from running Sphinx on a doc directory, parse
     the HTML tree to get the links from the navigation menu.
@@ -118,7 +130,7 @@ def _create_paddle_sphinx_site_map_from_index(index_html_path, language, content
             if chapters_container:
 
                 for chapter in chapters_container.find_all('li', recursive=False):
-                    _create_sphinx_site_map(chapters, chapter, language, content_id)
+                    _create_sphinx_site_map(chapters, chapter, language, content_id, link_language_prefix)
         else:
             print 'Cannot generate sphinx sitemap, nav.doc-menu-vertical not found in %s' % index_html_path
 
@@ -147,7 +159,7 @@ def _create_visualdl_sphinx_site_map_from_index(index_html_path, language):
         return sitemap
 
 
-def _create_sphinx_site_map(parent_list, node, language, content_id):
+def _create_sphinx_site_map(parent_list, node, language, content_id, link_language_prefix=None):
     """
     Recursive function to append links to a new parent list object by going down the
     nested lists inside the HTML, using BeautifulSoup tree parser.
@@ -161,7 +173,8 @@ def _create_sphinx_site_map(parent_list, node, language, content_id):
 
         first_link = node.find('a')
         if first_link:
-            link_url = '/%s/%s/%s' % (content_id, language, first_link['href'])
+            link_language = link_language_prefix if link_language_prefix else language
+            link_url = '/%s/%s/%s' % (content_id, link_language, first_link['href'])
             node_dict['title'] = OrderedDict({ language: first_link.text })
             if not sections:
                 node_dict['link'] = OrderedDict({ language: link_url})
@@ -173,7 +186,7 @@ def _create_sphinx_site_map(parent_list, node, language, content_id):
                 node_dict['sections'] = []
 
                 for sub_section in sub_sections:
-                    _create_sphinx_site_map(node_dict['sections'], sub_section, language, content_id)
+                    _create_sphinx_site_map(node_dict['sections'], sub_section, language, content_id, link_language_prefix)
 
 
 def inject_operators_link(sitemap, lang):
