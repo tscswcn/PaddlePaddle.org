@@ -47,7 +47,6 @@ def transform(original_documentation_dir, generated_docs_dir, version, options=N
             doc_generator = documentation_generator.generate_paddle_docs
             convertor = strip.sphinx
             sm_generators = [sitemap_generator.paddle_sphinx_sitemap, sitemap_generator.paddle_api_sphinx_sitemap]
-            post_generator = generate_operators_docs_with_generated_doc_dir
 
         # Or if this seems like a request to build/transform the book.
         elif content_id == Content.BOOK:

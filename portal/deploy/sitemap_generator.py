@@ -53,12 +53,6 @@ def _sphinx_sitemap(original_documentation_dir, generated_documentation_dir, ver
 
         if sphinx_content == SphinxContent.PADDLE:
             sitemap = _create_paddle_sphinx_site_map_from_index(index_html_path, lang, Content.DOCUMENTATION)
-
-            # Inject operators doc into the sitemap if it exists.
-            try:
-                inject_operators_link(sitemap, lang)
-            except Exception as e:
-                print 'Failed to build add operators to documentation sitemap: %s' % e
         elif sphinx_content == SphinxContent.PADDLE_API:
             if lang == 'en':
                 sitemap = _create_paddle_sphinx_site_map_from_index(index_html_path, lang, Content.API)
@@ -70,10 +64,6 @@ def _sphinx_sitemap(original_documentation_dir, generated_documentation_dir, ver
             sitemap_ouput_path = get_sitemap_destination_path(versioned_dest_dir, lang)
             with open(sitemap_ouput_path, 'w') as outfile:
                 json.dump(sitemap, outfile)
-
-    if sphinx_content == SphinxContent.PADDLE:
-        for lang in ['en', 'zh']:
-            generate_operators_sitemap(versioned_dest_dir, lang)
 
 
 def _create_paddle_sphinx_site_map_from_index(index_html_path, language, content_id):
@@ -108,7 +98,7 @@ def _create_paddle_sphinx_site_map_from_index(index_html_path, language, content
     """
 
     title_en = 'Documentation'
-    title_zh = '文档'
+    title_zh = '使用文档'
 
     if content_id == Content.API:
         title_en = 'API'
@@ -167,13 +157,15 @@ def _create_sphinx_site_map(parent_list, node, language, content_id):
         if parent_list != None:
             parent_list.append(node_dict)
 
+        sections = node.findAll('ul', recursive=False)
+
         first_link = node.find('a')
         if first_link:
             link_url = '/%s/%s/%s' % (content_id, language, first_link['href'])
             node_dict['title'] = OrderedDict({ language: first_link.text })
-            node_dict['link'] = OrderedDict({ language: link_url})
+            if not sections:
+                node_dict['link'] = OrderedDict({ language: link_url})
 
-        sections = node.findAll('ul', recursive=False)
         for section in sections:
             sub_sections = section.findAll('li', recursive=False)
 
