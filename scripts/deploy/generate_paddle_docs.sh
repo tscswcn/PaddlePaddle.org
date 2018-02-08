@@ -36,7 +36,7 @@ if [ $BUILD_TYPE = "DOC_LITE" ]; then
 elif [ $BUILD_TYPE = "DOC_FULL" ]; then
     make -j $processors gen_proto_py
     make -j $processors paddle_python
-    make -j $processors paddle_docs paddle_docs_cn
+    make -j $processors paddle_docs paddle_docs_cn paddle_api_docs
     make -j $processors print_operators_doc
     paddle/pybind/print_operators_doc > doc/en/html/operators.json
 fi

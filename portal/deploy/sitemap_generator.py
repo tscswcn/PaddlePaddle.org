@@ -9,11 +9,22 @@ from portal.portal_helper import Content
 
 class SphinxContent:
     PADDLE = 'paddle'
+    PADDLE_API = 'api'
     VISUALDL = 'visualdl'
 
 
 def paddle_sphinx_sitemap(original_documentation_dir, generated_documentation_dir, version, output_dir_name):
     _sphinx_sitemap(original_documentation_dir, generated_documentation_dir, version, output_dir_name, SphinxContent.PADDLE)
+
+
+def paddle_api_sphinx_sitemap(original_documentation_dir, generated_documentation_dir, version, output_dir_name):
+    # We override the output dir to point for API documentation so sitemaps can be generated in api dir
+    output_dir_name = SphinxContent.PADDLE_API
+    if generated_documentation_dir:
+        # Since Paddle API documents exists as a subdirectory 'api' within paddle docs, we append 'api' to it
+        generated_documentation_dir = '%s/%s' % (generated_documentation_dir, output_dir_name)
+
+    _sphinx_sitemap(original_documentation_dir, generated_documentation_dir, version, output_dir_name, SphinxContent.PADDLE_API)
 
 
 def visualdl_sphinx_sitemap(original_documentation_dir, generated_documentation_dir, version, output_dir_name):
@@ -38,31 +49,24 @@ def _sphinx_sitemap(original_documentation_dir, generated_documentation_dir, ver
     for lang, parent_path in parent_path_map.items():
         # Using the index.html of the generated Sphinx HTML documentation,
         # separately for each language, generate a sitemap.
-
         index_html_path = '%s/%s/index.html' % (generated_documentation_dir, parent_path)
 
         if sphinx_content == SphinxContent.PADDLE:
-            sitemap = _create_paddle_sphinx_site_map_from_index(index_html_path, lang)
-
-            # Inject operators doc into the sitemap if it exists.
-            try:
-                inject_operators_link(sitemap, lang)
-            except Exception as e:
-                print 'Failed to build add operators to documentation sitemap: %s' % e
+            sitemap = _create_paddle_sphinx_site_map_from_index(index_html_path, lang, Content.DOCUMENTATION)
+        elif sphinx_content == SphinxContent.PADDLE_API:
+            if lang == 'en':
+                sitemap = _create_paddle_sphinx_site_map_from_index(index_html_path, lang, Content.API)
         elif sphinx_content == SphinxContent.VISUALDL:
             sitemap = _create_visualdl_sphinx_site_map_from_index(index_html_path, lang)
 
         # Write the sitemap into the specific content directory.
-        sitemap_ouput_path = get_sitemap_destination_path(versioned_dest_dir, lang)
-        with open(sitemap_ouput_path, 'w') as outfile:
-            json.dump(sitemap, outfile)
-
-    if sphinx_content == SphinxContent.PADDLE:
-        for lang in ['en', 'zh']:
-            generate_operators_sitemap(versioned_dest_dir, lang)
+        if sitemap:
+            sitemap_ouput_path = get_sitemap_destination_path(versioned_dest_dir, lang)
+            with open(sitemap_ouput_path, 'w') as outfile:
+                json.dump(sitemap, outfile)
 
 
-def _create_paddle_sphinx_site_map_from_index(index_html_path, language):
+def _create_paddle_sphinx_site_map_from_index(index_html_path, language, content_id):
     """
     Given an index.html generated from running Sphinx on a doc directory, parse
     the HTML tree to get the links from the navigation menu.
@@ -92,11 +96,19 @@ def _create_paddle_sphinx_site_map_from_index(index_html_path, language):
         </ul>
       </nav>
     """
+
+    title_en = 'Documentation'
+    title_zh = '使用文档'
+
+    if content_id == Content.API:
+        title_en = 'API'
+        title_zh = 'API'
+
     with open(index_html_path) as html:
         chapters = []
 
         sitemap = OrderedDict()
-        sitemap['title'] = OrderedDict( { 'en': 'Documentation', 'zh': '文档'} )
+        sitemap['title'] = OrderedDict( { 'en': title_en, 'zh': title_zh} )
         sitemap['sections'] = chapters
 
         navs = BeautifulSoup(html, 'lxml').findAll('nav', class_='doc-menu-vertical')
@@ -106,7 +118,7 @@ def _create_paddle_sphinx_site_map_from_index(index_html_path, language):
             if chapters_container:
 
                 for chapter in chapters_container.find_all('li', recursive=False):
-                    _create_sphinx_site_map(chapters, chapter, language, Content.DOCUMENTATION)
+                    _create_sphinx_site_map(chapters, chapter, language, content_id)
         else:
             print 'Cannot generate sphinx sitemap, nav.doc-menu-vertical not found in %s' % index_html_path
 
@@ -145,13 +157,15 @@ def _create_sphinx_site_map(parent_list, node, language, content_id):
         if parent_list != None:
             parent_list.append(node_dict)
 
+        sections = node.findAll('ul', recursive=False)
+
         first_link = node.find('a')
         if first_link:
             link_url = '/%s/%s/%s' % (content_id, language, first_link['href'])
             node_dict['title'] = OrderedDict({ language: first_link.text })
-            node_dict['link'] = OrderedDict({ language: link_url})
+            if not sections:
+                node_dict['link'] = OrderedDict({ language: link_url})
 
-        sections = node.findAll('ul', recursive=False)
         for section in sections:
             sub_sections = section.findAll('li', recursive=False)
 
@@ -173,12 +187,9 @@ def inject_operators_link(sitemap, lang):
     if sections:
         sections.append({
             '$ref': {
-                lang: '%s/%s' % (Content.DOCUMENTATION, get_operator_sitemap_name(lang))
+                lang: '%s/%s' % (Content.DOCUMENTATION, _get_sitemap_name(lang, 'operators'))
             }
         })
-
-def get_operator_sitemap_name(lang):
-    return 'site.operators.%s.json' % lang
 
 
 def book_sitemap(original_documentation_dir, generated_documentation_dir, version, output_dir_name):
@@ -254,8 +265,15 @@ def get_destination_documentation_dir(version, output_dir_name):
     return '%s/docs/%s/%s' % (settings.EXTERNAL_TEMPLATE_DIR, version, output_dir_name)
 
 
-def get_sitemap_destination_path(versioned_dest_dir, lang):
-    return os.path.join(versioned_dest_dir, 'site.%s.json' % lang)
+def get_sitemap_destination_path(versioned_dest_dir, lang, tag=None):
+    return os.path.join(versioned_dest_dir, _get_sitemap_name(lang, tag))
+
+
+def _get_sitemap_name(lang, tag=None):
+    if tag:
+        return 'site.%s.%s.json' % (tag, lang)
+    else:
+        return 'site.%s.json' % lang
 
 
 def _book_sitemap_with_lang(original_documentation_dir, generated_documentation_dir, version, output_dir_name, lang):
@@ -264,9 +282,9 @@ def _book_sitemap_with_lang(original_documentation_dir, generated_documentation_
     sections_title = 'Deep Learning 101'
 
     if lang == 'zh':
-        title = '教程'
+        title = '深度学习101'
         root_json_path_template = '.tools/templates/index.cn.html.json'
-        sections_title = '深度学习入门'
+        sections_title = '深度学习101'
 
     sections = []
     sitemap = { 'title': {lang: title}, 'sections': [{'title':{lang: sections_title}, 'sections':sections}]}
@@ -348,8 +366,7 @@ def _mobile_sitemap_with_lang(original_documentation_dir, generated_documentatio
 
 
 def generate_operators_sitemap(versioned_dest_dir, lang):
-    sitemap_ouput_path = '%s/%s' % (versioned_dest_dir, get_operator_sitemap_name(lang))
-
+    sitemap_ouput_path = get_sitemap_destination_path(versioned_dest_dir, lang, 'operators')
     sitemap = {
         'title': {
             # TODO(Jeff): Translate word to Chinese.
