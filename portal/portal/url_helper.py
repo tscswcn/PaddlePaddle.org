@@ -9,6 +9,7 @@ from django.core.urlresolvers import reverse
 BLOG_ROOT = 'blog/'
 BOOK_ROOT = 'book/'
 DOCUMENTATION_ROOT = 'documentation/'
+API_ROOT = 'api/'
 MODEL_ROOT = 'models/'
 MOBILE_ROOT = 'mobile/'
 VISUALDL_ROOT = 'visualdl/'

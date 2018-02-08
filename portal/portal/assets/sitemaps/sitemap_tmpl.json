@@ -5,6 +5,12 @@
             "zh": "documentation/site.zh.json"
         }
     },
+    "api": {
+        "$ref": {
+            "en": "api/site.en.json",
+            "zh": "api/site.en.json"
+        }
+    },
     "book": {
         "$ref": {
             "en": "book/site.en.json",

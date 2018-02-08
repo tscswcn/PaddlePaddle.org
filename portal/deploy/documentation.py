@@ -27,7 +27,7 @@ def transform(original_documentation_dir, generated_docs_dir, version, options=N
 
         doc_generator = None
         convertor = None
-        sm_generator = None
+        sm_generators = None
         post_generator = None
         output_dir_name = None
 
@@ -46,39 +46,36 @@ def transform(original_documentation_dir, generated_docs_dir, version, options=N
         if content_id == Content.DOCUMENTATION:
             doc_generator = documentation_generator.generate_paddle_docs
             convertor = strip.sphinx
-            sm_generator = sitemap_generator.paddle_sphinx_sitemap
-            post_generator = generate_operators_docs_with_generated_doc_dir
+            sm_generators = [sitemap_generator.paddle_sphinx_sitemap, sitemap_generator.paddle_api_sphinx_sitemap]
 
         # Or if this seems like a request to build/transform the book.
         elif content_id == Content.BOOK:
             doc_generator = documentation_generator.generate_book_docs
             convertor = strip.default
-            sm_generator = sitemap_generator.book_sitemap
+            sm_generators = [sitemap_generator.book_sitemap]
 
         # Or if this seems like a request to build/transform the models.
         elif content_id == Content.MODELS:
             doc_generator = documentation_generator.generate_models_docs
             convertor = strip.default
-            sm_generator = sitemap_generator.models_sitemap
+            sm_generators = [sitemap_generator.models_sitemap]
 
         elif content_id == Content.MOBILE:
             doc_generator = documentation_generator.generate_mobile_docs
             convertor = strip.default
-            sm_generator = sitemap_generator.mobile_sitemap
+            sm_generators = [sitemap_generator.mobile_sitemap]
 
         elif content_id == Content.BLOG:
             doc_generator = documentation_generator.generate_blog_docs
 
             # move the folder _site/ from generated_docs_dir to content_dir
             convertor = strip.default
-
-            # sm_generator = sitemap_generator.models_sitemap
-            sm_generator = None
+            sm_generators = None
 
         elif content_id == Content.VISUALDL:
             doc_generator = documentation_generator.generate_visualdl_docs
             convertor = strip.sphinx
-            sm_generator = sitemap_generator.visualdl_sphinx_sitemap
+            sm_generators = [sitemap_generator.visualdl_sphinx_sitemap]
 
         else:
             raise Exception('Unsupported content.')
@@ -101,8 +98,9 @@ def transform(original_documentation_dir, generated_docs_dir, version, options=N
 
         print 'Generating sitemap for documentation at %s, gen_docs_dir=%s,  version %s' % \
               (original_documentation_dir, generated_docs_dir, version)
-        if sm_generator:
-            sm_generator(original_documentation_dir, generated_docs_dir, version, output_dir_name)
+        if sm_generators:
+            for sm_generator in sm_generators:
+                sm_generator(original_documentation_dir, generated_docs_dir, version, output_dir_name)
 
     except Exception as e:
         print 'Unable to process documentation: %s' % e
