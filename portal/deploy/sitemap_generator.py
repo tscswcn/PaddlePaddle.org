@@ -277,7 +277,7 @@ def _get_sitemap_name(lang, tag=None):
 
 
 def _book_sitemap_with_lang(original_documentation_dir, generated_documentation_dir, version, output_dir_name, lang):
-    title = 'Deep Learning 101'
+    title = 'Book'
     root_json_path_template = '.tools/templates/index.html.json'
     sections_title = 'Deep Learning 101'
 
