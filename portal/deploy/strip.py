@@ -23,8 +23,7 @@ def sphinx(generated_documentation_dir, version, output_dir_name):
     new_path_map = {
         'develop': {
             '/en/html/': '/en/',
-            '/cn/html/': '/zh/',
-            '/api/en/html': '/../api/en/'
+            '/cn/html/': '/zh/'
         },
         '0.10.0': {
             '/en/html/':    '/en/',
@@ -46,8 +45,6 @@ def sphinx(generated_documentation_dir, version, output_dir_name):
         for file in all_files:
             subpath = os.path.join(subdir, file)[len(
                 generated_documentation_dir):]
-            subpath_language_dir = None
-
             if version in new_path_map:
                 subpath_language_dirs = new_path_map[version].keys()
 
@@ -60,12 +57,7 @@ def sphinx(generated_documentation_dir, version, output_dir_name):
 
                         if '.html' in file or '_images' in subpath or '.txt' in file or '.json' in file:
                             if not os.path.exists(os.path.dirname(new_path)):
-                                try:
-                                    # os.path.exists sometimes doesn't work with relative paths, so we just prevent app
-                                    # from crashing if the path exists method fails
-                                    os.makedirs(os.path.dirname(new_path))
-                                except Exception as e:
-                                    print(e)
+                                os.makedirs(os.path.dirname(new_path))
 
                         if '.html' in file:
                             # Soup the body of the HTML file.

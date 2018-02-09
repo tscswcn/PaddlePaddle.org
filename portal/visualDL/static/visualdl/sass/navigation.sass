@@ -206,23 +206,38 @@ body
     margin: $content-padding 16px 0 16px
 
     ol,ul
-        padding-left: 12px
         margin-bottom: 0px
-        border-left: 2px solid $theme-color
 
+        &:first-child
+            border-left: 2px solid $theme-color
+
+        &:first-child,&:nth-child(2)
+            padding-left: 18px
         a
             width: 100%
-            display: block
+            display: inline
             white-space: nowrap
             text-overflow: ellipsis
             overflow: hidden
             color: $primary-text-color
+
             &:hover,&.active
                 color: $accent-color
 
-        li
-            a
-                padding-left: 15px
+        .toggle
+            display: inline
+            padding-right: 22px
+            margin: -18px
+
+            &:before
+                content: "\f146"
+
+            &.hidden
+                display: none
+
+            &.collapsed
+                &:before
+                    content: "\f0fe"
 
 @media (min-width: 992px)
     .panel-layout

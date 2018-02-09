@@ -10,7 +10,7 @@ var PermalinkNav = {
 
         if (navContainer.length) {
             $(navContainer).empty();
-            permalinks = $(".doc-content").find("h1,h2");
+            permalinks = $(".doc-content").find("h1,h2,h3");
 
             if (permalinks.length <= 1) {
                 navContainer.hide();
@@ -21,7 +21,13 @@ var PermalinkNav = {
 
                 var maxIdLength = 30;
                 var index = 0;
-                var containerOl;
+
+                var containerRoot = $("<ol/>");
+                navContainer.append(containerRoot);
+
+                var containerH1;
+                var containerH2;
+
                 permalinks.each(function(index) {
                     var header = $(this);
 
@@ -38,6 +44,10 @@ var PermalinkNav = {
                         headerText = firstAnchor.text();
                     }
 
+                    if (headerText == '¶') {
+                        headerText = '';
+                    }
+
                     if (!headerId) {
                         // Create a permalink id on header (if header does not have an id already)
                         headerId = ("permalink-" + index + "-" + headerText.replace(/\W+/g, "-")).toLowerCase();
@@ -49,22 +59,52 @@ var PermalinkNav = {
                     }
 
                     if (header.is("h1")) {
-                        containerOl = $("<ol/>");
-                        var link = "#" + headerId;
-                        var linkElement = $('<a />', { text: headerText, href: link, title: headerText })
-                        containerOl.append(linkElement);
-                        navContainer.append(containerOl);
-                    } else if (header.is("h2")) {
-                        if (containerOl == null) {
-                            containerOl = $("<ol/>");
-                            navContainer.append(containerOl);
-                        }
+                        containerH1 = $("<ol/>");
+                        containerH2 = null;
 
                         var link = "#" + headerId;
                         var linkElement = $('<a />', { text: headerText, href: link, title: headerText })
                         var containerLi = $("<li/>");
                         containerLi.append(linkElement);
-                        containerOl.append(containerLi);
+
+                        containerRoot.append(containerLi);
+                        containerLi.append(containerH1);
+                    } else if (header.is("h2")) {
+                        var containerId = 'permalink-container-' + index;
+                        containerH2 = $("<ol/>", { id: containerId, class: 'collapse' });
+
+                        var link = "#" + headerId;
+                        var linkElement = $('<a />', { text: headerText, href: link, title: headerText });
+                        var containerLi = $("<li/>");
+
+                        var toggle = $('<i />', { class: 'toggle hidden collapsed far fa-plus-square'});
+                        toggle.attr('data-toggle', 'collapse');
+                        toggle.attr('data-target', '#' + containerId);
+
+                        containerLi.append(toggle);
+                        containerLi.append(linkElement);
+
+                        var container = containerRoot;
+                        if (containerH1 != null) {
+                            container = containerH1;
+                        }
+
+                        container.append(containerLi);
+                        containerLi.append(containerH2);
+                    } else if (header.is("h3")) {
+                        var link = "#" + headerId;
+                        var linkElement = $('<a />', { text: headerText, href: link, title: headerText })
+                        var containerLi = $("<li/>");
+                        containerLi.append(linkElement);
+
+                        var container = containerRoot;
+                        if (containerH2 != null) {
+                            container = containerH2;
+                            $(containerH2).parent().find('.toggle').removeClass('hidden');
+                        } else if (containerH1 != null) {
+                            container = containerH1;
+                        }
+                        container.append(containerLi);
                     }
                 });
 
