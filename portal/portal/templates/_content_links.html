@@ -13,7 +13,7 @@
     {% endif %}
 
     {% for chapter in side_nav_content.sections %}
-    <ol class="chapter">
+    <ol class="content-links chapter">
         {% translation_assignment chapter.title as chapter_title %}
         {% translation_assignment chapter.link as chapter_link %}
         {% if chapter_title != None %}
