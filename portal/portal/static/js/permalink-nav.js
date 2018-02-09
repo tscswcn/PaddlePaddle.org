@@ -9,15 +9,17 @@ var PermalinkNav = {
         navContainer = $(navContainerSelector);
 
         if (navContainer.length) {
+            $(navContainer).empty();
             permalinks = $(".doc-content").find("h1,h2");
 
             if (permalinks.length <= 1) {
-                navContainer.hide()
+                navContainer.hide();
+                $(".doc-content").removeClass('with-permalink-nav');
             } else {
-                var maxIdLength = 30;
-
+                navContainer.show();
                 $(".doc-content").addClass('with-permalink-nav');
 
+                var maxIdLength = 30;
                 var index = 0;
                 var containerOl;
                 permalinks.each(function(index) {
@@ -114,4 +116,8 @@ var PermalinkNav = {
 
 $(function(){
     PermalinkNav.init(".permalinks-nav");
+
+    $( document ).on( "content-updated", function( event, arg1, arg2 ) {
+        PermalinkNav.init(".permalinks-nav");
+    });
 })
