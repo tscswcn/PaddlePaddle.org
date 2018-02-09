@@ -25,12 +25,6 @@ def transform(original_documentation_dir, generated_docs_dir, version, options=N
             print 'Cannot strip documentation, source_dir=%s does not exists' % original_documentation_dir
             return
 
-        doc_generator = None
-        convertor = None
-        sm_generators = None
-        post_generator = None
-        output_dir_name = None
-
         if original_documentation_dir:
             original_documentation_dir = original_documentation_dir.rstrip('/')
 
@@ -44,67 +38,78 @@ def transform(original_documentation_dir, generated_docs_dir, version, options=N
         # If this seems like a request to build/transform the core Paddle docs.
         content_id = portal_helper.FOLDER_MAP_TO_CONTENT_ID.get(path_base_name, None)
         if content_id == Content.DOCUMENTATION:
-            doc_generator = documentation_generator.generate_paddle_docs
-            convertor = strip.sphinx
-            sm_generators = [sitemap_generator.paddle_sphinx_sitemap, sitemap_generator.paddle_api_sphinx_sitemap]
+            # Generate Paddle Documentation
+            _execute(original_documentation_dir, generated_docs_dir, version, content_id,
+                     documentation_generator.generate_paddle_docs, strip.sphinx,
+                     sitemap_generator.paddle_sphinx_sitemap, None, options)
+
+            # Generate Paddle API Documentation
+            output_dir_name = Content.API
+            if generated_docs_dir:
+                # Since Paddle API documents exists as a subdirectory 'api' within paddle docs, we append 'api' to it
+                generated_docs_dir = '%s/%s' % (generated_docs_dir, output_dir_name)
+
+            # TODO(thuan): Fix document generator for API documentation.  For now, we are only going to support
+            #   stripping/generating sitemaps for pre generated Paddle documentation
+            _execute(original_documentation_dir, generated_docs_dir, version, 'api',
+                     documentation_generator.generate_paddle_docs, strip.sphinx,
+                     sitemap_generator.paddle_api_sphinx_sitemap, None, options)
 
         # Or if this seems like a request to build/transform the book.
         elif content_id == Content.BOOK:
-            doc_generator = documentation_generator.generate_book_docs
-            convertor = strip.default
-            sm_generators = [sitemap_generator.book_sitemap]
+            _execute(original_documentation_dir, generated_docs_dir, version, content_id,
+                     documentation_generator.generate_book_docs, strip.default,
+                     sitemap_generator.book_sitemap, None, options)
 
         # Or if this seems like a request to build/transform the models.
         elif content_id == Content.MODELS:
-            doc_generator = documentation_generator.generate_models_docs
-            convertor = strip.default
-            sm_generators = [sitemap_generator.models_sitemap]
+            _execute(original_documentation_dir, generated_docs_dir, version, content_id,
+                     documentation_generator.generate_models_docs, strip.default,
+                     sitemap_generator.models_sitemap, None, options)
 
         elif content_id == Content.MOBILE:
-            doc_generator = documentation_generator.generate_mobile_docs
-            convertor = strip.default
-            sm_generators = [sitemap_generator.mobile_sitemap]
+            _execute(original_documentation_dir, generated_docs_dir, version, content_id,
+                     documentation_generator.generate_mobile_docs, strip.default,
+                     sitemap_generator.mobile_sitemap, None, options)
 
         elif content_id == Content.BLOG:
-            doc_generator = documentation_generator.generate_blog_docs
-
-            # move the folder _site/ from generated_docs_dir to content_dir
-            convertor = strip.default
-            sm_generators = None
+            _execute(original_documentation_dir, generated_docs_dir, version, content_id,
+                     documentation_generator.generate_blog_docs, strip.default,
+                     None, None, options)
 
         elif content_id == Content.VISUALDL:
-            doc_generator = documentation_generator.generate_visualdl_docs
-            convertor = strip.sphinx
-            sm_generators = [sitemap_generator.visualdl_sphinx_sitemap]
+            _execute(original_documentation_dir, generated_docs_dir, version, content_id,
+                     documentation_generator.generate_visualdl_docs, strip.sphinx,
+                     sitemap_generator.visualdl_sphinx_sitemap, None, options)
 
         else:
             raise Exception('Unsupported content.')
 
-        output_dir_name = content_id
-
-        if not generated_docs_dir:
-            # If we have not already generated the documentation, then run the document generator
-            print 'Generating documentation at %s' % original_documentation_dir
-            if doc_generator:
-                generated_docs_dir = doc_generator(original_documentation_dir, output_dir_name, options)
-
-        if post_generator:
-            # Run any post generator steps
-            post_generator(generated_docs_dir, output_dir_name)
-
-        print 'Stripping documentation at %s, version %s' % (generated_docs_dir, version)
-        if convertor:
-            convertor(generated_docs_dir, version, output_dir_name)
-
-        print 'Generating sitemap for documentation at %s, gen_docs_dir=%s,  version %s' % \
-              (original_documentation_dir, generated_docs_dir, version)
-        if sm_generators:
-            for sm_generator in sm_generators:
-                sm_generator(original_documentation_dir, generated_docs_dir, version, output_dir_name)
-
     except Exception as e:
         print 'Unable to process documentation: %s' % e
         traceback.print_exc(original_documentation_dir)
+
+
+def _execute(original_documentation_dir, generated_docs_dir, version, output_dir_name, doc_generator,
+             convertor, sm_generator, post_generator, options=None):
+    if not generated_docs_dir:
+        # If we have not already generated the documentation, then run the document generator
+        print 'Generating documentation at %s' % original_documentation_dir
+        if doc_generator:
+            generated_docs_dir = doc_generator(original_documentation_dir, output_dir_name, options)
+
+    if post_generator:
+        # Run any post generator steps
+        post_generator(generated_docs_dir, output_dir_name)
+
+    print 'Stripping documentation at %s, version %s' % (generated_docs_dir, version)
+    if convertor:
+        convertor(generated_docs_dir, version, output_dir_name)
+
+    print 'Generating sitemap for documentation at %s, gen_docs_dir=%s,  version %s' % \
+          (original_documentation_dir, generated_docs_dir, version)
+    if sm_generator:
+        sm_generator(original_documentation_dir, generated_docs_dir, version, output_dir_name)
 
 
 def fetch_and_transform(source_url, version):

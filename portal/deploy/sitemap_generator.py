@@ -18,12 +18,6 @@ def paddle_sphinx_sitemap(original_documentation_dir, generated_documentation_di
 
 
 def paddle_api_sphinx_sitemap(original_documentation_dir, generated_documentation_dir, version, output_dir_name):
-    # We override the output dir to point for API documentation so sitemaps can be generated in api dir
-    output_dir_name = SphinxContent.PADDLE_API
-    if generated_documentation_dir:
-        # Since Paddle API documents exists as a subdirectory 'api' within paddle docs, we append 'api' to it
-        generated_documentation_dir = '%s/%s' % (generated_documentation_dir, output_dir_name)
-
     _sphinx_sitemap(original_documentation_dir, generated_documentation_dir, version, output_dir_name, SphinxContent.PADDLE_API)
 
 
@@ -109,10 +103,12 @@ def _create_paddle_sphinx_site_map_from_index(index_html_path, language, content
       </nav>
     """
 
+    allow_parent_links = True
     title_en = 'Documentation'
     title_zh = '使用文档'
 
     if content_id == Content.API:
+        allow_parent_links = False  # We do not allow parent links for API section
         title_en = 'API'
         title_zh = 'API'
 
@@ -130,7 +126,7 @@ def _create_paddle_sphinx_site_map_from_index(index_html_path, language, content
             if chapters_container:
 
                 for chapter in chapters_container.find_all('li', recursive=False):
-                    _create_sphinx_site_map(chapters, chapter, language, content_id, link_language_prefix)
+                    _create_sphinx_site_map(chapters, chapter, language, content_id, allow_parent_links, link_language_prefix)
         else:
             print 'Cannot generate sphinx sitemap, nav.doc-menu-vertical not found in %s' % index_html_path
 
@@ -159,7 +155,7 @@ def _create_visualdl_sphinx_site_map_from_index(index_html_path, language):
         return sitemap
 
 
-def _create_sphinx_site_map(parent_list, node, language, content_id, link_language_prefix=None):
+def _create_sphinx_site_map(parent_list, node, language, content_id, allow_parent_links=True, link_language_prefix=None):
     """
     Recursive function to append links to a new parent list object by going down the
     nested lists inside the HTML, using BeautifulSoup tree parser.
@@ -176,7 +172,12 @@ def _create_sphinx_site_map(parent_list, node, language, content_id, link_langua
             link_language = link_language_prefix if link_language_prefix else language
             link_url = '/%s/%s/%s' % (content_id, link_language, first_link['href'])
             node_dict['title'] = OrderedDict({ language: first_link.text })
-            if not sections:
+
+            if allow_parent_links:
+                # If we allow parent links, then we will add the link to the parent no matter what
+                node_dict['link'] = OrderedDict({language: link_url})
+            elif not sections:
+                # If parent links are not allowed, and the parent does not have children then add a link
                 node_dict['link'] = OrderedDict({ language: link_url})
 
         for section in sections:
@@ -186,7 +187,7 @@ def _create_sphinx_site_map(parent_list, node, language, content_id, link_langua
                 node_dict['sections'] = []
 
                 for sub_section in sub_sections:
-                    _create_sphinx_site_map(node_dict['sections'], sub_section, language, content_id, link_language_prefix)
+                    _create_sphinx_site_map(node_dict['sections'], sub_section, language, content_id, allow_parent_links, link_language_prefix)
 
 
 def inject_operators_link(sitemap, lang):
