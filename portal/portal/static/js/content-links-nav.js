@@ -77,4 +77,8 @@ $(function(){
             ContentLinksNav.updatePage(e.state);
         }
     };
+
+    $( document ).on( "content-updated", function( event ) {
+        $('#sidebar-nav').removeClass('show');
+    });
 })
