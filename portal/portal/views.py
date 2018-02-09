@@ -264,26 +264,31 @@ def _render_static_content(request, version, content_id, additional_context=None
     This is the primary function that renders all static content (.html) pages.
     It builds the context and passes it to the only documentation template rendering template.
     """
-
+    isRaw = request.GET.get('raw', None)
     static_content_path = sitemap_helper.get_external_file_path(request.path)
+    static_content = _get_static_content_from_template(static_content_path)
 
-    context = {
-        'static_content': _get_static_content_from_template(static_content_path),
-        'content_id': content_id,
-    }
+    if isRaw and isRaw == '1':
+        response = HttpResponse(static_content, content_type="text/html")
+        return response
+    else:
+        context = {
+            'static_content': static_content,
+            'content_id': content_id,
+        }
 
-    if additional_context:
-        context.update(additional_context)
+        if additional_context:
+            context.update(additional_context)
 
-    template = 'content_panel.html'
-    if content_id in [Content.MOBILE, Content.MODELS]:
-        template = 'content_doc.html'
+        template = 'content_panel.html'
+        if content_id in [Content.MOBILE, Content.MODELS]:
+            template = 'content_doc.html'
 
-    response = render(request, template, context)
-    if version:
-        portal_helper.set_preferred_version(request, response, version)
+        response = render(request, template, context)
+        if version:
+            portal_helper.set_preferred_version(request, response, version)
 
-    return response
+        return response
 
 
 ######## Paths and content roots below ########################
