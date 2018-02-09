@@ -45,9 +45,6 @@ def sphinx(generated_documentation_dir, version, output_dir_name):
         for file in all_files:
             subpath = os.path.join(subdir, file)[len(
                 generated_documentation_dir):]
-            subpath_language_dir = None
-
-            print(subpath)
             if version in new_path_map:
                 subpath_language_dirs = new_path_map[version].keys()
 
