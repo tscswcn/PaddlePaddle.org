@@ -401,6 +401,8 @@ def content_sub_path(request, version, path=None):
 
     elif path.startswith(url_helper.API_ROOT):
         content_id = Content.API
+        search_url = '%s/%s/search.html' % (content_id, 'en')
+        additional_context = {'allow_search': True, 'search_url': search_url}
 
     if settings.CURRENT_PPO_MODE == settings.PPO_MODES.DOC_EDIT_MODE:
         additional_context['form'] = PaddleOperatorsForm()
