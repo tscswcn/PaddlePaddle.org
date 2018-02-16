@@ -1,4 +1,5 @@
 import os
+import re
 from shutil import copyfile, copytree, rmtree
 import codecs
 
@@ -83,7 +84,8 @@ def sphinx(original_documentation_dir, generated_documentation_dir, version, out
 
                                 with open(new_path) as original_html_file:
                                     soup = BeautifulSoup(original_html_file, 'lxml')
-                                    image_links = soup.select('img[src^=%s]' % 'src/')
+
+                                    image_links = soup.find_all('img', src=re.compile(r'^(?!http).*'))
 
                                     if len(image_links) > 0:
                                         for image_link in image_links:
