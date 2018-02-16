@@ -8,7 +8,7 @@ import markdown
 from django.conf import settings
 
 
-def sphinx(generated_documentation_dir, version, output_dir_name):
+def sphinx(original_documentation_dir, generated_documentation_dir, version, output_dir_name):
     """
     Strip out the static and extract the body contents, ignoring the TOC,
     headers, and body.
@@ -61,17 +61,53 @@ def sphinx(generated_documentation_dir, version, output_dir_name):
 
                         if '.html' in file:
                             # Soup the body of the HTML file.
-                            with open(os.path.join(subdir, file)) as original_html_file:
-                                soup = BeautifulSoup(original_html_file, 'lxml')
+                            # Check if this HTML was generated from Markdown
+                            original_md_path = get_original_markdown_path(original_documentation_dir,
+                                                                          subdir, subpath_language_dir, file)
+                            if original_md_path:
+                                # If this html file was generated from Sphinx MD, we need to regenerate it using python's
+                                # MD library.  Sphinx MD library is limited and doesn't support tables
+                                markdown_file(original_md_path, version, '', new_path)
 
-                            document = None
-                            # Find the .document element.
-                            if version == '0.9.0':
-                                document = soup.select('div.body')[0]
+                                # Since we are ignoring SPHINX's generated HTML for MD files (and generating HTML using
+                                # python's MD library), we must fix any image links that starts with 'src/'.
+                                image_subpath = None
+                                relative_path = _find_relative_path(subdir, subpath_language_dir)
+                                if relative_path:
+                                    # figure out the relative path of the file to the root, and append a ../ on each parent
+                                    parent_paths = relative_path.split('/')
+                                    image_subpath = ''
+                                    for i in range(len(parent_paths)):
+                                        image_subpath = image_subpath + '../'
+                                    image_subpath += '_images'  # hardcode the sphinx '_images' dir
+
+                                with open(new_path) as original_html_file:
+                                    soup = BeautifulSoup(original_html_file, 'lxml')
+                                    image_links = soup.select('img[src^=%s]' % 'src/')
+
+                                    if len(image_links) > 0:
+                                        for image_link in image_links:
+                                            image_file_name = os.path.basename(image_link['src'])
+
+                                            if image_subpath:
+                                                image_link['src'] = '%s/%s' % (image_subpath, image_file_name)
+                                            else:
+                                                image_link['src'] = '_images/%s' % (image_file_name)
+
+                                        with open(new_path, 'w') as new_html_partial:
+                                            new_html_partial.write(soup.encode("utf-8"))
                             else:
-                                document = soup.select('div.document')[0]
-                            with open(new_path, 'w') as new_html_partial:
-                                new_html_partial.write(document.encode("utf-8"))
+                                with open(os.path.join(subdir, file)) as original_html_file:
+                                    soup = BeautifulSoup(original_html_file, 'lxml')
+
+                                document = None
+                                # Find the .document element.
+                                if version == '0.9.0':
+                                    document = soup.select('div.body')[0]
+                                else:
+                                    document = soup.select('div.document')[0]
+                                with open(new_path, 'w') as new_html_partial:
+                                    new_html_partial.write(document.encode("utf-8"))
                         elif '_images' in subpath or '.txt' in file or '.json' in file:
                             # Copy to images directory.
                             copyfile(os.path.join(subdir, file), new_path)
@@ -79,7 +115,34 @@ def sphinx(generated_documentation_dir, version, output_dir_name):
                             copyfile(os.path.join(subdir, file), new_path)
 
 
-def default(generated_documentation_dir, version, output_dir_name):
+def _find_relative_path(path, subpath_language_dir):
+    relative_path = ''
+    loc = path.find(subpath_language_dir)
+    if loc != -1:
+        relative_path = path[loc + len(subpath_language_dir):].strip("/")
+    return relative_path
+
+
+def get_original_markdown_path(original_documentation_dir, path, subpath_language_dir, file):
+    """
+    Finds the path of the original MD file that generated the html file located at "path"
+    :param original_documentation_dir:
+    :param path:
+    :param subpath_language_dir:
+    :param file:
+    :return:
+    """
+    relative_path = _find_relative_path(path, subpath_language_dir)
+    filename, _ = os.path.splitext(file)
+    original_file_path = '%s/doc/%s/%s.md' % (original_documentation_dir, relative_path, filename)
+
+    if os.path.isfile(original_file_path):
+        return original_file_path
+    else:
+        return None
+
+
+def default(original_documentation_dir, generated_documentation_dir, version, output_dir_name):
     """
     Generates and moves generated output from a source directory to an output
     one, without any transformations or build steps.
@@ -92,14 +155,15 @@ def default(generated_documentation_dir, version, output_dir_name):
     copytree(generated_documentation_dir, destination_documentation_dir)
 
 
-def markdown_file(source_markdown_file, version, tmp_dir):
+def markdown_file(source_markdown_file, version, tmp_dir, new_path=None):
     """
     Given a markdown file path, generate an HTML partial in a directory nested
     by the path on the URL itself.
     """
-    new_path = settings.OTHER_PAGE_PATH % (
-        settings.EXTERNAL_TEMPLATE_DIR, version, os.path.splitext(
-        source_markdown_file.replace(tmp_dir, ''))[0] + '.html')
+    if not new_path:
+        new_path = settings.OTHER_PAGE_PATH % (
+            settings.EXTERNAL_TEMPLATE_DIR, version, os.path.splitext(
+            source_markdown_file.replace(tmp_dir, ''))[0] + '.html')
 
     # Create the nested directories if they don't exist.
     if not os.path.exists(os.path.dirname(new_path)):

@@ -104,7 +104,7 @@ def _execute(original_documentation_dir, generated_docs_dir, version, output_dir
 
     print 'Stripping documentation at %s, version %s' % (generated_docs_dir, version)
     if convertor:
-        convertor(generated_docs_dir, version, output_dir_name)
+        convertor(original_documentation_dir, generated_docs_dir, version, output_dir_name)
 
     print 'Generating sitemap for documentation at %s, gen_docs_dir=%s,  version %s' % \
           (original_documentation_dir, generated_docs_dir, version)
