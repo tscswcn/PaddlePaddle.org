@@ -28,14 +28,14 @@ fi
 # TODO[thuan]: Make document generator work with paddle fluid and paddle operators docs
 
 # Compile Documentation only.
-cmake "$DOCS_LOCATION" -DCMAKE_BUILD_TYPE=Debug -DWITH_GPU=OFF -DWITH_MKL=OFF -DWITH_DOC=ON
+cmake "$DOCS_LOCATION" -DCMAKE_BUILD_TYPE=Release -DWITH_GPU=OFF -DWITH_MKL=OFF -DWITH_DOC=ON -DWITH_STYLE_CHECK=OFF
 
 if [ $BUILD_TYPE = "DOC_LITE" ]; then
     make -j $processors gen_proto_py
     make -j $processors paddle_docs paddle_docs_cn
 elif [ $BUILD_TYPE = "DOC_FULL" ]; then
-    make -j $processors gen_proto_py
-    make -j $processors paddle_python
+    make -j $processors gen_proto_py framework_py_proto
+    make -j $processors copy_paddle_pybind
     make -j $processors paddle_docs paddle_docs_cn paddle_api_docs
 fi
 
