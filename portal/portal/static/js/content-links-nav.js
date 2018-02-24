@@ -13,13 +13,12 @@ var ContentLinksNav = {
 
                 if (!url.startsWith('#')) {
                     if (url != document.location.href) {
-                        self.updatePage(url, function() {
-                            if (history.pushState) {
-                                window.history.pushState(url, document.title, url);
-                            } else {
-                                document.location.href = url;
-                            }
-                        });
+                        if (history.pushState) {
+                            window.history.pushState(url, document.title, url);
+                        } else {
+                            document.location.href = url;
+                        }
+                        self.updatePage(url, function() {});
                     }
                     e.preventDefault();
                     e.stopPropagation();
