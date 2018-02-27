@@ -18,8 +18,7 @@ RUN /bin/bash -c 'if [[ -n ${UBUNTU_MIRROR} ]]; then sed -i 's#http://archive.ub
 # Update the default application repository sources list
 RUN apt-get update && apt-get install -y \
     nginx \
-    gettext \
-    python-wheel
+    gettext
 
 ENV GOROOT=/usr/local/go GOPATH=/root/gopath
 # should not be in the same line with GOROOT definition, otherwise docker build could not find GOROOT.
@@ -34,11 +33,8 @@ COPY . .
 EXPOSE 8000
 
 WORKDIR /var/www/portal
-# set proxy if download slowly
-#ENV https_proxy=172.19.32.166:3128
+RUN pip uninstall -y numpy
 RUN pip install -r requirements.txt
-# unset it if setted
-#ENV https_proxy=""
 
 COPY ./docker-entrypoint.sh .
 COPY ./django_nginx.conf /etc/nginx/sites-available/
