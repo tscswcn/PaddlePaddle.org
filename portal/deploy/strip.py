@@ -179,7 +179,8 @@ def markdown_file(source_markdown_file, version, tmp_dir, new_path=None):
             new_html_partial.write(
                 '{% verbatim %}\n' + markdown.markdown(
                     unicode(markdown_body, 'utf-8'),
-                    extensions=['markdown.extensions.fenced_code', 'markdown.extensions.tables']
+                    extensions=['markdown.extensions.fenced_code', 'markdown.extensions.tables', 'pymdownx.superfences',
+    'pymdownx.escapeall']
                 ) + '\n{% endverbatim %}'
             )
 
