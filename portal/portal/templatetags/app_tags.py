@@ -110,6 +110,7 @@ def content_links(context, content_id):
     return _common_context(context, {
         'side_nav_content': side_nav_content,
         'allow_search': context.get('allow_search', False),
+        'allow_version': context.get('allow_version', False),
         'search_url': context.get('search_url', None)
     })
 
