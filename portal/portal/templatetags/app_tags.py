@@ -117,7 +117,7 @@ def content_links(context, content_id):
 
 @register.inclusion_tag('_version_links.html', takes_context=True)
 def version_links(context, content_id):
-    versions = sitemap_helper.get_available_versions()
+    versions = sitemap_helper.get_available_versions(content_id)
 
     is_hidden = True
     if context.template and content_id:

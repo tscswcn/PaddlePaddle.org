@@ -247,7 +247,7 @@ def _get_sitemap_path(version, language):
     return '%s/sitemap.%s.%s.json' % (settings.RESOLVED_SITEMAP_DIR, version, language)
 
 
-def get_available_versions():
+def get_available_versions(content_id=None):
     """
     Go through all the generated folders inside the parent content directory's
     versioned `docs` dir, and return a list of the first-level of subdirectories.
@@ -267,6 +267,13 @@ def get_available_versions():
 
     if versions:
         for version in versions:
+            if content_id:
+                folder_path = '%s/%s/%s' % (path, version, content_id)
+                if not os.path.isdir(folder_path):
+                    # If content_id folder does not exists in versioned directory,
+                    # then don't add it to list of available versions
+                    continue
+
             normalized_version = version.split('.')
             if len(normalized_version) > 1:
                 number_based_version.append(version)
