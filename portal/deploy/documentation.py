@@ -44,11 +44,6 @@ def transform(original_documentation_dir, generated_docs_dir, version, options=N
                      sitemap_generator.paddle_sphinx_sitemap, None, options)
 
             # Generate Paddle API Documentation
-            output_dir_name = Content.API
-            if generated_docs_dir:
-                # Since Paddle API documents exists as a subdirectory 'api' within paddle docs, we append 'api' to it
-                generated_docs_dir = '%s/%s' % (generated_docs_dir, output_dir_name)
-
             # TODO(thuan): Fix document generator for API documentation.  For now, we are only going to support
             #   stripping/generating sitemaps for pre generated Paddle documentation
             _execute(original_documentation_dir, generated_docs_dir, version, 'api',
