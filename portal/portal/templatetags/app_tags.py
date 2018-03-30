@@ -53,11 +53,19 @@ def translation_assignment(context, leaf_node):
 
 
 @register.assignment_tag(takes_context=True)
-def first_book_url_assignment(context, book):
+def first_book_url_assignment(context, book, content_id):
     # Finds the first url in the book in the default category
     if book and 'default-category' in book:
-        default_category = book['default-category']
-        leaf_node = book['categories'][default_category]
+        category = book['default-category']
+
+        if content_id == portal_helper.Content.DOCUMENTATION or \
+           content_id == portal_helper.Content.API:
+            # For Documentation or API, we also filter by category
+            api_category = context.get('CURRENT_API_VERSION', None)
+            if api_category:
+                category = api_category
+
+        leaf_node = book['categories'][category]
         if ('link' in leaf_node):
             return translation(context, leaf_node['link'])
 
@@ -113,7 +121,7 @@ def content_links(context, content_id):
     current_lang_code = context.request.LANGUAGE_CODE
     docs_version = context.get('CURRENT_DOCS_VERSION', None)
 
-    side_nav_content = sitemap_helper.get_content_navigation(
+    side_nav_content, category = sitemap_helper.get_content_navigation(
         context.request,
         content_id,
         docs_version,
@@ -122,6 +130,7 @@ def content_links(context, content_id):
 
     return _common_context(context, {
         'side_nav_content': side_nav_content,
+        'category': category,
         'allow_search': context.get('allow_search', False),
         'allow_version': context.get('allow_version', False),
         'search_url': context.get('search_url', None)
@@ -129,7 +138,7 @@ def content_links(context, content_id):
 
 
 @register.inclusion_tag('_version_links.html', takes_context=True)
-def version_links(context, content_id):
+def version_links(context, content_id, category):
     if content_id == portal_helper.Content.DOCUMENTATION or \
                     content_id == portal_helper.Content.API:
         # API section needs to be additonally filtered by API Version
@@ -147,6 +156,7 @@ def version_links(context, content_id):
 
     return _common_context(context, {
         'versions': versions,
+        'category': category,
         'is_hidden': is_hidden
     })
 

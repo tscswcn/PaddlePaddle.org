@@ -57,7 +57,7 @@ def change_version(request):
 
     if content_id:
         if content_id in root_navigation and root_navigation[content_id]:
-            response = _redirect_first_link_in_contents(request, preferred_version, content_id)
+            response = _redirect_first_link_in_contents(request, preferred_version, content_id, api_version)
         else:
             # This version doesn't support this book. Redirect it back to home
             response = redirect('/')
@@ -66,7 +66,7 @@ def change_version(request):
     elif root_navigation and len(root_navigation) > 0:
         for content_id, content in root_navigation.items():
             if content:
-                response = _redirect_first_link_in_contents(request, preferred_version, content_id)
+                response = _redirect_first_link_in_contents(request, preferred_version, content_id, api_version)
 
     portal_helper.set_preferred_version(response, preferred_version)
     portal_helper.set_preferred_api_version(response, api_version)
@@ -162,7 +162,7 @@ def reload_docs(request):
         return HttpResponseServerError("Cannot reload docs: %s" % e)
 
 
-def _redirect_first_link_in_contents(request, version, content_id):
+def _redirect_first_link_in_contents(request, version, content_id, category=None):
     """
     Given a version and a content service, redirect to the first link in it's
     navigation.
@@ -173,7 +173,7 @@ def _redirect_first_link_in_contents(request, version, content_id):
     try:
         # Get the first section link from the content.
         content = root_navigation[content_id]
-        path = _get_first_link_in_contents(content, lang)
+        path = _get_first_link_in_contents(content, lang, category)
 
         if not path:
             msg = 'Cannot perform reverse lookup on link: %s' % path
@@ -186,11 +186,16 @@ def _redirect_first_link_in_contents(request, version, content_id):
         return redirect('/')
 
 
-def _get_first_link_in_contents(content, lang):
+def _get_first_link_in_contents(book, lang, category):
     """
     Given a content's sitemap, and a language choice, get the first available link.
     """
-    if content:
+    if not category:
+        category = 'default'
+
+    if book and 'categories' in book and category in book['categories']:
+        content = book['categories'][category]
+
         # If there are sections in the root of the sitemap.
         first_chapter = None
         if content and 'sections' in content and len(content['sections']) > 0:
@@ -346,7 +351,11 @@ def content_sub_path(request, version, path=None):
     if path.startswith(url_helper.DOCUMENTATION_ROOT):
         content_id = Content.DOCUMENTATION
         lang = portal_helper.get_preferred_language(request)
+
         search_url = '%s/%s/search.html' % (content_id, lang)
+        if path.startswith(url_helper.DOCUMENTATION_ROOT + 'fluid'):
+            search_url = '%s/fluid/%s/search.html' % (content_id, lang)
+
         additional_context = { 'allow_search': True, 'allow_version': True, 'search_url': search_url }
 
     elif path.startswith(url_helper.VISUALDL_ROOT):
@@ -363,7 +372,11 @@ def content_sub_path(request, version, path=None):
 
     elif path.startswith(url_helper.API_ROOT):
         content_id = Content.API
+
         search_url = '%s/%s/search.html' % (content_id, 'en')
+        if path.startswith(url_helper.API_ROOT + 'fluid'):
+            search_url = '%s/fluid/%s/search.html' % (content_id, 'en')
+
         additional_context = {'allow_search': True, 'allow_version': True, 'search_url': search_url}
 
 

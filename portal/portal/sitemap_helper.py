@@ -247,7 +247,7 @@ def get_content_navigation(request, content_id, version, language):
 
         category_data = book['categories'][category]
 
-    return category_data
+    return category_data, category
 
 
 def get_doc_subpath(version):
