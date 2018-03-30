@@ -43,6 +43,7 @@ def change_version(request):
     """
     # Look for a new version in the URL get params.
     preferred_version = request.GET.get('preferred_version', settings.DEFAULT_DOCS_VERSION)
+    api_version = request.GET.get('api_version', None)
 
     # Refers to the name of the contents service, for eg. 'models', 'documentation', or 'book'.
     content_id = request.GET.get('content_id', None)
@@ -67,7 +68,8 @@ def change_version(request):
             if content:
                 response = _redirect_first_link_in_contents(request, preferred_version, content_id)
 
-    portal_helper.set_preferred_version(request, response, preferred_version)
+    portal_helper.set_preferred_version(response, preferred_version)
+    portal_helper.set_preferred_api_version(response, api_version)
 
     return response
 
@@ -208,33 +210,6 @@ def _get_first_link_in_contents(content, lang):
             return content['link'][lang]
 
 
-def _get_translated_link_in_content(content_id, version, target_link, lang):
-    """
-    For a given content service and version and link, return a related page in
-    the desired language.
-    """
-    side_nav_content = sitemap_helper.get_content_navigation(content_id, version, lang)
-
-    # Go through each level, and find the matching URL,
-    # Once found, check if there is translated link.
-    # NOTE: Only 3 levels of sections nesting are supported right now.
-    for chapter_id, chapter in side_nav_content.iteritems():
-        if 'sections' in chapter:
-            for section in chapter['sections']:
-                if 'link' in section:
-                    link = section['link']
-                    if target_link in link.values():
-                        if lang in link:
-                            return link[lang]
-
-                elif 'sections' in section:
-                    for sub_section in section['sections']:
-                        if 'link' in sub_section:
-                            link = sub_section['link']
-                            if target_link in link.values():
-                                if lang in link:
-                                    return link[lang]
-
 
 def static_file_handler(request, path, extension, insecure=False, **kwargs):
     """
@@ -324,7 +299,7 @@ def home_root(request):
             return _redirect_first_link_in_contents(request, preferred_version, Content.DOCUMENTATION)
         else:
             response = render(request, 'index_doc_view_mode.html')
-            portal_helper.set_preferred_version(request, response, 'develop')
+            portal_helper.set_preferred_version(response, 'develop')
             return response
 
     else:
