@@ -154,17 +154,17 @@ def version_links(context, content_id):
 def _get_api_version_to_paddle_versions(content_id):
     versions = sitemap_helper.get_available_versions(content_id)
 
-    fluild_min_version = '0.11.0'
+    fluid_min_version = '0.12.0'
     v1v2_min_version = '0.9.0'  # TODO: Implement upper bounds for v1v2 once its deprecated
 
     api_version_to_paddle_version = [
         {
             'key': 'fluid',
             'title': 'Fluid',
-            'versions': [v for v in versions if sitemap_helper.is_version_greater_eq(v, fluild_min_version)]
+            'versions': [v for v in versions if sitemap_helper.is_version_greater_eq(v, fluid_min_version)]
         },
         {
-            'key': 'v2v1',
+            'key': 'v2/v1',
             'title': 'V2/V1',
             'versions': [v for v in versions if sitemap_helper.is_version_greater_eq(v, v1v2_min_version)]
         }
@@ -182,7 +182,8 @@ def _common_context(context, additional_context):
         'url_helper': context.get('url_helper', None),
         'settings': context.get('settings', None),
         'content_id': context.get('content_id', ''),
-        'CURRENT_DOCS_VERSION': context.get('CURRENT_DOCS_VERSION', '')
+        'CURRENT_DOCS_VERSION': context.get('CURRENT_DOCS_VERSION', ''),
+        'CURRENT_API_VERSION': context.get('CURRENT_API_VERSION', '')
     })
 
     return additional_context

@@ -7,18 +7,18 @@
         "categories": {
             "fluid": {
                 "$ref": {
-                    "en": "fluid/site.en.json",
-                    "zh": "fluid/site.zh.json"
+                    "en": "documentation/fluid/site.en.json",
+                    "zh": "documentation/fluid/site.zh.json"
                 }
             },
-            "v2v1": {
+            "v2/v1": {
                 "$ref": {
                     "en": "documentation/site.en.json",
                     "zh": "documentation/site.zh.json"
                 }
             }
         },
-        "default-category": "v2v1"
+        "default-category": "v2/v1"
     },
     "api": {
         "title":{
@@ -28,18 +28,18 @@
         "categories": {
             "fluid": {
                 "$ref": {
-                    "en": "fluid/api/site.en.json",
-                    "zh": "fluid/api/site.zh.json"
+                    "en": "api/fluid/site.en.json",
+                    "zh": "api/fluid/site.zh.json"
                 }
             },
-            "v2v1": {
+            "v2/v1": {
                 "$ref": {
                     "en": "api/site.en.json",
                     "zh": "api/site.zh.json"
                 }
             }
         },
-         "default-category": "v2v1"
+         "default-category": "v2/v1"
     },
     "book": {
         "title":{
