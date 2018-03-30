@@ -84,6 +84,8 @@ def transform(original_documentation_dir, generated_docs_dir, version, options=N
                      None, None, options)
 
         elif content_id == Content.VISUALDL:
+            strip.remove_old_dir(version, content_id)
+
             _execute(original_documentation_dir, generated_docs_dir, version, content_id,
                      documentation_generator.generate_visualdl_docs, strip.sphinx,
                      sitemap_generator.visualdl_sphinx_sitemap, None, options)

@@ -18,7 +18,7 @@
                 }
             }
         },
-        "default-category": "v2/v1"
+        "default-category": "fluid"
     },
     "api": {
         "title":{
@@ -39,7 +39,7 @@
                 }
             }
         },
-         "default-category": "v2/v1"
+         "default-category": "fluid"
     },
     "book": {
         "title":{

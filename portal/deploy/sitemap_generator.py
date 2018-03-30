@@ -261,7 +261,6 @@ def _create_sphinx_site_map(parent_list, node, language, content_id, output_dir_
         if first_link:
             link_language = link_language_prefix if link_language_prefix else language
             link_url = '/%s/%s/%s' % (output_dir_name, link_language, first_link['href'])
-            print(link_url)
             node_dict['title'] = OrderedDict({ language: first_link.text })
 
             if allow_parent_links:
