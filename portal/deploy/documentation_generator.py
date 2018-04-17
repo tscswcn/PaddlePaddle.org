@@ -203,7 +203,7 @@ def generate_mobile_docs(original_documentation_dir, output_dir_name, options=No
 
                         # There are several links to the Paddle folder.
                         # We first extract those links and update them according to the languages.
-                        github_url = 'https://github.com/PaddlePaddle/Paddle/blob/develop/doc/'
+                        github_url = 'https://github.com/PaddlePaddle/Paddle/blob/develop/doc/mobile'
                         all_paddle_doc_links = soup.select('a[href^=%s]' % github_url)
                         for link in all_paddle_doc_links:
                             link_path, md_extension = os.path.splitext(link['href'])
