@@ -231,7 +231,7 @@ def _create_visualdl_sphinx_site_map_from_index(index_html_path, language, outpu
         sitemap['title'] = OrderedDict( { 'en': 'Documentation', 'zh': '文档'} )
         sitemap['sections'] = chapters
 
-        navs = BeautifulSoup(html, 'lxml').findAll('div', class_='toctree-wrapper compound')
+        navs = BeautifulSoup(html, 'lxml').findAll('nav', class_='doc-menu-vertical')
 
         if len(navs) > 0:
             chapters_container = navs[0].find('ul', recursive=True)
