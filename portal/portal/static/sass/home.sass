@@ -172,6 +172,21 @@
     padding: 20px
     background: linear-gradient(40deg, #ffffff, rgba(59, 133, 245, 0.3))
 
+    h2
+      text-align: left
+      font-size: 36px
+      color: #888888
+
+    p
+      color: #888888
+
+    a
+      color: #597cf1
+
+    code
+      font-size: 21px
+      color: #fff
+
     .row
       margin-top: 12px
       margin-bottom: 12px
@@ -182,25 +197,47 @@
 
     .install-option
       display: inline-block
-      background-color: #f4f5f7
-      border-radius: 6px
+      color: #3b85f5
+      background-color: transparent
+      border-color: #3b85f5
+      text-align: center
+      font-size: 21px
+      border-radius: 25px
       padding: 12px
       width: 100%
-      text-align: center
+      min-height: 56px
 
       &:hover
-        background-color: #efefef
+        color: #fff
+        background-color: #3b85f5
 
       &.selected
         color: #fff
-        background-color: #9977ef
+        background: linear-gradient(to bottom left, #3b85f5, #5a9bff)
 
     .other-install
-      display: inline-block
       float: right
-      background-color: #f4f5f7
-      border-radius: 6px
-      padding: 12px
+
+    .terminal
+      background-color: black
+      border-radius: 5px
+      overflow: hidden
+      margin-top: 12px
+      margin-bottom: 12px
+      height: calc(100% - 24px)
+
+      p
+        float: left
+        margin-left: 20px
+        margin-right: 20px
+        font-size: 21px
+        color: #3b85f5
+
+      .terminal-bar
+        background-color: rgba(59, 133, 245, 0.75)
+        height: 26px
+        margin-bottom: 10px
+
 
   .quick-start-guide
     h3

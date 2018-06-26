@@ -76,82 +76,65 @@
     <!-- Installation Guide Section -->
     <section class="installation-guide">
         <div class="container">
-        <div class="row">
-            <h2 class="col-lg-12">PaddlePaddle Installation</h2>
-        </div>
-        <div class="row">
-            <div class="left col-lg-4">
-                <div class="row">
-                    <h1 class="col-lg-12">Get Started</h1>
-                </div>
-
-                <p>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Scrupulum, inquam, abeunti; Huic mori
-                    optimum esse propter desperationem sapientiae, illi propter spem vivere. Ab his oratores, ab his
-                    imperatores ac rerum publicarum principes extiterunt. Ut in geometria, prima si dederis, danda sunt
-                    omnia.
-                </p>
+            <div class="row">
+                <h2 class="col-lg-12">Install</h2>
             </div>
-            <div class="right col-lg-8">
-                <div class="row">
-                    <div class="col-3">
-                        <p>Processor</p>
+            <div class="row">
+                <p class="col-lg-12">Get PaddlePaddle up and running quick after installing the newest version of
+                    pip</p>
+            </div>
+
+            <div class="row">
+                <div class="left col-lg-6">
+                    <div class="row">
+                        <div class="col-6">
+                            <button id="CPU" class="install-option">
+                                CPU
+                            </button>
+                        </div>
+                        <div class="col-6">
+                            <button id="GPU" class="install-option selected">
+                                GPU
+                            </button>
+                        </div>
                     </div>
 
-                    <!-- empty span -->
-                    <div class="col-1"></div>
-
-                    <div class="col-3">
-                        <button id="CPU" class="install-option">
-                            CPU
-                        </button>
-                    </div>
-
-                    <!-- empty span -->
-                    <div class="col-1"></div>
-
-                    <div class="col-3">
-                        <button id="GPU" class="install-option selected">
-                            GPU
-                        </button>
-                    </div>
-
-                    <!-- empty span -->
-                    <div class="col-1"></div>
-                </div>
-
-                <!-- cuda version selection bar, only enabled when Cuda selected-->
-                <div id="cuda-version" class="row">
-                    <div class="col-3">
-                        <p>CUDA</p>
-                    </div>
-                    <div class="col-3">
-                        <button id="cuda8" class="install-option cuda selected">
-                            Cuda 8.0
-                        </button>
-                    </div>
-                    <div class="col-3">
-                        <button id="cuda9" class="install-option cuda">
-                            Cuda 9.0
-                        </button>
-                    </div>
-                    <div class="col-3">
-                        <button id="cuda10" class="install-option cuda">
-                            Cuda 10.0
-                        </button>
+                    <!-- cuda version selection bar, only enabled when Cuda selected-->
+                    <div id="cuda-version" class="row">
+                        <div class="col-4">
+                            <button id="cuda8" class="install-option cuda selected">
+                                Cuda 7.5
+                            </button>
+                        </div>
+                        <div class="col-4">
+                            <button id="cuda9" class="install-option cuda">
+                                Cuda 8
+                            </button>
+                        </div>
+                        <div class="col-4">
+                            <button id="cuda10" class="install-option cuda">
+                                Cuda 9
+                            </button>
+                        </div>
                     </div>
                 </div>
 
+                <!-- Display what commend to install PaddlePaddle, should match the height of option buttons -->
+                <div class="right col-lg-6">
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                        </div>
+                        <p> $ </p><code id="commend">pip install paddlepaddle-gpu-cuda8</code>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-6">
+                    <p>Tested on CentOS 6+, Ubuntu 14.04+</p>
+                </div>
                 <!-- Link to docker installation -->
-                <div class="row">
-                    <div class="col-lg-12">
-                        <button class="other-install">Other Installation</button>
-                    </div>
-                </div>
-
-                <div>
-                    <p>Run this</p>
-                    <code id="commend">pip install paddlepaddle-gpu-cuda8</code>
+                <div class="col-lg-6">
+                    <a class="other-install">Install on Windows, MacOS, or other options</a>
                 </div>
             </div>
         </div>
