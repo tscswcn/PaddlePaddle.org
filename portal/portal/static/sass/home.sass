@@ -524,7 +524,7 @@
         display: inline-block
         vertical-align: middle
         line-height: normal
-        width: 50%
+        width: 80%
 
     .feature-desc
       display: inline-block
@@ -610,12 +610,15 @@
       height: 800px
 
     .video-cell
-      display: inline-block
+      display: block
       padding: 16px
-      margin: auto
+      margin-top: auto
+      margin-bottom: auto
       top: 0px
       bottom: 0px
       text-align: center
+      right: 0px
+      -webkit-transition: all 2s cubic-bezier(0.1, 0.8, 1.0, 1.0) 0s
 
       h2
         margin-left: auto
@@ -626,8 +629,11 @@
         margin-left: auto
         margin-right: auto
 
+      &.align-left
+        right: calc(100% - 530px)
+
       .watch-now
-        margin-top: 12px
+        margin-top: 20px
         padding: 12px
         width: 200px
         height: 60px
@@ -789,7 +795,7 @@
 
       h2
         font-size: 36px
-        margin-top: 90px
+        margin-top: 120px
         margin-left: auto
         margin-right: auto
         margin-bottom: 30px
@@ -797,7 +803,7 @@
 
       .watch-now
         position: absolute
-        bottom: 60px
+        bottom: 90px
         margin: auto
         left: 0px
         right: 0px
