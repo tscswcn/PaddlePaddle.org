@@ -469,7 +469,7 @@ for i in xrange(len(probs)):
                     </a>
                 </div>
                 <div class="col-lg-4">
-                    <a class="resource-cell" href="aistudio.baidu.com">
+                    <a class="resource-cell" href="http://aistudio.baidu.com">
                         <div class="feature-icon">
                             <img src="/static/images/feature-1.png">
                         </div>
@@ -490,18 +490,20 @@ for i in xrange(len(probs)):
     {% endif %}
     <!-- End of Resources section -->
 
-    <!-- Video section -->
+    <!-- Video section: Only in Chinese -->
+    {% if LANGUAGE_CODE == 'zh' %}
+
     <section class="video">
         <div class="container">
             <div class="row">
-                <div class="col-lg-7">
+                <div class="col-lg-1">
                     <div class="big-img">
                     </div>
                 </div>
-                <div class="col-lg-5">
-                    <div class="video-cell">
-                        <h2>"the sorting machine has helped us enormously"</h2>
-                        <p>4 enterprising students from Beijing University of Technology decided to use PaddlePaddle to build a robot that helps a farmer sort good peaches from rotten ones. <br/><br/>What they made changed his life.</p>
+                <div class="col-lg-11">
+                    <div class="video-cell" id="vid">
+                        <h2 id="vid-title">PaddlePaddle，让AI触手可及</h2>
+                        <p id="vid-desc">PaddlePaddle是一个开源的深度学习引擎，能够帮助你快速高效地实现任何想要的AI创意</p>
                         <button class="watch-now">
                             <div class="triangle-right"></div>
                             Watch Video
@@ -511,6 +513,8 @@ for i in xrange(len(probs)):
             </div>
         </div>
     </section>
+
+    {% endif %}
     <!-- End of Video section -->
 
 </div>
@@ -606,6 +610,28 @@ for i in xrange(len(probs)):
         $(".list-group-item").removeClass('active');
         $(this).addClass('active');
     });
+
+    // Start a timer to rotate the video infos and links
+    var rotateTimer = setInterval(rotate, 10000);
+    var videoTitles = ['PaddlePaddle，让AI触手可及', '“桃子分拣机对我的帮助非常大”', 'AI会发现并记录你在公共场所的不良行为'];
+    var videoDescs = ['PaddlePaddle是一个开源的深度学习引擎，能够帮助你快速高效地实现任何想要的AI创意', '四个大学生用一个假期时间，基于PaddlePaddle平台打造了通过外观、尺寸等特征进行桃子质量分级的机器，帮助桃农节约了大量劳动成本', '百度员工打造的AI控烟方案，当你在禁止吸烟的公共场所吸烟时，就会被AI实时捕捉并将你的吸烟图像投放至附近的屏幕上'];
+    var count = 0;
+
+    function rotate() {
+        count += 1;
+
+        // Toggle the position from left to right
+        $('#vid').toggleClass('align-left');
+
+        // Update title and desc with fade in and fade out
+        $('#vid-title').fadeOut(500, function() {
+          $(this).text(videoTitles[count % 3]).fadeIn(500);
+        });
+
+        $('#vid-desc').fadeOut(500, function() {
+          $(this).text(videoDescs[count % 3]).fadeIn(1500);
+        });
+   }
 
 </script>
 
