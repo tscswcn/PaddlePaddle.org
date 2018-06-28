@@ -59,6 +59,7 @@
     padding-top: 25vh
     position: relative
     overflow: hidden
+    margin-bottom: -60px   //60px is the height of top nav bar
 
     .content
       display: inline-block
@@ -101,13 +102,33 @@
 
     .arch-1
       left: -500px
-      top: -700px
-    .arch-2
-      left: 300px
-      top: 1200px
-    .arch-3
-      left: 1200px
       top: -800px
+    .arch-2
+      left: 0px
+      top: 1250px
+    .arch-3
+      left: 1400px
+      top: -700px
+
+
+    .dot-area
+      right: 40px
+      bottom: 30px + 60px //60px is the height of top nav bar
+      position: absolute
+
+    .dot-group
+      text-align: right
+
+    .dot
+      background: $accent-color
+      width: 18px
+      height: 18px
+      border-radius: 50%
+      display: inline-block
+      margin-left: 6px
+      margin-top: 4px
+
+
 
   .models
     background: linear-gradient(to bottom left, #ffffff, #c6dbfc)
