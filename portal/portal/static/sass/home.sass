@@ -336,45 +336,22 @@
 
   // step-1-2-3: quick start
   .step-1-2-3
-    padding: 20px
-    background: linear-gradient(40deg, #ffffff, rgba(59, 133, 245, 0.3))
-
     h2
-      text-align: left
-      font-size: 36px
-      color: #888888
+      margin-top: 20px
 
-    p
-      color: #888888
-
-    a
-      color: #597cf1
-
-    .row
-      margin-top: 12px
-      margin-bottom: 12px
-
-      code
-        color: black
-        font: 14px ibm plex mono
-        margin-left: 12px
-
-    .disable
-      pointer-events: none
-      opacity: 0.2
-
-    .step-option
+    .step-button
       display: inline-block
       color: #3b85f5
       background-color: transparent
       border-color: #3b85f5
-      text-align: center
+      text-align: left
       font-size: 21px
-      border-radius: 25px
+      border-radius: 28px
       padding: 12px
+      padding-left: 34px
       width: 100%
       min-height: 56px
-
+      
       &:hover
         color: #fff
         background-color: #3b85f5
@@ -383,9 +360,6 @@
         color: #fff
         background: linear-gradient(to right, #3b85f5, #5a9bff)
 
-    .other-install
-      float: right
-
     .code-panel
       background-color: #f7f7f7
       border-radius: 5px
@@ -393,6 +367,24 @@
       margin-top: 12px
       margin-bottom: 12px
       min-height: 600px
+
+      code
+        font-size: 14px
+        color: black
+        opacity: 0.0
+
+      .left-bar
+        background-color: green
+
+      //.step
+      //  opacity: 0.1
+        //display: none !important
+
+      .show
+        opacity: 0.5
+
+      .in-focus
+        opacity: 1
 
       p
         float: left
@@ -414,15 +406,7 @@
         width: 5px
         color: #3b85f5
 
-      .step
-        opacity: 0.5
-        display: none !important
 
-      .show
-        display: block !important
-
-      .in-focus
-        opacity: 1
 
   .quick-start-guide
     h3
