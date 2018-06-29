@@ -143,32 +143,32 @@
                 <div class="left col-lg-6">
                     <div class="row">
                         <div class="col-6">
-                            <button id="CPU" class="install-option">
+                            <button id="CPU" class="install-option selected">
                                 CPU
                             </button>
                         </div>
                         <div class="col-6">
-                            <button id="GPU" class="install-option selected">
+                            <button id="GPU" class="install-option">
                                 GPU
                             </button>
                         </div>
                     </div>
 
                     <!-- cuda version selection bar, only enabled when Cuda selected-->
-                    <div id="cuda-version" class="row">
+                    <div id="cuda-version" class="row disable">
                         <div class="col-4">
-                            <button id="cuda8" class="install-option cuda selected">
-                                Cuda 7.5
+                            <button id="-gpu" class="install-option cuda selected">
+                                CUDA 9.0 cuDNN 7.0
                             </button>
                         </div>
                         <div class="col-4">
-                            <button id="cuda9" class="install-option cuda">
-                                Cuda 8
+                            <button id="-gpu==0.14.0.post87" class="install-option cuda">
+                                CUDA 8.0 cuDNN 7.0
                             </button>
                         </div>
                         <div class="col-4">
-                            <button id="cuda10" class="install-option cuda">
-                                Cuda 9
+                            <button id="-gpu==0.14.0.post85" class="install-option cuda">
+                                CUDA 8.0 cuDNN 5.0
                             </button>
                         </div>
                     </div>
@@ -179,7 +179,7 @@
                     <div class="terminal">
                         <div class="terminal-bar">
                         </div>
-                        <p> $ </p><code id="commend">pip install paddlepaddle-gpu-cuda8</code>
+                        <p> $ </p><code id="commend">pip install paddlepaddle</code>
                     </div>
                 </div>
             </div>
@@ -572,10 +572,12 @@ for i in xrange(len(probs)):
                     <div class="video-cell" id="vid">
                         <h2 id="vid-title">PaddlePaddle，让AI触手可及</h2>
                         <p id="vid-desc">PaddlePaddle是一个开源的深度学习引擎，能够帮助你快速高效地实现任何想要的AI创意</p>
-                        <button class="watch-now">
-                            <div class="triangle-right"></div>
-                            Watch Video
-                        </button>
+                        <a id="vid-link" href="http://www.iqiyi.com/w_19rytlq0cp.html">
+                            <button class="watch-now">
+                                <div class="triangle-right"></div>
+                                Watch Video
+                            </button>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -636,8 +638,6 @@ for i in xrange(len(probs)):
 
             // Select the target
             $(event.target).addClass('selected');
-
-            installCommend = 'pip install paddlepaddle';
         } else {
             if (installationToShow == 'GPU') {
                 $('#CPU').removeClass('selected');
@@ -651,7 +651,7 @@ for i in xrange(len(probs)):
 
             var t = $('.installation-guide div > .install-option.cuda.selected');
 
-            installCommend = 'pip install paddlepaddle-gpu-' + t[0].id;
+            installCommend = installCommend + t[0].id;
         }
 
         // Update the installation commend
@@ -683,6 +683,7 @@ for i in xrange(len(probs)):
     var rotateTimer = setInterval(rotate, 10000);
     var videoTitles = ['PaddlePaddle，让AI触手可及', '“桃子分拣机对我的帮助非常大”', 'AI会发现并记录你在公共场所的不良行为'];
     var videoDescs = ['PaddlePaddle是一个开源的深度学习引擎，能够帮助你快速高效地实现任何想要的AI创意', '四个大学生用一个假期时间，基于PaddlePaddle平台打造了通过外观、尺寸等特征进行桃子质量分级的机器，帮助桃农节约了大量劳动成本', '百度员工打造的AI控烟方案，当你在禁止吸烟的公共场所吸烟时，就会被AI实时捕捉并将你的吸烟图像投放至附近的屏幕上'];
+    var videoLinks = ['http://www.iqiyi.com/w_19rytlq0cp.html', 'http://www.iqiyi.com/w_19rys9temd.html', 'http://www.iqiyi.com/w_19rysa26ep.html']
     var count = 0;
 
     function rotate() {
@@ -691,6 +692,9 @@ for i in xrange(len(probs)):
         // Toggle the position from left to right
         $('#vid').toggleClass('align-left');
 
+        // Update video link
+        $('#vid-link').attr("href", videoLinks[count % 3]);
+        
         // Update title and desc with fade in and fade out
         $('#vid-title').fadeOut(500, function() {
           $(this).text(videoTitles[count % 3]).fadeIn(500);
