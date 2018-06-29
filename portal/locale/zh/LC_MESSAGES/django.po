@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-06-29 01:54+0000\n"
+"POT-Creation-Date: 2018-06-29 20:19+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -58,13 +58,17 @@ msgid ""
 "An open-source deep learning platform with a<br>simple API, trusted by the "
 "world’s leading AI teams"
 msgstr ""
-"PaddlePaddle是一个易学、易用的开源深度学习框架、<br>能够让开发者和企业安全、高效地实现自己的AI想法"
+"PaddlePaddle是一个易学、易用的开源深度学习框架，<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;能够让开发者和企业安全、"
+"高效地实现自己的AI想法"
 
-#: portal/templates/index.html:21
+#: portal/templates/index.html:21 portal/templates/index.html.py:200
 msgid "Get Started"
-msgstr "入门手册"
+msgstr "让我们开始吧"
 
-#: portal/templates/index.html:23
+#: portal/templates/index.html:23 portal/templates/index.html.py:306
+#: portal/templates/index.html:328 portal/templates/index.html.py:354
+#: portal/templates/index.html:376 portal/templates/index.html.py:402
+#: portal/templates/index.html:424
 msgid "Learn more"
 msgstr "了解更多"
 
@@ -114,38 +118,23 @@ msgstr ""
 "框架能够一键安装，针对CPU、GPU都做了众多优化，分布式性能强劲，并且开放多种百"
 "度优势业务模型；让你的开发快人一步"
 
-#: portal/templates/index.html:265
-msgid "Build powerful applications with PaddlePaddle"
-msgstr "用PaddlePaddle构建强大的应用"
-
-#: portal/templates/index.html:450
-msgid "Quick Start"
-msgstr "快速入门"
-
-#: portal/templates/index.html:453
-msgid "Install and make predictions in 5 minutes"
-msgstr "五分钟快速上手"
-
 #: portal/templates/index.html:135
 msgid "Install"
 msgstr "安装"
 
 #: portal/templates/index.html:138
 msgid ""
-"Get PaddlePaddle up and running quick after installing the newest version of pip"
+"Get PaddlePaddle up and running quick after installing the newest version of "
+"pip"
 msgstr "用最新的pip快捷地安装和运行PaddlePaddle"
 
-#: portal/templates/index.html:188
+#: portal/templates/index.html:187
 msgid "Tested on CentOS 6+, Ubuntu 14.04+"
 msgstr "在CentOS 6+和Ubuntu 14.04+上测试通过"
 
 #: portal/templates/index.html:192
 msgid "Install on Windows, MacOS, or other options"
 msgstr "在Windows，MacOS以及其他平台上安装"
-
-#: portal/templates/index.html:200
-msgid "Get Started"
-msgstr "让我们开始吧"
 
 #: portal/templates/index.html:209
 msgid "Import PaddlePaddle"
@@ -159,24 +148,28 @@ msgstr "导入数据集并开始训练"
 msgid "Make a prediction"
 msgstr "可以做预测啦"
 
-#: portal/templates/index.html:298
+#: portal/templates/index.html:274
+msgid "Build powerful applications with PaddlePaddle"
+msgstr "用PaddlePaddle构建强大的应用"
+
+#: portal/templates/index.html:299
 msgid "CTR Prediction"
 msgstr "点击率预测"
 
 #: portal/templates/index.html:302
-msgid "Use DeepFM to predict a user’s click-through rate based on the user’s various features."
+msgid ""
+"Use DeepFM to predict a user’s click-through rate based on the user’s "
+"various features."
 msgstr "根据用户的多种特征，用DeepFM来预测用户的点击率"
-
-#: portal/templates/index.html:306
-msgid "Learn more"
-msgstr "了解更多"
 
 #: portal/templates/index.html:321
 msgid "Learn to Rank (LTR)"
 msgstr "排序学习"
 
 #: portal/templates/index.html:324
-msgid "Build LTR model that can be applied in information retrieval, NLP and data mining."
+msgid ""
+"Build LTR model that can be applied in information retrieval, NLP and data "
+"mining."
 msgstr "构建可以用于信息检索，自然语言处理和数据挖掘的LTR模型"
 
 #: portal/templates/index.html:347
@@ -184,7 +177,9 @@ msgid "DSSM"
 msgstr "结构化语义模型"
 
 #: portal/templates/index.html:350
-msgid "Use Deep Structured Semantic Models to match web search queries and the URL based documents."
+msgid ""
+"Use Deep Structured Semantic Models to match web search queries and the URL "
+"based documents."
 msgstr "使用结构化语义模型来匹配网络检索和基于文本的URL"
 
 #: portal/templates/index.html:369
@@ -192,7 +187,8 @@ msgid "Neural Machine Translation"
 msgstr "神经网络机器翻译模型"
 
 #: portal/templates/index.html:372
-msgid "Construct an end-to-end NMT model using the recurrent neural network (RNN)."
+msgid ""
+"Construct an end-to-end NMT model using the recurrent neural network (RNN)."
 msgstr "用循环神经网络来构建端到端的神经网络机器翻译模型"
 
 #: portal/templates/index.html:395
@@ -207,97 +203,9 @@ msgstr "运用栈式双向长短期记忆模型来生成中文古诗"
 msgid "SSD Object Detection"
 msgstr "SSD目标检测"
 
-#: portal/templates/index.html:419
+#: portal/templates/index.html:420
 msgid "Use the SSD model in PaddlePaddle for object detection."
 msgstr "使用PaddlePaddle的SSD模型来做物体探测"
-
-#: portal/templates/index.html:163
-msgid "Build powerful applications with PaddlePaddle"
-msgstr "用PaddlePaddle构建强大的应用"
-
-#: portal/templates/index.html:338
->>>>>>> develop
-msgid ""
-"Tested on CentOS 7, Ubuntu 16.04, and MacOS 10.12, with Python 2.7.x "
-"installed"
-msgstr "在 CentOS 7，Ubuntu 16.04， MacOS 10.12，Python 2.7.x 环境下测试过"
-
-#: portal/templates/index.html:463
-msgid "Download "
-msgstr "下载"
-
-#: portal/templates/index.html:463
-msgid "the trained housing prices model"
-msgstr "房价模型"
-
-#: portal/templates/index.html:463
-msgid " and then install PaddlePaddle on your computer:"
-msgstr "和在电脑上安装PaddlePaddle"
-
-#: portal/templates/index.html:466
-msgid ""
-"Download, and then <a href=\"https://docs.docker.com/engine/installation/\" "
-"target=\"_blank\">install Docker</a> on your computer."
-msgstr ""
-"在您的电脑上<a href=\"https://docs.docker.com/engine/installation/\" target="
-"\"_blank\">安装Docker。</a>"
-
-#: portal/templates/index.html:466
-msgid ""
-"After installing Docker, create a new file called <em>housing.py</em> in a "
-"new and empty directory:"
-msgstr "安装好后，在一个新的目录下创建一个<em>housing.py</em> "
-
-#: portal/templates/index.html:470
-msgid "Instructions on installing pip"
-msgstr "pip 安装教学"
-
-#: portal/templates/index.html:472
-msgid "Now, create a new file called "
-msgstr "创建一个 "
-
-#: portal/templates/index.html:472
-msgid ", and paste this Python code"
-msgstr " 并粘贴此Python代码"
-
-#: portal/templates/index.html:472
-msgid ""
-"(make sure to set the right path based on the location of <em>fit_a_line."
-"tar</em> on your computer):"
-msgstr "(请确保<em>fit_a_line.tar</em> 是在正确的路径上)"
-
-#: portal/templates/index.html:473
-msgid "Now download "
-msgstr "下载"
-
-#: portal/templates/index.html:473
-msgid ""
-"the trained housing prices model</a> into the <code>~/workspace</code> "
-"directory, and paste this Python code in <em>housing.py</em> using your "
-"favorite editor"
-msgstr ""
-"房价模型</a> 且放在<code>~/workspace</code> 目录下，使用您喜欢的编辑器粘贴此"
-"Python代码到<em>housing.py</em>"
-
-#: portal/templates/index.html:496
-msgid "Run "
-msgstr "执行"
-
-#: portal/templates/index.html:496
-msgid ""
-" and <strong>voila</strong>! It should print out a list of predictions for "
-"the test housing data."
-msgstr " <strong>瞧</strong>！ 它应该打印出预测住房数据的清单。"
-
-#: portal/templates/index.html:498
-msgid "Now run this code in a new PaddlePaddle Docker container:"
-msgstr "在一个新的paddlepaddle Docker容器运行这个代码："
-
-#: portal/templates/index.html:501
-msgid ""
-"<strong>Voila</strong>! It should print out a list of predictions for the "
-"test housing data."
-msgstr "<strong>瞧</strong>！ 它应该打印出预测住房数据的清单。"
 
 #: portal/templates/index_doc_mode.html:20
 msgid "PaddlePaddle Document Viewer"
@@ -394,6 +302,79 @@ msgid ""
 "Run the web-app with one command and instantly visualize the results. Train "
 "again, and refresh results."
 msgstr "运行Web应用程序，即可立即可视化结果。再次训练，并刷新结果。"
+
+#~ msgid "Quick Start"
+#~ msgstr "快速入门"
+
+#~ msgid "Install and make predictions in 5 minutes"
+#~ msgstr "五分钟快速上手"
+
+#~ msgid ""
+#~ "Tested on CentOS 7, Ubuntu 16.04, and MacOS 10.12, with Python 2.7.x "
+#~ "installed"
+#~ msgstr "在 CentOS 7，Ubuntu 16.04， MacOS 10.12，Python 2.7.x 环境下测试过"
+
+#~ msgid "Download "
+#~ msgstr "下载"
+
+#~ msgid "the trained housing prices model"
+#~ msgstr "房价模型"
+
+#~ msgid " and then install PaddlePaddle on your computer:"
+#~ msgstr "和在电脑上安装PaddlePaddle"
+
+#~ msgid ""
+#~ "Download, and then <a href=\"https://docs.docker.com/engine/installation/"
+#~ "\" target=\"_blank\">install Docker</a> on your computer."
+#~ msgstr ""
+#~ "在您的电脑上<a href=\"https://docs.docker.com/engine/installation/\" "
+#~ "target=\"_blank\">安装Docker。</a>"
+
+#~ msgid ""
+#~ "After installing Docker, create a new file called <em>housing.py</em> in "
+#~ "a new and empty directory:"
+#~ msgstr "安装好后，在一个新的目录下创建一个<em>housing.py</em> "
+
+#~ msgid "Instructions on installing pip"
+#~ msgstr "pip 安装教学"
+
+#~ msgid "Now, create a new file called "
+#~ msgstr "创建一个 "
+
+#~ msgid ", and paste this Python code"
+#~ msgstr " 并粘贴此Python代码"
+
+#~ msgid ""
+#~ "(make sure to set the right path based on the location of <em>fit_a_line."
+#~ "tar</em> on your computer):"
+#~ msgstr "(请确保<em>fit_a_line.tar</em> 是在正确的路径上)"
+
+#~ msgid "Now download "
+#~ msgstr "下载"
+
+#~ msgid ""
+#~ "the trained housing prices model</a> into the <code>~/workspace</code> "
+#~ "directory, and paste this Python code in <em>housing.py</em> using your "
+#~ "favorite editor"
+#~ msgstr ""
+#~ "房价模型</a> 且放在<code>~/workspace</code> 目录下，使用您喜欢的编辑器粘贴"
+#~ "此Python代码到<em>housing.py</em>"
+
+#~ msgid "Run "
+#~ msgstr "执行"
+
+#~ msgid ""
+#~ " and <strong>voila</strong>! It should print out a list of predictions "
+#~ "for the test housing data."
+#~ msgstr " <strong>瞧</strong>！ 它应该打印出预测住房数据的清单。"
+
+#~ msgid "Now run this code in a new PaddlePaddle Docker container:"
+#~ msgstr "在一个新的paddlepaddle Docker容器运行这个代码："
+
+#~ msgid ""
+#~ "<strong>Voila</strong>! It should print out a list of predictions for the "
+#~ "test housing data."
+#~ msgstr "<strong>瞧</strong>！ 它应该打印出预测住房数据的清单。"
 
 #~ msgid "PArallel Distributed Deep LEarning"
 #~ msgstr "易学易用的分布式深度学习平台"
