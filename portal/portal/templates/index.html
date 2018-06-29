@@ -504,11 +504,10 @@ for i in xrange(len(probs)):
     <section class="video">
         <div class="container">
             <div class="row">
-                <div class="col-lg-1">
-                    <div class="big-img">
-                    </div>
-                </div>
-                <div class="col-lg-11">
+                <div class="col-lg-12">
+                    <!-- TODO: Update with the real assets-->
+                    <img class="big-img" id="videoImage" src="/static/images/feature-1.png">
+                    </img>
                     <div class="video-cell" id="vid">
                         <h2 id="vid-title">PaddlePaddle，让AI触手可及</h2>
                         <p id="vid-desc">PaddlePaddle是一个开源的深度学习引擎，能够帮助你快速高效地实现任何想要的AI创意</p>
@@ -650,6 +649,15 @@ for i in xrange(len(probs)):
         $('#vid-desc').fadeOut(500, function() {
           $(this).text(videoDescs[count % 3]).fadeIn(1500);
         });
+
+        // Update background image position
+        var videoImage = $("#videoImage")
+        if( videoImage.css('display') != 'none') {
+            videoImage.fadeOut(500, function() {
+                $(this).toggleClass('align-right');
+                $(this).fadeIn(1500);
+            });
+        }
     }
 
     // Subtle animation on the bubble

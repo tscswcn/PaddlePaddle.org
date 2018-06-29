@@ -194,7 +194,7 @@
 
     .model-cell
       border-radius: 100px
-      border: 2px solid #498ffa
+      border: 1px solid #498ffa
       height: 200px
 
     .arch
@@ -293,7 +293,7 @@
       display: inline-block
       color: #3b85f5
       background-color: transparent
-      border-color: #3b85f5
+      border: solid #3b85f5 1px
       text-align: center
       font-size: 21px
       border-radius: 28px
@@ -308,6 +308,7 @@
       &.selected
         color: #fff
         background: linear-gradient(to right, #3b85f5, #5a9bff)
+        border-color: transparent
 
     .other-install
       float: right
@@ -343,7 +344,7 @@
       display: inline-block
       color: #3b85f5
       background-color: transparent
-      border-color: #3b85f5
+      border: solid #3b85f5 1px
       text-align: left
       font-size: 21px
       border-radius: 28px
@@ -359,6 +360,7 @@
       &.selected
         color: #fff
         background: linear-gradient(to right, #3b85f5, #5a9bff)
+        border-color: transparent
 
     .code-panel
       background-color: #f7f7f7
@@ -503,8 +505,6 @@
     .resource-cell
       display: inline-block
       padding: 16px
-      width: 326px
-      height: 326px
       text-align: center
       border-radius: 163px
       border-color: #3b85f5
@@ -526,7 +526,10 @@
     background: linear-gradient(40deg, #ffffff, rgba(59, 133, 245, 0.3))
 
     .big-img
-      height: 800px
+      height: 600px
+
+      &.align-right
+        float: right
 
     .video-cell
       display: block
@@ -559,6 +562,7 @@
         border-radius: 30px
         background: linear-gradient(to left, #5a9bff, $accent-color)
         color: white
+        border: 0px
 
         .triangle-right
           width: 0px
@@ -657,6 +661,10 @@
         margin-top: 20px
         margin-bottom: 20px
 
+    .resource-cell
+      width: 266px
+      height: 266px
+
 @media (min-width: 992px)
   .home
     h1
@@ -702,6 +710,13 @@
       h2
         margin-top: $home-line-spacing * 4
         margin-bottom: $home-line-spacing * 2
+
+    .resource-cell
+      width: 326px
+      height: 326px
+
+    .big-img
+      visibility: hidden
 
     .video-cell
       position: absolute
