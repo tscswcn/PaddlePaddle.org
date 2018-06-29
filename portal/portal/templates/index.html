@@ -643,11 +643,13 @@ for i in xrange(len(probs)):
         });
 
         // Update background image position
-        $('#videoImage').fadeOut(500, function() {
-          $('#videoImage').toggleClass('align-right');
-          $(this).fadeIn(1500);
-        });
-
+        var videoImage = $("#videoImage")
+        if( videoImage.css('display') != 'none') {
+            videoImage.fadeOut(500, function() {
+                $(this).toggleClass('align-right');
+                $(this).fadeIn(1500);
+            });
+        }
     }
 
     // Subtle animation on the bubble
