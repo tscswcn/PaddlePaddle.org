@@ -2,13 +2,12 @@
 
 .home
   font-family: $primary-font-family
-  h1
-    font-size: $font-xxxlarge
 
+  h1
+    font-size: $font-xxlarge
 
   h2
-    font-size: $font-large
-
+    font-size: $font-xlarge
 
   h3
     font-size: $font-medium
@@ -21,20 +20,18 @@
   hr
     display: block
 
-
   p
     font-size: $font-small
     font-weight: 100
     color: #666
     margin: 0px
 
-
   .btn
     height: 78px
     border-radius: 39px
     border: solid $accent-color 1px
     color: $accent-color
-    font-size: $font-xxlarge
+    font-size: $font-xlarge
     background: transparent
 
     &:hover
@@ -73,9 +70,11 @@
       margin-bottom: $home-line-spacing * 2
 
     p
-      font-size: $font-xxlarge
       color: black
       margin-bottom: $home-line-spacing * 2
+      text-align: left
+      font-size: 24px
+      line-height: 30px
 
     .btn
       margin-right: 20px
@@ -110,7 +109,6 @@
       left: 1400px
       top: -700px
 
-
     .dot-area
       right: 40px
       bottom: 30px + 60px //60px is the height of top nav bar
@@ -128,8 +126,6 @@
       margin-left: 6px
       margin-top: 4px
 
-
-
   .models
     background: linear-gradient(to bottom left, #ffffff, #c6dbfc)
     position: relative
@@ -137,6 +133,9 @@
     width: 100%
     height: auto
     padding-bottom: 32px
+
+    h2
+      color: #888888
 
     .six-dots
       text-align: center
@@ -168,24 +167,26 @@
       padding-left: 0px
 
       h3
-        font-size: $font-xxlarge
         text-align: left
         padding-bottom: 5px
+        font-weight: bold
 
       p
-        font-size: $font-large
         padding-bottom: 5px
         height: 76px
 
       .learn-more
         font-size: $font-large
         text-align: right
-        color: #3095ff
         padding-right: 30px
         padding-top: 5px
 
         a
-          color: #3095ff
+          color: #5a9bff
+
+          &:hover
+            color: #3b85f5
+
 
     // 6 models in 2 columns
     .model-row
@@ -268,7 +269,6 @@
 
     h2
       text-align: left
-      font-size: 36px
       color: #888888
 
     p
@@ -300,6 +300,7 @@
       padding: 12px
       width: 100%
       min-height: 56px
+      cursor: pointer
 
       &:hover
         color: #fff
@@ -352,6 +353,7 @@
       padding-left: 34px
       width: 100%
       min-height: 56px
+      cursor: pointer
       
       &:hover
         color: #fff
@@ -419,11 +421,10 @@
 
     h3
       margin: $home-line-spacing 0 $home-line-spacing 0
-      font-size: 24px
       font-weight: bold
+      text-transform: uppercase
 
     p
-      font-size: 18px
       text-align: center
 
     .feature-icon
@@ -439,13 +440,12 @@
       margin-right: auto
       margin-top: 60px
 
-      p
-        font-size: 24px
+      h3
         color: #fff
         display: inline-block
         vertical-align: middle
         line-height: normal
-        width: 80%
+        width: 90%
 
     .feature-desc
       display: inline-block
@@ -470,7 +470,6 @@
     overflow: hidden
 
     h2
-      font-size: 36px
       color: #888888
       margin-top: 50px
       margin-bottom: 50px
@@ -479,11 +478,11 @@
       color: black
 
     h3
-      margin: 20px
+      margin: 10px
       font-weight: bold
 
     p
-      width: 80%
+      width: 90%
       margin: auto
       text-align: center
       color: black
@@ -563,6 +562,7 @@
         background: linear-gradient(to left, #5a9bff, $accent-color)
         color: white
         border: 0px
+        cursor: pointer
 
         .triangle-right
           width: 0px
@@ -656,6 +656,7 @@
     .video-cell
       width: 100%
       height: auto
+      border: 0px
 
       h2
         margin-top: 20px
@@ -716,7 +717,8 @@
       height: 326px
 
     .big-img
-      visibility: hidden
+      margin-top: 40px
+      margin-bottom: 40px
 
     .video-cell
       position: absolute
@@ -724,9 +726,9 @@
       height: 530px
       border-radius: 50%
       background-color: rgba(255, 255,255, 0.5)
+      border: 1px solid #498ffa
 
       h2
-        font-size: 36px
         margin-top: 120px
         margin-left: auto
         margin-right: auto
