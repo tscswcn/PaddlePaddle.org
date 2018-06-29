@@ -86,9 +86,9 @@
     </section>
 
     <!-- Features sections, currently supports 4 features -->
-    <section class="features">
+    <section class="features" id="features-head">
         <div class="container">
-            <div class="bubble-background">
+            <div class="bubble-background" id="features-bubble">
             </div>
             <div class="row">
                 <div class="col-lg-3">
@@ -132,43 +132,42 @@
     <section class="installation-guide">
         <div class="container">
             <div class="row">
-                <h2 class="col-lg-12">Install</h2>
+                <h2 class="col-lg-12">{% trans "Install"%}</h2>
             </div>
             <div class="row">
-                <p class="col-lg-12">Get PaddlePaddle up and running quick after installing the newest version of
-                    pip</p>
+                <p class="col-lg-12">{% trans "Get PaddlePaddle up and running quick after installing the newest version of pip"%}</p>
             </div>
 
             <div class="row">
                 <div class="left col-lg-6">
                     <div class="row">
                         <div class="col-6">
-                            <button id="CPU" class="install-option">
+                            <button id="CPU" class="install-option selected">
                                 CPU
                             </button>
                         </div>
                         <div class="col-6">
-                            <button id="GPU" class="install-option selected">
+                            <button id="GPU" class="install-option">
                                 GPU
                             </button>
                         </div>
                     </div>
 
                     <!-- cuda version selection bar, only enabled when Cuda selected-->
-                    <div id="cuda-version" class="row">
+                    <div id="cuda-version" class="row disable">
                         <div class="col-4">
-                            <button id="cuda8" class="install-option cuda selected">
-                                Cuda 7.5
+                            <button id="-gpu" class="install-option cuda selected">
+                                CUDA 9.0 cuDNN 7.0
                             </button>
                         </div>
                         <div class="col-4">
-                            <button id="cuda9" class="install-option cuda">
-                                Cuda 8
+                            <button id="-gpu==0.14.0.post87" class="install-option cuda">
+                                CUDA 8.0 cuDNN 7.0
                             </button>
                         </div>
                         <div class="col-4">
-                            <button id="cuda10" class="install-option cuda">
-                                Cuda 9
+                            <button id="-gpu==0.14.0.post85" class="install-option cuda">
+                                CUDA 8.0 cuDNN 5.0
                             </button>
                         </div>
                     </div>
@@ -179,37 +178,35 @@
                     <div class="terminal">
                         <div class="terminal-bar">
                         </div>
-                        <p> $ </p><code id="commend">pip install paddlepaddle-gpu-cuda8</code>
+                        <p> $ </p><code id="commend">pip install paddlepaddle</code>
                     </div>
                 </div>
             </div>
             <div class="row">
                 <div class="col-lg-6">
-                    <p>Tested on CentOS 6+, Ubuntu 14.04+</p>
+                    <p>{% trans "Tested on CentOS 6+, Ubuntu 14.04+"%}</p>
                 </div>
                 <!-- Link to docker installation -->
                 <div class="col-lg-6">
-                    <a class="other-install">Install on Windows, MacOS, or other options</a>
+                    <a class="other-install">
+                        {% blocktrans %}Install on Windows, MacOS, or other options{% endblocktrans %}</a>
                 </div>
             </div>
         </div>
-    </section>
-    <!-- End of Installation Guide Section -->
 
-    <!-- Start of Step 1-2-3 -->
-    <section class="step-1-2-3">
-        <div class="container">
+        <!-- Start of Step 1-2-3 -->
+        <div class="container step-1-2-3">
             <div class="row">
-                <h2 class="col-lg-12">Get Started</h2>
+                <h2 class="col-lg-12">{% blocktrans %}Get Started{% endblocktrans %}</h2>
             </div>
 
             <div class="row">
-                <div class="left col-lg-4">
+                <div class="left col-sm-4">
                     <!-- Step 1. Import PaddlePaddle -->
                     <div class="row">
                         <div class="col-12">
-                            <button id="code-step-button-1" class="step-option show in-focus" data-step-id="1">
-                                1. Import PaddlePaddle
+                            <button id="step-button-1" class="step-button show in-focus selected" data-step-id="1">
+                                1. {% blocktrans %}Import PaddlePaddle{% endblocktrans %}
                             </button>
                         </div>
                     </div>
@@ -217,8 +214,8 @@
                     <!-- Step 2. Load dataset and train -->
                     <div class="row">
                         <div class="col-12">
-                            <button id="code-step-button-2" class="step-option" data-step-id="2">
-                                2. Load dataset and train
+                            <button id="step-button-2" class="step-button" data-step-id="2">
+                                2. {% blocktrans %}Load dataset and train{% endblocktrans %}
                             </button>
                         </div>
                     </div>
@@ -226,38 +223,50 @@
                     <!-- Step 3. Make a prediction -->
                     <div class="row">
                         <div class="col-12">
-                            <button id="code-step-button-3" class="step-option" data-step-id="3">
-                                3. Make a prediction
+                            <button id="step-button-3" class="step-button" data-step-id="3">
+                                3. {% blocktrans %}Make a prediction{% endblocktrans %}
                             </button>
                         </div>
                     </div>
                 </div>
 
                 <!-- code panel -->
-                <div class="right col-lg-8">
+                <div class="right col-sm-8">
                     <div class="code-panel">
                         <div class="code-panel-bar">
                         </div>
                         <div class="row col-lg-12">
-                            <code id="step-1" class="col-lg-12 step">
-                                step 1: Import PaddlePaddle
-                            </code>
+                            <pre>
+                                <code id="step-1" class="step-code show in-focus">
+import paddle.v2 as paddle
+<span class="hljs-comment"># Initialize PaddlePaddle.</span>
+paddle.init(use_gpu=False, trainer_count=1)
+                                </code>
 
-                            <code id="step-2" class="col-lg-12 step">
-                                step 2: Load dataset and train
-                            </code>
-
-                            <code id="step-3" class="col-lg-12 step">
-                                step 3: Make a prediction
-                            </code>
+                                <code id="step-2" class="step-code">
+<span class="hljs-comment"># Configure the neural network.</span>
+x = paddle.layer.data(name='x', type=paddle.data_type.dense_vector(13))
+y_predict = paddle.layer.fc(input=x, size=1, act=paddle.activation.Linear())
+<span class='pip'>with open('fit_a_line.tar', 'r') as f:</span>
+    parameters = paddle.parameters.Parameters.from_tar(f)
+                                </code>
+                                <code id="step-3" class="step-code">
+<span class="hljs-comment"># Infer using provided test data.</span>
+probs = paddle.infer(
+     output_layer=y_predict, parameters=parameters,
+     input=[item for item in paddle.dataset.uci_housing.test()()])
+for i in xrange(len(probs)):
+     print 'Predicted price: ${:,.2f}'.format(probs[i][0] * 1000)
+                                </code>
+                            </pre>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+        <!-- End of Step 1-2-3 -->
     </section>
-
-    <!-- End of Step 1-2-3 -->
+    <!-- End of Installation Guide Section -->
 
     <section class="models">
         <div class="container">
@@ -287,14 +296,14 @@
                                 </div>
                                 <div class="col-sm-7 model-intro">
                                     <h3>
-                                        CTR Prediction
+                                        {% blocktrans %}CTR Prediction{% endblocktrans %}
                                     </h3>
                                     <p>
-                                        Use DeepFM to predict a user’s click-through rate based on the user’s various features.
+                                        {% blocktrans %}Use DeepFM to predict a user’s click-through rate based on the user’s various features.{% endblocktrans %}
                                     </p>
                                     <div class="learn-more">
                                         <a href="http://paddlepaddle.org/docs/develop/models/deep_fm/README.html" target="_blank">
-                                            Learn more
+                                            {% trans "Learn more"%}
                                         </a>
                                     </div>
                                 </div>
@@ -309,14 +318,14 @@
                                 </div>
                                 <div class="col-sm-7 model-intro">
                                     <h3>
-                                        Learn to Rank (LTR)
+                                        {% blocktrans %}Learn to Rank (LTR){% endblocktrans %}
                                     </h3>
                                     <p>
-                                        Build LTR model that can be applied in information retrieval, NLP and data mining.
+                                        {% blocktrans %}Build LTR model that can be applied in information retrieval, NLP and data mining.{% endblocktrans %}
                                     </p>
                                     <div class="learn-more">
                                         <a href="https://github.com/PaddlePaddle/models/blob/develop/ltr/README_en.md" target="_blank">
-                                            Learn more
+                                            {% trans "Learn more"%}
                                         </a>
                                     </div>
                                 </div>
@@ -335,14 +344,14 @@
                                 </div>
                                 <div class="col-sm-7 model-intro">
                                     <h3>
-                                        DSSM
+                                        {% blocktrans %}DSSM{% endblocktrans %}
                                     </h3>
                                     <p>
-                                        Use Deep Structured Semantic Models to match web search queries and the URL based documents.
+                                        {% blocktrans %}Use Deep Structured Semantic Models to match web search queries and the URL based documents.{% endblocktrans %}
                                     </p>
                                     <div class="learn-more">
-                                        <a href="/models/dssm/README{% if lang_label != 'English' %}_en{% endif %}.html" target="_blank">
-                                            Learn more
+                                        <a href="/models/dssm/README{% if LANGUAGE_CODE != 'zh' %}_en{% endif %}.html" target="_blank">
+                                            {% trans "Learn more"%}
                                         </a>
                                     </div>
                                 </div>
@@ -357,14 +366,14 @@
                                 </div>
                                 <div class="col-sm-7 model-intro">
                                     <h3>
-                                        Neural Machine Translation
+                                        {% blocktrans %}Neural Machine Translation{% endblocktrans %}
                                     </h3>
                                     <p>
-                                        Construct an end-to-end NMT model using the recurrent neural network (RNN).
+                                        {% blocktrans %}Construct an end-to-end NMT model using the recurrent neural network (RNN).{% endblocktrans %}
                                     </p>
                                     <div class="learn-more">
                                         <a href="https://github.com/PaddlePaddle/models/blob/develop/nmt_without_attention/README.md" target="_blank">
-                                            Learn more
+                                            {% trans "Learn more"%}
                                         </a>
                                     </div>
                                 </div>
@@ -383,14 +392,14 @@
                                 </div>
                                 <div class="col-sm-7 model-intro">
                                     <h3>
-                                        Chinese Ancient Poetry
+                                        {% blocktrans %}Chinese Ancient Poetry{% endblocktrans %}
                                     </h3>
                                     <p>
-                                        Utilize stacked bi-directional LSTM to generate a Chinese ancient poem.
+                                        {% blocktrans %}Utilize stacked bi-directional LSTM to generate a Chinese ancient poem.{% endblocktrans %}
                                     </p>
                                     <div class="learn-more">
                                         <a href="https://github.com/PaddlePaddle/models/blob/develop/generate_chinese_poetry/README_en.md" target="_blank">
-                                            Learn more
+                                            {% trans "Learn more"%}
                                         </a>
                                     </div>
                                 </div>
@@ -405,14 +414,14 @@
                                 </div>
                                 <div class="col-sm-7 model-intro">
                                     <h3>
-                                        SSD Object Detection
+                                        {% blocktrans %}SSD Object Detection{% endblocktrans %}
                                     </h3>
                                     <p>
-                                        Use the SSD model in PaddlePaddle for object detection.
+                                        {% blocktrans %}Use the SSD model in PaddlePaddle for object detection.{% endblocktrans %}
                                     </p>
                                     <div class="learn-more">
                                         <a href="https://github.com/PaddlePaddle/models/blob/develop/ssd/README.md" target="_blank">
-                                            Learn more
+                                            {% trans "Learn more"%}
                                         </a>
                                     </div>
                                 </div>
@@ -446,69 +455,13 @@
         </div>
     </section>
 
-    <section class="container quick-start-guide">
-        <h2 class="col-lg-12"><span><a name="quick-start-guide">{% trans "Quick Start" %}</a></span></h2>
-
-
-        <h3>{% blocktrans %}Install and make predictions in 5 minutes{% endblocktrans %}</h3>
-
-        <nav>
-            <ul>
-                <li id='pip' class='selected'><div class='pip-icon'></div>PIP (Python)</li>
-                <li id='docker'><div class='docker-icon'></div>Docker</li>
-            </ul>
-            <p class="installation-note pip">{% blocktrans %}Tested on CentOS 7, Ubuntu 16.04, and MacOS 10.12, with Python 2.7.x installed{% endblocktrans %}</p>
-        </nav>
-
-        <p class='pip'>{% blocktrans %}Download {% endblocktrans %}<a href="https://raw.githubusercontent.com/PaddlePaddle/book/develop/01.fit_a_line/fit_a_line.tar" target="_blank">{% blocktrans %}the trained housing prices model{% endblocktrans %}</a>{% blocktrans %} and then install PaddlePaddle on your computer:{% endblocktrans %}</p>
-        <pre class='pip'><code>pip install paddlepaddle</code></pre>
-
-        <p class='docker' style="display: none">{% blocktrans %}Download, and then <a href="https://docs.docker.com/engine/installation/" target="_blank">install Docker</a> on your computer.{% endblocktrans %} {% blocktrans %}After installing Docker, create a new file called <em>housing.py</em> in a new and empty directory:{% endblocktrans %}</p>
-        <pre class='docker' style="display: none"><code>mkdir ~/workspace
-cd ~/workspace; touch housing.py</code></pre>
-
-        <p class="sidenote pip"><a href="https://pip.pypa.io/en/stable/installing/" target="_blank">{% blocktrans %}Instructions on installing pip{% endblocktrans %}</a></p>
-
-        <p class='pip'>{% blocktrans %}Now, create a new file called {% endblocktrans %}<em>housing.py</em>{% blocktrans %}, and paste this Python code{% endblocktrans %} {% blocktrans %}(make sure to set the right path based on the location of <em>fit_a_line.tar</em> on your computer):{% endblocktrans %} </p>
-        <p class='docker' style="display: none">{% blocktrans %}Now download {% endblocktrans %}<a href="https://raw.githubusercontent.com/PaddlePaddle/book/develop/01.fit_a_line/fit_a_line.tar" target="_blank">{% blocktrans %}the trained housing prices model</a> into the <code>~/workspace</code> directory, and paste this Python code in <em>housing.py</em> using your favorite editor{% endblocktrans %}:</p>
-        <pre><code>import paddle.v2 as paddle
-
-<span class="hljs-comment"># Initialize PaddlePaddle.</span>
-paddle.init(use_gpu=False, trainer_count=1)
-
-<span class="hljs-comment"># Configure the neural network.</span>
-x = paddle.layer.data(name='x', type=paddle.data_type.dense_vector(13))
-y_predict = paddle.layer.fc(input=x, size=1, act=paddle.activation.Linear())
-
-<span class='pip'>with open('fit_a_line.tar', 'r') as f:</span><span class='docker' style="display: none">with open('/workspace/fit_a_line.tar', 'r') as f:</span>
-    parameters = paddle.parameters.Parameters.from_tar(f)
-
-<span class="hljs-comment"># Infer using provided test data.</span>
-probs = paddle.infer(
-     output_layer=y_predict, parameters=parameters,
-     input=[item for item in paddle.dataset.uci_housing.test()()])
-
-for i in xrange(len(probs)):
-     print 'Predicted price: ${:,.2f}'.format(probs[i][0] * 1000)
-        </code></pre>
-
-
-        <p class='pip'>{% blocktrans %}Run {% endblocktrans %}<code>python housing.py</code>{% blocktrans %} and <strong>voila</strong>! It should print out a list of predictions for the test housing data.{% endblocktrans %}</p>
-
-        <p class='docker' style="display: none">{% blocktrans %}Now run this code in a new PaddlePaddle Docker container:{% endblocktrans %}</p>
-        <pre class='docker' style="display: none"><code>docker run --rm -v ~/workspace:/workspace paddlepaddle/paddle:latest python /workspace/housing.py</code></pre>
-
-        <p class='docker' style="display: none">{% blocktrans %}<strong>Voila</strong>! It should print out a list of predictions for the test housing data.{% endblocktrans %}</p>
-        <p>Want more real-world tutorials? <a href='{% url url_helper.URL_NAME_BOOK_ROOT %}'>Read the book!</a></p>
-    </section>
-
     <!-- Resources section: Only in Chinese version -->
     {% get_current_language as LANGUAGE_CODE %}
     {% if LANGUAGE_CODE == 'zh' %}
 
-    <section class="resources-guide">
+    <section class="resources-guide" id="resources-head">
         <div class="container">
-            <div class="bubble-background">
+            <div class="bubble-background" id="resources-bubble">
             </div>
             <div class="row">
                 <h2 class="col-lg-12">基于PaddlePaddle框架，我们还提供了这些服务和学习资源</h2>
@@ -524,7 +477,7 @@ for i in xrange(len(probs)):
                     </a>
                 </div>
                 <div class="col-lg-4">
-                    <a class="resource-cell" href="aistudio.baidu.com">
+                    <a class="resource-cell" href="http://aistudio.baidu.com">
                         <div class="feature-icon">
                             <img src="/static/images/feature-1.png">
                         </div>
@@ -545,27 +498,33 @@ for i in xrange(len(probs)):
     {% endif %}
     <!-- End of Resources section -->
 
-    <!-- Video section -->
+    <!-- Video section: Only in Chinese -->
+    {% if LANGUAGE_CODE == 'zh' %}
+
     <section class="video">
         <div class="container">
             <div class="row">
-                <div class="col-lg-7">
+                <div class="col-lg-1">
                     <div class="big-img">
                     </div>
                 </div>
-                <div class="col-lg-5">
-                    <div class="video-cell">
-                        <h2>"the sorting machine has helped us enormously"</h2>
-                        <p>4 enterprising students from Beijing University of Technology decided to use PaddlePaddle to build a robot that helps a farmer sort good peaches from rotten ones. <br/><br/>What they made changed his life.</p>
-                        <button class="watch-now">
-                            <div class="triangle-right"></div>
-                            Watch Video
-                        </button>
+                <div class="col-lg-11">
+                    <div class="video-cell" id="vid">
+                        <h2 id="vid-title">PaddlePaddle，让AI触手可及</h2>
+                        <p id="vid-desc">PaddlePaddle是一个开源的深度学习引擎，能够帮助你快速高效地实现任何想要的AI创意</p>
+                        <a id="vid-link" href="http://www.iqiyi.com/w_19rytlq0cp.html">
+                            <button class="watch-now">
+                                <div class="triangle-right"></div>
+                                Watch Video
+                            </button>
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
     </section>
+
+    {% endif %}
     <!-- End of Video section -->
 
 </div>
@@ -627,8 +586,6 @@ for i in xrange(len(probs)):
 
             // Select the target
             $(event.target).addClass('selected');
-
-            installCommend = 'pip install paddlepaddle';
         } else {
             if (installationToShow == 'GPU') {
                 $('#CPU').removeClass('selected');
@@ -642,21 +599,21 @@ for i in xrange(len(probs)):
 
             var t = $('.installation-guide div > .install-option.cuda.selected');
 
-            installCommend = 'pip install paddlepaddle-gpu-' + t[0].id;
+            installCommend = installCommend + t[0].id;
         }
 
         // Update the installation commend
         $('#commend').html(installCommend);
     });
 
-    $('.step-option').click(function(event){
-        var steps = $('.step');
+    $('.step-button').click(function (event) {
+        var steps = $('.step-code');
         steps.removeClass('show');
         steps.removeClass('in-focus');
 
         var stepToFocusOn = $('#step-' + event.target.dataset.stepId);
 
-        $.each(steps, function(index, step){
+        $.each(steps, function (index, step) {
             step = $(step);
             step.addClass('show');
 
@@ -665,9 +622,44 @@ for i in xrange(len(probs)):
 
         stepToFocusOn.addClass('in-focus');
 
+        $(".step-button").removeClass('selected');
+        $(this).addClass('selected');
+    });
 
-        $(".list-group-item").removeClass('active');
-        $(this).addClass('active');
+    // Start a timer to rotate the video infos and links
+    var rotateTimer = setInterval(rotate, 10000);
+    var videoTitles = ['PaddlePaddle，让AI触手可及', '“桃子分拣机对我的帮助非常大”', 'AI会发现并记录你在公共场所的不良行为'];
+    var videoDescs = ['PaddlePaddle是一个开源的深度学习引擎，能够帮助你快速高效地实现任何想要的AI创意', '四个大学生用一个假期时间，基于PaddlePaddle平台打造了通过外观、尺寸等特征进行桃子质量分级的机器，帮助桃农节约了大量劳动成本', '百度员工打造的AI控烟方案，当你在禁止吸烟的公共场所吸烟时，就会被AI实时捕捉并将你的吸烟图像投放至附近的屏幕上'];
+    var videoLinks = ['http://www.iqiyi.com/w_19rytlq0cp.html', 'http://www.iqiyi.com/w_19rys9temd.html', 'http://www.iqiyi.com/w_19rysa26ep.html']
+    var count = 0;
+
+    function rotate() {
+        count += 1;
+
+        // Toggle the position from left to right
+        $('#vid').toggleClass('align-left');
+
+        // Update video link
+        $('#vid-link').attr("href", videoLinks[count % 3]);
+        
+        // Update title and desc with fade in and fade out
+        $('#vid-title').fadeOut(500, function() {
+          $(this).text(videoTitles[count % 3]).fadeIn(500);
+        });
+
+        $('#vid-desc').fadeOut(500, function() {
+          $(this).text(videoDescs[count % 3]).fadeIn(1500);
+        });
+    }
+
+    // Subtle animation on the bubble
+    $(window).scroll(function (event) {
+        var scroll = $(window).scrollTop();
+        var featuresHead = $('#features-head')
+        var resourcesHead = $('#resources-head')
+
+        $('#features-bubble').css('top', (-700 + (scroll - featuresHead.position().top) / 2));
+        $('#resources-bubble').css('top', (-800 + (scroll - resourcesHead.position().top) / 2));
     });
 
 </script>

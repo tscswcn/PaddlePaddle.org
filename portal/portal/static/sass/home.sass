@@ -296,7 +296,7 @@
       border-color: #3b85f5
       text-align: center
       font-size: 21px
-      border-radius: 25px
+      border-radius: 28px
       padding: 12px
       width: 100%
       min-height: 56px
@@ -336,45 +336,22 @@
 
   // step-1-2-3: quick start
   .step-1-2-3
-    padding: 20px
-    background: linear-gradient(40deg, #ffffff, rgba(59, 133, 245, 0.3))
-
     h2
-      text-align: left
-      font-size: 36px
-      color: #888888
+      margin-top: 20px
 
-    p
-      color: #888888
-
-    a
-      color: #597cf1
-
-    .row
-      margin-top: 12px
-      margin-bottom: 12px
-
-      code
-        color: black
-        font: 14px ibm plex mono
-        margin-left: 12px
-
-    .disable
-      pointer-events: none
-      opacity: 0.2
-
-    .step-option
+    .step-button
       display: inline-block
       color: #3b85f5
       background-color: transparent
       border-color: #3b85f5
-      text-align: center
+      text-align: left
       font-size: 21px
-      border-radius: 25px
+      border-radius: 28px
       padding: 12px
+      padding-left: 34px
       width: 100%
       min-height: 56px
-
+      
       &:hover
         color: #fff
         background-color: #3b85f5
@@ -383,9 +360,6 @@
         color: #fff
         background: linear-gradient(to right, #3b85f5, #5a9bff)
 
-    .other-install
-      float: right
-
     .code-panel
       background-color: #f7f7f7
       border-radius: 5px
@@ -393,6 +367,20 @@
       margin-top: 12px
       margin-bottom: 12px
       min-height: 600px
+
+      code
+        font-size: 14px
+        color: black
+        opacity: 0.0
+
+      .left-bar
+        background-color: green
+
+      .show
+        opacity: 0.5
+
+      .in-focus
+        opacity: 1
 
       p
         float: left
@@ -413,75 +401,6 @@
       .code-panel-left-decoration
         width: 5px
         color: #3b85f5
-
-      .step
-        opacity: 0.5
-        display: none !important
-
-      .show
-        display: block !important
-
-      .in-focus
-        opacity: 1
-
-  .quick-start-guide
-    h3
-      color: #666
-
-    p
-      padding: $home-line-spacing 0px
-
-      &.installation-note
-        font-size: 12px
-        text-align: center
-
-      &.sidenote
-        text-align: right
-        font-style: italic
-
-        a
-          color: #666
-
-    nav
-      padding: $home-line-spacing * 2 0
-
-      ul
-        margin: auto
-        overflow: hidden
-        text-align: center
-
-        li
-          border-radius: 6px
-          padding: 24px
-          background-color: #f4f5f7
-          cursor: pointer
-          display: inline-block
-
-          .pip-icon, .docker-icon
-            display: inline-block
-            width: 24px
-            height: 24px
-            background-position: -24px -0px
-            margin-right: 12px
-            float: left
-
-          .pip-icon
-            background-image: url(./../images/pip.png)
-
-          .docker-icon
-            background-image: url(./../images/docker.png)
-
-          &.selected
-            .pip-icon, .docker-icon
-              background-position: 0px 0px
-
-          &:hover
-            background-color: #efefef
-
-          &.selected
-            color: #fff
-            background-color: #9977ef
-
 
   .features
     padding-bottom: $home-line-spacing * 2
@@ -524,7 +443,7 @@
         display: inline-block
         vertical-align: middle
         line-height: normal
-        width: 50%
+        width: 80%
 
     .feature-desc
       display: inline-block
@@ -610,12 +529,15 @@
       height: 800px
 
     .video-cell
-      display: inline-block
+      display: block
       padding: 16px
-      margin: auto
+      margin-top: auto
+      margin-bottom: auto
       top: 0px
       bottom: 0px
       text-align: center
+      right: 0px
+      -webkit-transition: all 2s cubic-bezier(0.1, 0.8, 1.0, 1.0) 0s
 
       h2
         margin-left: auto
@@ -626,8 +548,11 @@
         margin-left: auto
         margin-right: auto
 
+      &.align-left
+        right: calc(100% - 530px)
+
       .watch-now
-        margin-top: 12px
+        margin-top: 20px
         padding: 12px
         width: 200px
         height: 60px
@@ -651,7 +576,7 @@
     margin: 0
     background-color: rgba(0, 0, 0, 0.04)
     border-radius: 3px
-    font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace
+    font-family: $code-font-family
     color: #E74C3C
     overflow-x: auto
 
@@ -659,6 +584,7 @@
   pre
     white-space: pre
     padding: 24px
+    padding-top: 0px
     overflow: auto
     line-height: 1.45
     background-color: #f7f7f7
@@ -666,7 +592,6 @@
     word-wrap: normal
     margin-top: 0
     margin-bottom: 0
-    font: Consolas, "Liberation Mono", Menlo, Courier, monospace
     color: #292b2c
 
     > code
@@ -676,6 +601,7 @@
       word-break: normal
       white-space: pre
       background: transparent
+      font-family: $code-font-family
       border: 0
 
     code
@@ -688,6 +614,7 @@
       word-wrap: normal
       background-color: transparent
       border: 0
+      font-family: $code-font-family
       color: #292b2c
 
       &::before, &::after
@@ -776,10 +703,6 @@
         margin-top: $home-line-spacing * 4
         margin-bottom: $home-line-spacing * 2
 
-    .quick-start-guide
-      h2
-        margin-top: $home-line-spacing * 4
-
     .video-cell
       position: absolute
       width: 530px
@@ -789,7 +712,7 @@
 
       h2
         font-size: 36px
-        margin-top: 90px
+        margin-top: 120px
         margin-left: auto
         margin-right: auto
         margin-bottom: 30px
@@ -797,7 +720,7 @@
 
       .watch-now
         position: absolute
-        bottom: 60px
+        bottom: 90px
         margin: auto
         left: 0px
         right: 0px
