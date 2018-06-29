@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-06-22 20:18+0000\n"
+"POT-Creation-Date: 2018-06-29 01:54+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -33,7 +33,11 @@ msgstr ""
 msgid "Refresh Content"
 msgstr "刷新内容"
 
-#: portal/templates/_nav_bar.html:48
+#: portal/templates/_nav_bar.html:49
+msgid "About"
+msgstr "关于我们"
+
+#: portal/templates/_nav_bar.html:52
 msgid "Community"
 msgstr "社区"
 
@@ -45,90 +49,102 @@ msgstr "刷新"
 msgid ". This may take a few minutes, please wait..."
 msgstr "中。这可能需要几分钟，请稍候…"
 
-#: portal/templates/index.html:16
-msgid "PArallel Distributed Deep LEarning"
-msgstr "易学易用的分布式深度学习平台"
-
 #: portal/templates/index.html:17
-msgid "An Easy-to-use, Efficient, Flexible and Scalable Deep Learning Platform"
-msgstr "正在为100+项产品提供深度学习算法支持"
+msgid "An easy-to-use, easy-to-learn<br>deep learning platform"
+msgstr "最适合中国开发者和企业的深度学习框架"
 
-#: portal/templates/index.html:21 portal/templates/index.html.py:328
-msgid "Quick Start"
-msgstr "快速入门"
+#: portal/templates/index.html:18
+msgid ""
+"An open-source deep learning platform with a<br>simple API, trusted by the "
+"world’s leading AI teams"
+msgstr ""
+"PaddlePaddle是一个易学、易用的开源深度学习框架、<br>能够让开发者和企业安全、高效地实现自己的AI想法"
 
-#: portal/templates/index.html:33
-msgid "Technical Features"
-msgstr "技术和服务优势"
+#: portal/templates/index.html:21
+msgid "Get Started"
+msgstr "入门手册"
 
-#: portal/templates/index.html:41
+#: portal/templates/index.html:23
+msgid "Learn more"
+msgstr "了解更多"
+
+#: portal/templates/index.html:97
 msgid "Easy to learn"
 msgstr "易学"
 
-#: portal/templates/index.html:42
+#: portal/templates/index.html:99
 msgid ""
 "PaddlePaddle provides multitudes of tools and tutorials; Become a deep "
 "learning developer in no time."
-msgstr "代码易于理解，官方提供丰富的学习资料及工具；帮助你迅速成为深度学习开发者"
+msgstr ""
+"代码易于理解，官方提供丰富的学习资料及工具；帮助你迅速成为深度学习开发者"
 
-#: portal/templates/index.html:50
+#: portal/templates/index.html:105
 msgid "Ease of use"
 msgstr "易用性"
 
-#: portal/templates/index.html:51
+#: portal/templates/index.html:107
 msgid ""
 "PaddlePaddle provides an intuitive and flexible interface for loading data "
 "and specifying model structures; Bring your creativity to reality."
 msgstr "框架具备非常好的拓展性，并且提供了丰富全面的API；实现你天马行空的创意"
 
-#: portal/templates/index.html:59
+#: portal/templates/index.html:113
 msgid "Security"
 msgstr "安全"
 
-#: portal/templates/index.html:60
+#: portal/templates/index.html:115
 msgid ""
 "PaddlePaddle is backed by Baidu’s AI technology and business practices. The "
 "framework is safe and stable. Focus your works and not worries."
-msgstr "基于百度多年的AI技术积累以及大量的业务使用验证，框架安全稳定；替你免除后顾之忧"
+msgstr ""
+"基于百度多年的AI技术积累以及大量的业务使用验证，框架安全稳定；替你免除后顾之"
+"忧"
 
-#: portal/templates/index.html:67
+#: portal/templates/index.html:121
 msgid "Efficiency"
 msgstr "高效性"
 
-#: portal/templates/index.html:68
+#: portal/templates/index.html:123
 msgid ""
 "It also provides extremely optimized operations, memory, and network "
 "communication. Kick start your projects in no time with the latest Baidu "
 "business models."
-msgstr "框架能够一键安装，针对CPU、GPU都做了众多优化，分布式性能强劲，并且开放多种百度优势业务模型；让你的开发快人一步"
+msgstr ""
+"框架能够一键安装，针对CPU、GPU都做了众多优化，分布式性能强劲，并且开放多种百"
+"度优势业务模型；让你的开发快人一步"
 
-#: portal/templates/index.html:163
+#: portal/templates/index.html:265
 msgid "Build powerful applications with PaddlePaddle"
 msgstr "用PaddlePaddle构建强大的应用"
 
-#: portal/templates/index.html:331
+#: portal/templates/index.html:450
+msgid "Quick Start"
+msgstr "快速入门"
+
+#: portal/templates/index.html:453
 msgid "Install and make predictions in 5 minutes"
 msgstr "五分钟快速上手"
 
-#: portal/templates/index.html:338
+#: portal/templates/index.html:460
 msgid ""
 "Tested on CentOS 7, Ubuntu 16.04, and MacOS 10.12, with Python 2.7.x "
 "installed"
 msgstr "在 CentOS 7，Ubuntu 16.04， MacOS 10.12，Python 2.7.x 环境下测试过"
 
-#: portal/templates/index.html:341
+#: portal/templates/index.html:463
 msgid "Download "
 msgstr "下载"
 
-#: portal/templates/index.html:341
+#: portal/templates/index.html:463
 msgid "the trained housing prices model"
 msgstr "房价模型"
 
-#: portal/templates/index.html:341
+#: portal/templates/index.html:463
 msgid " and then install PaddlePaddle on your computer:"
 msgstr "和在电脑上安装PaddlePaddle"
 
-#: portal/templates/index.html:344
+#: portal/templates/index.html:466
 msgid ""
 "Download, and then <a href=\"https://docs.docker.com/engine/installation/\" "
 "target=\"_blank\">install Docker</a> on your computer."
@@ -136,35 +152,35 @@ msgstr ""
 "在您的电脑上<a href=\"https://docs.docker.com/engine/installation/\" target="
 "\"_blank\">安装Docker。</a>"
 
-#: portal/templates/index.html:344
+#: portal/templates/index.html:466
 msgid ""
 "After installing Docker, create a new file called <em>housing.py</em> in a "
 "new and empty directory:"
 msgstr "安装好后，在一个新的目录下创建一个<em>housing.py</em> "
 
-#: portal/templates/index.html:348
+#: portal/templates/index.html:470
 msgid "Instructions on installing pip"
 msgstr "pip 安装教学"
 
-#: portal/templates/index.html:350
+#: portal/templates/index.html:472
 msgid "Now, create a new file called "
 msgstr "创建一个 "
 
-#: portal/templates/index.html:350
+#: portal/templates/index.html:472
 msgid ", and paste this Python code"
 msgstr " 并粘贴此Python代码"
 
-#: portal/templates/index.html:350
+#: portal/templates/index.html:472
 msgid ""
 "(make sure to set the right path based on the location of <em>fit_a_line."
 "tar</em> on your computer):"
 msgstr "(请确保<em>fit_a_line.tar</em> 是在正确的路径上)"
 
-#: portal/templates/index.html:351
+#: portal/templates/index.html:473
 msgid "Now download "
 msgstr "下载"
 
-#: portal/templates/index.html:351
+#: portal/templates/index.html:473
 msgid ""
 "the trained housing prices model</a> into the <code>~/workspace</code> "
 "directory, and paste this Python code in <em>housing.py</em> using your "
@@ -173,21 +189,21 @@ msgstr ""
 "房价模型</a> 且放在<code>~/workspace</code> 目录下，使用您喜欢的编辑器粘贴此"
 "Python代码到<em>housing.py</em>"
 
-#: portal/templates/index.html:374
+#: portal/templates/index.html:496
 msgid "Run "
 msgstr "执行"
 
-#: portal/templates/index.html:374
+#: portal/templates/index.html:496
 msgid ""
 " and <strong>voila</strong>! It should print out a list of predictions for "
 "the test housing data."
 msgstr " <strong>瞧</strong>！ 它应该打印出预测住房数据的清单。"
 
-#: portal/templates/index.html:376
+#: portal/templates/index.html:498
 msgid "Now run this code in a new PaddlePaddle Docker container:"
 msgstr "在一个新的paddlepaddle Docker容器运行这个代码："
 
-#: portal/templates/index.html:379
+#: portal/templates/index.html:501
 msgid ""
 "<strong>Voila</strong>! It should print out a list of predictions for the "
 "test housing data."
@@ -288,3 +304,9 @@ msgid ""
 "Run the web-app with one command and instantly visualize the results. Train "
 "again, and refresh results."
 msgstr "运行Web应用程序，即可立即可视化结果。再次训练，并刷新结果。"
+
+#~ msgid "PArallel Distributed Deep LEarning"
+#~ msgstr "易学易用的分布式深度学习平台"
+
+#~ msgid "Technical Features"
+#~ msgstr "技术和服务优势"

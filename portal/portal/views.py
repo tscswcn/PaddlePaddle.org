@@ -325,6 +325,12 @@ def cn_home_root(request):
 def book_home(request):
     return _redirect_first_link_in_contents(request, 'develop', Content.BOOK)
 
+def about_en(request):
+    return render(request, 'about_en.html')
+
+def about_cn(request):
+    return render(request, 'about_cn.html')
+
 
 def download_latest_doc_workspace(request):
     portal_helper.download_and_extract_workspace()
