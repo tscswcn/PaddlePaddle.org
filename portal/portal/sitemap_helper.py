@@ -258,6 +258,12 @@ def get_all_navigation(request, version, language):
     docs, cate = get_content_navigation(request, "documentation", version, language)
     all_data = docs
 
+    apis, cate = get_content_navigation(request, "api", version, language)
+
+    if apis and 'sections' in apis:
+        all_data['sections'] += apis['sections']
+        all_data['links'] += apis['links']
+
     book, cate = get_content_navigation(request, "book", version, language)
 
     if book and 'sections' in book:
