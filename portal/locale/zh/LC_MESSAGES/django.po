@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-06-29 20:19+0000\n"
+"POT-Creation-Date: 2018-07-01 03:06+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -50,16 +50,17 @@ msgid ". This may take a few minutes, please wait..."
 msgstr "中。这可能需要几分钟，请稍候…"
 
 #: portal/templates/index.html:17
-msgid "An easy-to-use, easy-to-learn<br>deep learning platform"
+msgid ""
+"An easy-to-use, easy-to-learn&nbsp;<br class=\"br\"/>deep learning platform"
 msgstr "最适合中国开发者和企业的深度学习框架"
 
 #: portal/templates/index.html:18
 msgid ""
-"An open-source deep learning platform with a<br>simple API, trusted by the "
-"world’s leading AI teams"
+"An open-source deep learning platform with a&nbsp;<br class=\"br\"/>simple "
+"API, trusted by the world’s leading AI teams"
 msgstr ""
-"PaddlePaddle是一个易学、易用的开源深度学习框架，<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;能够让开发者和企业安全、"
-"高效地实现自己的AI想法"
+"PaddlePaddle是一个易学、易用的开源深度学习框架，<br class=\"br\"/>"
+"能够让开发者和企业安全、高效地实现自己的AI想法"
 
 #: portal/templates/index.html:21 portal/templates/index.html.py:200
 msgid "Get Started"
@@ -68,7 +69,7 @@ msgstr "让我们开始吧"
 #: portal/templates/index.html:23 portal/templates/index.html.py:306
 #: portal/templates/index.html:328 portal/templates/index.html.py:354
 #: portal/templates/index.html:376 portal/templates/index.html.py:402
-#: portal/templates/index.html:424
+#: portal/templates/index.html:423
 msgid "Learn more"
 msgstr "了解更多"
 
@@ -199,11 +200,11 @@ msgstr "中文古诗生成模型"
 msgid "Utilize stacked bi-directional LSTM to generate a Chinese ancient poem."
 msgstr "运用栈式双向长短期记忆模型来生成中文古诗"
 
-#: portal/templates/index.html:417
+#: portal/templates/index.html:416
 msgid "SSD Object Detection"
 msgstr "SSD目标检测"
 
-#: portal/templates/index.html:420
+#: portal/templates/index.html:419
 msgid "Use the SSD model in PaddlePaddle for object detection."
 msgstr "使用PaddlePaddle的SSD模型来做物体探测"
 
