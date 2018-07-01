@@ -126,12 +126,14 @@ msgstr "安装"
 #: portal/templates/index.html:138
 msgid ""
 "Get PaddlePaddle up and running quick after installing the newest version of "
-"pip"
-msgstr "用最新的pip快捷地安装和运行PaddlePaddle"
+"<a href='https://pip.pypa.io/en/stable/installing/'>pip</a>"
+msgstr "推荐使用最新版的 <a href='https://pip.pypa.io/en/stable/installing/'>pip</a> 快捷地安装和运行 PaddlePaddle"
 
 #: portal/templates/index.html:187
-msgid "Tested on CentOS 6+, Ubuntu 14.04+"
-msgstr "在CentOS 6+和Ubuntu 14.04+上测试通过"
+msgid ""
+"Tested on <a href=https://wiki.centos.org/Download>CentOS 6</a>, <a "
+"href=https://www.ubuntu.com/download>Ubuntu 14.04</a>+"
+msgstr "请确保你的系统版本满足：<a href=https://wiki.centos.org/Download>CentOS 6</a> 以上，<a href=https://www.ubuntu.com/download>Ubuntu 14.04 </a>以上"
 
 #: portal/templates/index.html:192
 msgid "Install on Windows, MacOS, or other options"
@@ -303,6 +305,9 @@ msgid ""
 "Run the web-app with one command and instantly visualize the results. Train "
 "again, and refresh results."
 msgstr "运行Web应用程序，即可立即可视化结果。再次训练，并刷新结果。"
+
+#~ msgid "Tested on CentOS 6+, Ubuntu 14.04+"
+#~ msgstr "在CentOS 6+和Ubuntu 14.04+上测试通过"
 
 #~ msgid "Quick Start"
 #~ msgstr "快速入门"
