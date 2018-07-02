@@ -260,9 +260,9 @@ def get_all_navigation(request, version, language):
 
     apis, cate = get_content_navigation(request, "api", version, language)
 
-    if apis and 'sections' in apis:
-        all_data['sections'] += apis['sections']
-        all_data['links'] += apis['links']
+    # NOTE: API's section title is not "API", therefore, we have to add the root level instead.
+    if apis:
+        all_data['sections'] += [apis]
 
     book, cate = get_content_navigation(request, "book", version, language)
 
