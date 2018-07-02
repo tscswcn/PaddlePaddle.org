@@ -23,7 +23,7 @@
                 <button id="banner_learn_more" class="btn col-lg-3" href="/about_{% if LANGUAGE_CODE != 'zh' %}en{% else %}cn{% endif %}.html" type="text/html" >{% trans "Learn more"%}</button>
 
             </div>
-        <div>
+        </div>
 
         <div class="dot-area">
             <div class="dot-group">
@@ -157,17 +157,20 @@
                     <div id="cuda-version" class="row disable">
                         <div class="col-4">
                             <button id="-gpu" class="install-option cuda selected">
-                                CUDA 9.0 cuDNN 7.0
+                                <div class="cuda-title">CUDA 9</div>
+                                <div class="cuda-caption">cuDNN 7.0</div>
                             </button>
                         </div>
                         <div class="col-4">
                             <button id="-gpu==0.14.0.post87" class="install-option cuda">
-                                CUDA 8.0 cuDNN 7.0
+                                <div class="cuda-title">CUDA 8</div>
+                                <div class="cuda-caption">cuDNN 7.0</div>
                             </button>
                         </div>
                         <div class="col-4">
                             <button id="-gpu==0.14.0.post85" class="install-option cuda">
-                                CUDA 8.0 cuDNN 5.0
+                                <div class="cuda-title">CUDA 8</div>
+                                <div class="cuda-caption">cuDNN 5.0</div>
                             </button>
                         </div>
                     </div>
@@ -544,7 +547,9 @@ for i in xrange(len(probs)):
     });
 
 
-    $('.installation-guide div > .install-option').click(function(event){
+    $('.installation-guide .install-option').click(function(event){
+        if (event.target.tagName == 'DIV')
+            event.target = $(event.target).parent()[0];
         var installationToShow = event.target.id;
         var installCommend = 'pip install paddlepaddle';
 
