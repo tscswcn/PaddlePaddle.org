@@ -54,6 +54,7 @@
                 }
             }
         },
+        "default-branch": "develop",
         "default-category": "default"
     },
     "models": {
@@ -69,6 +70,7 @@
                 }
             }
         },
+        "default-branch": "develop",
         "default-category": "default"
     },
     "mobile": {
@@ -84,6 +86,7 @@
                 }
             }
         },
+        "default-branch": "develop",
         "default-category": "default"
     },
     "visualdl": {
