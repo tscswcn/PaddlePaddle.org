@@ -102,17 +102,36 @@ def nav_bar(context):
     if 'visualdl' in root_navigation:
         root_navigation.pop('visualdl')
 
+    # NOTE: This is to consolidate all into documentation
+    if 'book' in root_navigation:
+        root_navigation.pop('book')
+
+    if 'api' in root_navigation:
+        root_navigation.pop('api')
+
+    if 'mobile' in root_navigation:
+        root_navigation.pop('mobile')
+
+    if 'models' in root_navigation:
+        root_navigation.pop('models')
+
     # Since we default to english, we set the change lang toggle to chinese
     lang_label = u'中文'
     lang_link = '/change-lang?lang_code=zh'
+    community_link = 'https://github.com/PaddlePaddle/Paddle/issues'
+    about_link = '/about_en.html'
 
     if current_lang_code and current_lang_code == 'zh':
         lang_label = 'English'
         lang_link = '/change-lang?lang_code=en'
+        community_link = 'https://ai.baidu.com/forum/topic/list/168'
+        about_link = '/about_cn.html'
 
     return _common_context(context, {
         'root_nav': root_navigation,
-        'lang_def': { 'label': lang_label, 'link': lang_link }
+        'lang_def': { 'label': lang_label, 'link': lang_link },
+        'community_link': community_link,
+        'about_link': about_link
     })
 
 
@@ -121,15 +140,23 @@ def content_links(context, content_id):
     current_lang_code = context.request.LANGUAGE_CODE
     docs_version = context.get('CURRENT_DOCS_VERSION', None)
 
-    side_nav_content, category = sitemap_helper.get_content_navigation(
+    # NOTE: Uncomment the follow code to use the regular navigation path
+    # side_nav_content, category = sitemap_helper.get_content_navigation(
+    #     context.request,
+    #     content_id,
+    #     docs_version,
+    #     current_lang_code
+    # )
+
+    # Consolidate all into documentation
+    all_side_nav_content, category = sitemap_helper.get_all_navigation(
         context.request,
-        content_id,
         docs_version,
         current_lang_code
     )
 
     return _common_context(context, {
-        'side_nav_content': side_nav_content,
+        'side_nav_content': all_side_nav_content,
         'category': category,
         'allow_search': context.get('allow_search', False),
         'allow_version': context.get('allow_version', False),

@@ -325,6 +325,12 @@ def cn_home_root(request):
 def book_home(request):
     return _redirect_first_link_in_contents(request, 'develop', Content.BOOK)
 
+def about_en(request):
+    return render(request, 'about_en.html')
+
+def about_cn(request):
+    return render(request, 'about_cn.html')
+
 
 def download_latest_doc_workspace(request):
     portal_helper.download_and_extract_workspace()
@@ -367,16 +373,20 @@ def content_sub_path(request, version, path=None):
         content_id = Content.VISUALDL
 
     elif path.startswith(url_helper.BOOK_ROOT):
-        content_id = Content.BOOK
+        # content_id = Content.BOOK
+        content_id = Content.DOCUMENTATION
 
     elif path.startswith(url_helper.MODEL_ROOT):
-        content_id = Content.MODELS
+        # content_id = Content.MODELS
+        content_id = Content.DOCUMENTATION
 
     elif path.startswith(url_helper.MOBILE_ROOT):
-        content_id = Content.MOBILE
+        # content_id = Content.MOBILE
+        content_id = Content.DOCUMENTATION
 
     elif path.startswith(url_helper.API_ROOT):
-        content_id = Content.API
+        # content_id = Content.API
+        content_id = Content.DOCUMENTATION
 
         search_url = '%s/%s/search.html' % (content_id, 'en')
         if path.startswith(url_helper.API_ROOT + 'fluid'):
