@@ -547,13 +547,28 @@
 
   .video
     background: linear-gradient(40deg, #ffffff, rgba(59, 133, 245, 0.3))
+    position: relative
+
+    .previous-video, .next-video
+      top: 45%
+      position: absolute
+      display: none
+      cursor: pointer
+
+    .previous-video
+      transform: rotate(180deg)
+      left: 20px
+
+    .next-video
+      right: 20px
+
+    &:hover
+      .previous-video, .next-video
+        display: block
 
     .big-img
       height: 550px
       width: 550px
-
-      &.align-right
-        float: right
 
     .video-cell
       display: block
@@ -564,7 +579,6 @@
       bottom: 0px
       text-align: center
       right: 0px
-      -webkit-transition: all 2s cubic-bezier(0.1, 0.8, 1.0, 1.0) 0s
 
       h2
         margin-left: auto
@@ -574,9 +588,7 @@
         max-width: 400px
         margin-left: auto
         margin-right: auto
-
-      &.align-left
-        right: calc(100% - 530px)
+        min-height: 54px
 
       .watch-now
         margin-top: 20px
@@ -689,12 +701,24 @@
       border: 0px
 
       h2
-        margin-top: 20px
         margin-bottom: 20px
 
     .resource-cell
       width: 266px
       height: 266px
+
+    .video
+      .previous-video, .next-video
+        position: relative
+        display: block
+        margin: auto
+        left: 0px
+
+        img
+          display: block
+          margin: auto
+          transform: rotate(90deg)
+          height: 52px
 
 @media (min-width: 992px)
   .home
