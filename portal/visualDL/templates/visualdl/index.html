@@ -64,34 +64,42 @@
 
     <section class="container services">
         <div class="row">
-            <h3 class="col-lg-12 sub-title">{% trans "Works with:" %}</h3>
+            <h3 class="col-lg-12 sub-title">{% trans "Works with all frameworks including:" %}</h3>
         </div>
         <div class="row">
             <div class="col-lg-15">
-                <div class="app inactive">
-                    <img src="/static/visualdl/images/caffe2.svg"/>
-                    <span>{% trans "COMING SOON" %}</span>
+                <div class="app">
+                    <a href="http://visualdl.paddlepaddle.org/docs/develop/visualdl/{% if LANGUAGE_CODE != 'zh' %}en{% else %}zh{% endif %}/getting_started/demo/caffe2/TUTORIAL_{% if LANGUAGE_CODE != 'zh' %}EN{% else %}CN{% endif %}.html">
+                        <img src="/static/visualdl/images/caffe2.svg"/>
+                    </a>
                 </div>
             </div>
             <div class="col-lg-15">
                 <div class="app">
-                    <img src="/static/visualdl/images/paddle.svg"/>
+                    <a href="http://visualdl.paddlepaddle.org/docs/develop/visualdl/{% if LANGUAGE_CODE != 'zh' %}en{% else %}zh{% endif %}/getting_started/demo/paddle/TUTORIAL_{% if LANGUAGE_CODE != 'zh' %}EN{% else %}CN{% endif %}.html">
+                        <img src="/static/visualdl/images/paddle.svg"/>
+                    </a>
                 </div>
             </div>
             <div class="col-lg-15">
                 <div class="app">
-                    <img src="/static/visualdl/images/mxnet.svg"/>
-                </div>
-            </div>
-            <div class="col-lg-15">
-                <div class="app inactive">
-                    <img src="/static/visualdl/images/keras.svg"/>
-                    <span>{% trans "COMING SOON" %}</span>
+                    <a href="http://visualdl.paddlepaddle.org/docs/develop/visualdl/{% if LANGUAGE_CODE != 'zh' %}en{% else %}zh{% endif %}/getting_started/demo/pytorch/TUTORIAL_{% if LANGUAGE_CODE != 'zh' %}EN{% else %}CN{% endif %}.html">
+                        <img src="/static/visualdl/images/pytorch.svg"/>
+                    </a>
                 </div>
             </div>
             <div class="col-lg-15">
                 <div class="app">
-                    <img src="/static/visualdl/images/pytorch.svg"/>
+                    <a href="http://visualdl.paddlepaddle.org/docs/develop/visualdl/{% if LANGUAGE_CODE != 'zh' %}en{% else %}zh{% endif %}/getting_started/demo/keras/TUTORIAL_{% if LANGUAGE_CODE != 'zh' %}EN{% else %}CN{% endif %}.html">
+                        <img src="/static/visualdl/images/keras.svg"/>
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-15">
+                <div class="app">
+                    <a href="http://visualdl.paddlepaddle.org/docs/develop/visualdl/{% if LANGUAGE_CODE != 'zh' %}en{% else %}zh{% endif %}/getting_started/demo/mxnet/TUTORIAL_{% if LANGUAGE_CODE != 'zh' %}EN{% else %}CN{% endif %}.html">
+                        <img src="/static/visualdl/images/mxnet.svg"/>
+                    </a>
                 </div>
             </div>
         </div>
