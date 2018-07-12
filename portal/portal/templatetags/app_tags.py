@@ -86,6 +86,14 @@ def apply_class_if_template(context, template_file_name, class_name):
     else:
         return ''
 
+@register.simple_tag()
+def server_start_time():
+    """
+    The tag returns the server start time set in settings.py
+    This tag is mainly used to achieve expiring CSS files
+    """
+    return settings.SERVER_START_TIME
+
 
 @register.inclusion_tag('_nav_bar.html', takes_context=True)
 def nav_bar(context):
