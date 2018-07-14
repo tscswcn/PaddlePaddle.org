@@ -113,39 +113,40 @@
 .home .services .sub-title {
   text-align: center;
   color: #666;
+  padding: 4px;
 }
-/* line 99, ../sass/home.sass */
+/* line 100, ../sass/home.sass */
 .home .services .app {
   width: 100%;
   padding: 16px;
   text-align: center;
 }
-/* line 104, ../sass/home.sass */
+/* line 105, ../sass/home.sass */
 .home .services .app.inactive {
   opacity: 0.35;
 }
-/* line 107, ../sass/home.sass */
+/* line 108, ../sass/home.sass */
 .home .services .app img {
   width: 100%;
 }
-/* line 110, ../sass/home.sass */
+/* line 111, ../sass/home.sass */
 .home .how-to {
   background-color: #f2f2f2;
   padding: 48px 0 48px 0;
   text-align: center;
 }
-/* line 116, ../sass/home.sass */
+/* line 117, ../sass/home.sass */
 .home .how-to .how-to-step img {
   display: block;
   margin: 36px auto 36px auto;
   width: 156px;
   height: 137px;
 }
-/* line 122, ../sass/home.sass */
+/* line 123, ../sass/home.sass */
 .home .how-to .how-to-step .description {
   text-align: center;
 }
-/* line 125, ../sass/home.sass */
+/* line 126, ../sass/home.sass */
 .home .how-to .arrow {
   width: 39px;
   height: 28px;
@@ -159,39 +160,39 @@
 }
 
 @media (min-width: 992px) {
-  /* line 138, ../sass/home.sass */
+  /* line 139, ../sass/home.sass */
   .home h1 {
     font-size: 36px;
   }
-  /* line 141, ../sass/home.sass */
+  /* line 142, ../sass/home.sass */
   .home h2 {
     font-size: 24px;
   }
-  /* line 144, ../sass/home.sass */
+  /* line 145, ../sass/home.sass */
   .home h3 {
     font-size: 20px;
   }
-  /* line 147, ../sass/home.sass */
+  /* line 148, ../sass/home.sass */
   .home hr {
     display: none;
   }
-  /* line 150, ../sass/home.sass */
+  /* line 151, ../sass/home.sass */
   .home p {
     font-size: 16px;
     font-weight: 100;
     color: #666;
     margin: 0px;
   }
-  /* line 156, ../sass/home.sass */
+  /* line 157, ../sass/home.sass */
   .home .banner {
     color: white;
   }
-  /* line 159, ../sass/home.sass */
+  /* line 160, ../sass/home.sass */
   .home .banner .tag-line {
     padding-top: 96px;
     margin-bottom: 48px;
   }
-  /* line 164, ../sass/home.sass */
+  /* line 165, ../sass/home.sass */
   .home .how-to .arrow {
     width: 39px;
     height: 28px;

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-07-01 07:01+0000\n"
+"POT-Creation-Date: 2018-07-12 00:53+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -62,14 +62,14 @@ msgstr ""
 "PaddlePaddle是一个易学、易用的开源深度学习框架，<br class=\"br\"/>能够让开发"
 "者和企业安全、高效地实现自己的AI想法"
 
-#: portal/templates/index.html:21 portal/templates/index.html.py:200
+#: portal/templates/index.html:21 portal/templates/index.html.py:203
 msgid "Get Started"
 msgstr "让我们开始吧"
 
-#: portal/templates/index.html:23 portal/templates/index.html.py:306
-#: portal/templates/index.html:328 portal/templates/index.html.py:354
+#: portal/templates/index.html:23 portal/templates/index.html.py:354
 #: portal/templates/index.html:376 portal/templates/index.html.py:402
-#: portal/templates/index.html:423
+#: portal/templates/index.html:424 portal/templates/index.html.py:450
+#: portal/templates/index.html:471
 msgid "Learn more"
 msgstr "了解更多"
 
@@ -128,10 +128,10 @@ msgid ""
 "Get PaddlePaddle up and running quick after installing the newest version of "
 "<a href='https://pip.pypa.io/en/stable/installing/'>pip</a>"
 msgstr ""
-"推荐在Linux系统下使用最新版的 <a href='https://pip.pypa.io/en/stable/installing/' target=\"_blank\">pip</a> "
-"快捷地安装和运行 PaddlePaddle"
+"推荐在Linux系统下使用最新版的 <a href='https://pip.pypa.io/en/stable/"
+"installing/' target=\"_blank\">pip</a> 快捷地安装和运行 PaddlePaddle"
 
-#: portal/templates/index.html:187
+#: portal/templates/index.html:190
 msgid ""
 "Tested on <a href=https://wiki.centos.org/Download>CentOS 6</a>, <a "
 "href=https://www.ubuntu.com/download>Ubuntu 14.04</a>+"
@@ -139,75 +139,75 @@ msgstr ""
 "请确保你的系统版本满足：<a href=https://wiki.centos.org/Download>CentOS 6</"
 "a> 以上，<a href=https://www.ubuntu.com/download>Ubuntu 14.04 </a>以上"
 
-#: portal/templates/index.html:192
+#: portal/templates/index.html:195
 msgid "Install on Windows, MacOS, or other options"
 msgstr "在Windows，MacOS以及其他平台上安装"
 
-#: portal/templates/index.html:209
+#: portal/templates/index.html:212
 msgid "Import PaddlePaddle"
 msgstr "引入PaddlePaddle"
 
-#: portal/templates/index.html:218
+#: portal/templates/index.html:221
 msgid "Load dataset and train"
 msgstr "导入数据集并开始训练"
 
-#: portal/templates/index.html:227
+#: portal/templates/index.html:230
 msgid "Make a prediction"
 msgstr "可以做预测啦"
 
-#: portal/templates/index.html:274
+#: portal/templates/index.html:322
 msgid "Build powerful applications with PaddlePaddle"
 msgstr "用PaddlePaddle构建强大的应用"
 
-#: portal/templates/index.html:299
+#: portal/templates/index.html:347
 msgid "Word2Vec"
 msgstr "词向量"
 
-#: portal/templates/index.html:302
-msgid ""
-"Express words as real vectors to calculate similarities between them."
-msgstr "能够将词表示成一个实数向量(one-hot vector), 从而能够进行词与词之间的计算"
+#: portal/templates/index.html:350
+msgid "Express words as real vectors to calculate similarities between them."
+msgstr ""
+"能够将词表示成一个实数向量(one-hot vector), 从而能够进行词与词之间的计算"
 
-#: portal/templates/index.html:321
+#: portal/templates/index.html:369
 msgid "Recommender System"
 msgstr "个性化推荐"
 
-#: portal/templates/index.html:324
+#: portal/templates/index.html:372
 msgid ""
-"Recommend potentially interesting information or commodities to users based on their features."
+"Recommend potentially interesting information or commodities to users based "
+"on their features."
 msgstr "根据不同用户个性化需求与兴趣推荐其可能感兴趣的信息或商品"
 
-#: portal/templates/index.html:347
+#: portal/templates/index.html:395
 msgid "Understand Sentiment"
 msgstr "情感分析"
 
-#: portal/templates/index.html:350
+#: portal/templates/index.html:398
 msgid ""
 "Predict the emotion expressed in a piece of text as positive or negative."
 msgstr "可以用来判断一段文本所表达的情绪状态，比如正面、负面"
 
-#: portal/templates/index.html:369
+#: portal/templates/index.html:417
 msgid "Image Classification"
 msgstr "图像分类"
 
-#: portal/templates/index.html:372
-msgid ""
-"Classify images based on their semantic information."
+#: portal/templates/index.html:420
+msgid "Classify images based on their semantic information."
 msgstr "能够根据图像所传达的语义信息将图像按类别进行区分"
 
-#: portal/templates/index.html:395
+#: portal/templates/index.html:443
 msgid "Machine Translation"
 msgstr "机器翻译"
 
-#: portal/templates/index.html:398
+#: portal/templates/index.html:446
 msgid "Translate between different languages via deep learning."
 msgstr "通过深度学习方法实现不同语言之间的转换"
 
-#: portal/templates/index.html:416
+#: portal/templates/index.html:464
 msgid "SSD Object Detection"
 msgstr "SSD目标检测"
 
-#: portal/templates/index.html:419
+#: portal/templates/index.html:467
 msgid "Use the SSD model in PaddlePaddle for object detection."
 msgstr "使用PaddlePaddle的SSD模型来做物体探测"
 
@@ -284,28 +284,29 @@ msgid "Image data"
 msgstr "图像数据"
 
 #: visualDL/templates/visualdl/index.html:67
-msgid "Works with:"
-msgstr "适用於"
+msgid "Works with all frameworks including:"
+msgstr "适用于所有框架包括："
 
-#: visualDL/templates/visualdl/index.html:73
-#: visualDL/templates/visualdl/index.html:89
-msgid "COMING SOON"
-msgstr "敬请期待"
-
-#: visualDL/templates/visualdl/index.html:105
+#: visualDL/templates/visualdl/index.html:113
 msgid "Write your deep neural network training in Python or C++"
 msgstr "用Python或C++写下你的深层神经网络训练"
 
-#: visualDL/templates/visualdl/index.html:113
+#: visualDL/templates/visualdl/index.html:121
 msgid ""
 "Plug in the VisualDL SDK to log metrics and data produced during training"
 msgstr "在训练过程中利用 VisualDL SDK 纪录下数据日志"
 
-#: visualDL/templates/visualdl/index.html:120
+#: visualDL/templates/visualdl/index.html:128
 msgid ""
 "Run the web-app with one command and instantly visualize the results. Train "
 "again, and refresh results."
 msgstr "运行Web应用程序，即可立即可视化结果。再次训练，并刷新结果。"
+
+#~ msgid "Works with:"
+#~ msgstr "适用於"
+
+#~ msgid "COMING SOON"
+#~ msgstr "敬请期待"
 
 #~ msgid "Tested on CentOS 6+, Ubuntu 14.04+"
 #~ msgstr "在CentOS 6+和Ubuntu 14.04+上测试通过"
