@@ -121,15 +121,14 @@ def documentation(source_dir, destination_dir, content_id, version, original_lan
                             new_menu['sections'], link,
                             'documentation', lang, version, source_dir, content_id == 'docs'
                         )
-
     for lang in langs:
         if original_lang:
             lang_destination_dir = destination_dir
         else:
             lang_destination_dir = os.path.join(destination_dir, content_id, lang, version)
 
-            strip_sphinx_documentation(
-                source_dir, generated_dir, lang_destination_dir, version)
+        strip_sphinx_documentation(
+            source_dir, generated_dir, lang_destination_dir, version)
         # shutil.rmtree(generated_dir)
 
     if new_menu:
@@ -674,14 +673,29 @@ def markdown_file(source_markdown_file, version, tmp_dir, new_path=None):
         os.makedirs(os.path.dirname(new_path))
 
     with open(source_markdown_file) as original_md_file:
-        markdown_body = original_md_file.read()
+        markdown_body = sanitize_markdown(original_md_file.read())
+
+        # Preserve all formula
+        formula_map = {}
+        markdown_body = reserve_formulas(markdown_body, formula_map)
 
         with codecs.open(new_path, 'w', 'utf-8') as new_html_partial:
+            converted_content = markdown.markdown(
+                unicode(markdown_body, 'utf-8'),
+                extensions=MARKDOWN_EXTENSIONS
+            )
+
+            soup = BeautifulSoup(converted_content, 'lxml')
+
+            # Insert the preserved formulas
+            markdown_equation_placeholders = soup.select('.markdown-equation')
+            for equation in markdown_equation_placeholders:
+                equation.string = formula_map[equation.get('id')]
+
             # Strip out the wrapping HTML
             new_html_partial.write(
-                '{% verbatim %}\n' + markdown.markdown(
-                    unicode(markdown_body, 'utf-8'),
-                    extensions=MARKDOWN_EXTENSIONS
+                '{% verbatim %}\n' + unicode(
+                    str(soup.select('body')[0])[6:-7], 'utf-8'
                 ) + '\n{% endverbatim %}'
             )
 
