@@ -52,7 +52,7 @@ msgstr "中。这可能需要几分钟，请稍候…"
 #: portal/templates/index.html:17
 msgid ""
 "An easy-to-use, easy-to-learn&nbsp;<br class=\"br\"/>deep learning platform"
-msgstr "最适合中国开发者和企业的深度学习框架"
+msgstr "非常适合中国开发者和企业的深度学习框架"
 
 #: portal/templates/index.html:18
 msgid ""
