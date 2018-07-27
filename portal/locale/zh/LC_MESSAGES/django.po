@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-07-19 20:52+0000\n"
+"POT-Creation-Date: 2018-07-27 23:13+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -68,6 +68,10 @@ msgstr ""
 msgid "About"
 msgstr "关于我们"
 
+#: portal/templates/_nav_bar.html:24
+msgid "Documentation"
+msgstr "使用文档"
+
 #: portal/templates/_nav_bar.html:29
 msgid "Community"
 msgstr "社区"
@@ -89,14 +93,14 @@ msgstr ""
 "PaddlePaddle是一个易学、易用的开源深度学习框架，<br class=\"br\"/>能够让开发"
 "者和企业安全、高效地实现自己的AI想法"
 
-#: portal/templates/index.html:24 portal/templates/index.html.py:206
+#: portal/templates/index.html:24 portal/templates/index.html:206
 msgid "Get Started"
 msgstr "让我们开始吧"
 
-#: portal/templates/index.html:26 portal/templates/index.html.py:364
-#: portal/templates/index.html:386 portal/templates/index.html.py:412
-#: portal/templates/index.html:434 portal/templates/index.html.py:460
-#: portal/templates/index.html:481
+#: portal/templates/index.html:26 portal/templates/index.html:363
+#: portal/templates/index.html:385 portal/templates/index.html:411
+#: portal/templates/index.html:433 portal/templates/index.html:459
+#: portal/templates/index.html:480
 msgid "Learn more"
 msgstr "了解更多"
 
@@ -182,59 +186,59 @@ msgstr "定义训练和预测函数"
 msgid "Train and make a prediction"
 msgstr "执行训练和预测"
 
-#: portal/templates/index.html:332
+#: portal/templates/index.html:331
 msgid "Build powerful applications with PaddlePaddle"
 msgstr "用PaddlePaddle构建强大的应用"
 
-#: portal/templates/index.html:357
+#: portal/templates/index.html:356
 msgid "Word2Vec"
 msgstr "词向量"
 
-#: portal/templates/index.html:360
+#: portal/templates/index.html:359
 msgid "Express words as real vectors to calculate similarities between them."
 msgstr ""
 "能够将词表示成一个实数向量(one-hot vector), 从而能够进行词与词之间的计算"
 
-#: portal/templates/index.html:379
+#: portal/templates/index.html:378
 msgid "Recommender System"
 msgstr "个性化推荐"
 
-#: portal/templates/index.html:382
+#: portal/templates/index.html:381
 msgid ""
 "Recommend potentially interesting information or commodities to users based "
 "on their features."
 msgstr "根据不同用户个性化需求与兴趣推荐其可能感兴趣的信息或商品"
 
-#: portal/templates/index.html:405
+#: portal/templates/index.html:404
 msgid "Understand Sentiment"
 msgstr "情感分析"
 
-#: portal/templates/index.html:408
+#: portal/templates/index.html:407
 msgid ""
 "Predict the emotion expressed in a piece of text as positive or negative."
 msgstr "可以用来判断一段文本所表达的情绪状态，比如正面、负面"
 
-#: portal/templates/index.html:427
+#: portal/templates/index.html:426
 msgid "Image Classification"
 msgstr "图像分类"
 
-#: portal/templates/index.html:430
+#: portal/templates/index.html:429
 msgid "Classify images based on their semantic information."
 msgstr "能够根据图像所传达的语义信息将图像按类别进行区分"
 
-#: portal/templates/index.html:453
+#: portal/templates/index.html:452
 msgid "Machine Translation"
 msgstr "机器翻译"
 
-#: portal/templates/index.html:456
+#: portal/templates/index.html:455
 msgid "Translate between different languages via deep learning."
 msgstr "通过深度学习方法实现不同语言之间的转换"
 
-#: portal/templates/index.html:474
+#: portal/templates/index.html:473
 msgid "SSD Object Detection"
 msgstr "SSD目标检测"
 
-#: portal/templates/index.html:477
+#: portal/templates/index.html:476
 msgid "Use the SSD model in PaddlePaddle for object detection."
 msgstr "使用PaddlePaddle的SSD模型来做物体探测"
 
