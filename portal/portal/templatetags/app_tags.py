@@ -51,7 +51,7 @@ def nav_bar(context):
     """
     Build the navigation based on the current language.
     """
-    current_lang_code = context.request.LANGUAGE_CODE
+    current_lang_code = context.get('lang', context.request.LANGUAGE_CODE)
     # root_navigation = menu_helper.get_top_level_navigation(
     #     portal_helper.get_preferred_version(context.request),
     #     current_lang_code
