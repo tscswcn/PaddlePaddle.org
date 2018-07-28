@@ -18,7 +18,6 @@ from django.conf import settings
 
 from portal import portal_helper
 from portal import url_helper
-from django.utils import translation
 
 
 def base_context(request):
@@ -31,7 +30,6 @@ def base_context(request):
 
     if lang and lang != portal_helper.get_preferred_language(request):
         portal_helper.set_preferred_language(request, None, lang)
-        translation.activate(lang)
 
     return {
         'CURRENT_DOCS_VERSION': version,
