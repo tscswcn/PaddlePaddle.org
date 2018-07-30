@@ -59,14 +59,14 @@ def change_lang(request):
     lang = request.GET.get('lang_code', 'en')
 
     # By default, intend to redirect to the home page.
-    response = redirect('/')
 
     path = urlparse(request.META.get('HTTP_REFERER')).path
 
     if not path == '/':
         response = _find_matching_equivalent_page_for(path, request, lang)
-
-    portal_helper.set_preferred_language(request, response, lang)
+    else:
+        portal_helper.set_preferred_language(request, None, lang)
+        response = redirect('/')
 
     return response
 
