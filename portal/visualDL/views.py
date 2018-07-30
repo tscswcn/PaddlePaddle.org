@@ -25,6 +25,14 @@ from portal import menu_helper
 def home_root(request):
     return render(request, 'visualdl/index.html')
 
+def en_home_root(request):
+    portal_helper.set_preferred_language(request, None, 'en')
+    return render(request, 'visualdl/index.html')
+
+
+def zh_home_root(request):
+    portal_helper.set_preferred_language(request, None, 'zh')
+    return render(request, 'visualdl/index.html')
 
 def change_lang(request):
     """
