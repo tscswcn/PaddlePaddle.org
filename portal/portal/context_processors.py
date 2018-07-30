@@ -28,7 +28,7 @@ def base_context(request):
     if not version:
         version = portal_helper.get_preferred_version(request)
 
-    if lang and lang != portal_helper.get_preferred_language(request):
+    if lang in ['en', 'zh'] and lang != portal_helper.get_preferred_language(request):
         portal_helper.set_preferred_language(request, None, lang)
 
     return {
