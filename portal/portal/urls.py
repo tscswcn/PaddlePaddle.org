@@ -43,6 +43,7 @@ urlpatterns = [
     # ---------------
     url(r'^$', views.home_root, name='home'),
     url(r'^zh', views.zh_home_root, name='zh_home'),
+    url(r'^en', views.en_home_root, name='en_home'),
 
     # ---------------
     # BLOG URLS
