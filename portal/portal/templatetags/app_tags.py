@@ -155,4 +155,25 @@ def translation(context, leaf_node):
 # identified by the inclusion tag for nav_bar.
 @register.assignment_tag(takes_context=True)
 def setup_vdl_context(context):
-    return nav_bar(context)
+    current_lang_code = context.get('lang', context.request.LANGUAGE_CODE)
+    # root_navigation = menu_helper.get_top_level_navigation(
+    #     portal_helper.get_preferred_version(context.request),
+    #     current_lang_code
+    # )
+
+    # TODO[thuan]: This is kinda hacky, need to find better way of removing visualdl docs from PPO
+    # if 'visualdl' in root_navigation:
+    #     root_navigation.pop('visualdl')
+
+    # Since we default to english, we set the change lang toggle to chinese
+    lang_label = u'中文'
+    lang_link = '/zh'
+
+    if current_lang_code and current_lang_code == 'zh':
+        lang_label = 'English'
+        lang_link = '/en'
+
+    return _common_context(context, {
+        # 'root_nav': root_navigation,
+        'lang_def': { 'label': lang_label, 'link': lang_link },
+    })
