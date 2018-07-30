@@ -30,6 +30,8 @@ def base_context(request):
 
     if lang in ['en', 'zh'] and lang != portal_helper.get_preferred_language(request):
         portal_helper.set_preferred_language(request, None, lang)
+    else:
+        lang = portal_helper.get_preferred_language(request)
 
     return {
         'CURRENT_DOCS_VERSION': version,
