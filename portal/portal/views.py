@@ -347,20 +347,25 @@ def about_en(request):
 def about_cn(request):
     return render(request, 'about_cn.html')
 
+def content_home_zh(request, content_id):
+    return content_home(request, None, 'zh')
 
-def content_home(request, content_id):
+def content_home_en(request, content_id):
+    return content_home(request, None, 'en')
+
+def content_home(request, content_id, lang):
     is_raw = request.GET.get('raw', None) == '1'
     content_id = urlparse(request.path).path[15:]
 
     if hasattr(request, 'urlconf') and request.urlconf == 'visualDL.urls':
         content_id = 'visualdl'
-    elif content_id == '':
+    else:
         content_id = 'docs'
 
     return _redirect_first_link_in_contents(
         request, content_id,
         'develop' if content_id == 'visualdl' else portal_helper.get_preferred_version(request),
-        None, is_raw
+        lang, is_raw
     )
 
 

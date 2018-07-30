@@ -3,9 +3,11 @@
 {% load app_tags %}
 {% load i18n %}
 
+{% get_current_language as LANGUAGE_CODE %}
+
 <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
     <div class="container-fluid">
-        <a class="navbar-brand" href="/"><img src="/static/images/logo.png"/></a>
+        <a class="navbar-brand" href="/{% if LANGUAGE_CODE != 'zh' %}en{% else %}zh{% endif %}"><img src="/static/images/logo.png"/></a>
         <form action="{% url 'content' 'api/en/develop/search.html' %}" class="form-inline">
           <input class="form-control mr-sm-2 typeahead" type="search" name="q" placeholder="Search PaddlePaddle.org" />
         </form>
@@ -21,7 +23,7 @@
                 </li>
 
                 <li class="nav-item{% if '/documentation' in request.path %} active{% endif %}">
-                    <a class="nav-link" href="/documentation"{% if settings.ENV != 'production' and settings.ENV != 'staging' %} onclick="return showFullpageSpinnerForContentId('documentation');"{% endif %}>{% trans "Documentation" %}<span class="sr-only">(current)</span></a>
+                    <a class="nav-link" href="/documentation/{% if LANGUAGE_CODE != 'zh' %}en{% else %}zh{% endif %}"{% if settings.ENV != 'production' and settings.ENV != 'staging' %} onclick="return showFullpageSpinnerForContentId('documentation');"{% endif %}>{% trans "Documentation" %}<span class="sr-only">(current)</span></a>
                 </li>
             </ul>
             <ul class="navbar-nav">
