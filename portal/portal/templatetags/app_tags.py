@@ -51,7 +51,7 @@ def nav_bar(context):
     """
     Build the navigation based on the current language.
     """
-    current_lang_code = context.request.LANGUAGE_CODE
+    current_lang_code = context.get('lang', context.request.LANGUAGE_CODE)
     # root_navigation = menu_helper.get_top_level_navigation(
     #     portal_helper.get_preferred_version(context.request),
     #     current_lang_code
@@ -83,7 +83,7 @@ def nav_bar(context):
 
 @register.inclusion_tag('_content_links.html', takes_context=True)
 def content_links(context, content_id):
-    current_lang_code = context.request.LANGUAGE_CODE
+    current_lang_code = context.get('lang', context.request.LANGUAGE_CODE)
     docs_version = context.get('CURRENT_DOCS_VERSION', None)
 
     side_nav_content = menu_helper.get_content_navigation(
@@ -95,7 +95,8 @@ def content_links(context, content_id):
 
     return _common_context(context, {
         'side_nav_content': side_nav_content,
-        'search_url': context.get('search_url', None)
+        'search_url': context.get('search_url', None),
+        'current_lang_code': current_lang_code
     })
 
 
@@ -142,7 +143,7 @@ def translation(context, leaf_node):
     if isinstance(leaf_node, basestring):
         result = leaf_node
     elif isinstance(leaf_node, dict):
-        current_lang_code = context.request.LANGUAGE_CODE
+        current_lang_code = context.get('current_lang_code', context.request.LANGUAGE_CODE)
 
         if current_lang_code in leaf_node:
             result = leaf_node[current_lang_code]

@@ -12,9 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from django.utils.translation import LANGUAGE_SESSION_KEY
 from django.conf import settings
-from portal import menu_helper
+from django.utils import translation
 
 
 def get_preferred_version(request):
@@ -29,23 +28,18 @@ def get_preferred_language(request):
     Observes the user's session, and consequently the cookies,
     to find the preferred documentation language.
     """
-    preferred_lang = request.session.get(LANGUAGE_SESSION_KEY, None)
-    if not preferred_lang:
-        default_lang = 'en'
 
-        if request.LANGUAGE_CODE == 'zh':
-            default_lang = 'zh'
+    default_lang = 'en'
 
-        preferred_lang = request.COOKIES.get(
-            settings.LANGUAGE_COOKIE_NAME, default_lang)
+    if request.LANGUAGE_CODE == 'zh':
+        default_lang = 'zh'
 
-    return preferred_lang
+    return default_lang
 
 
 def set_preferred_language(request, response, lang):
     """
     Sets the preferred documentation version in the user's session AND cookie.
     """
-    request.session[LANGUAGE_SESSION_KEY] = lang
-    response.set_cookie(settings.LANGUAGE_COOKIE_NAME, lang)
-    request.session.modified = True
+    translation.activate(lang)
+    request.session[translation.LANGUAGE_SESSION_KEY] = lang

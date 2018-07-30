@@ -21,7 +21,7 @@
                 </li>
 
                 <li class="nav-item{% if '/documentation' in request.path %} active{% endif %}">
-                    <a class="nav-link" href="/documentation"{% if settings.ENV != 'production' and settings.ENV != 'staging' %} onclick="return showFullpageSpinnerForContentId('documentation');"{% endif %}>{% translation "Documentation" %}<span class="sr-only">(current)</span></a>
+                    <a class="nav-link" href="/documentation"{% if settings.ENV != 'production' and settings.ENV != 'staging' %} onclick="return showFullpageSpinnerForContentId('documentation');"{% endif %}>{% trans "Documentation" %}<span class="sr-only">(current)</span></a>
                 </li>
             </ul>
             <ul class="navbar-nav">

@@ -28,8 +28,12 @@ def base_context(request):
     if not version:
         version = portal_helper.get_preferred_version(request)
 
+    if lang in ['en', 'zh'] and lang != portal_helper.get_preferred_language(request):
+        portal_helper.set_preferred_language(request, None, lang)
+
     return {
         'CURRENT_DOCS_VERSION': version,
         'settings': settings,
-        'url_helper': url_helper
+        'url_helper': url_helper,
+        'lang': lang
     }
