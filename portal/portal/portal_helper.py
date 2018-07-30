@@ -43,3 +43,4 @@ def set_preferred_language(request, response, lang):
     """
     translation.activate(lang)
     request.session[translation.LANGUAGE_SESSION_KEY] = lang
+    request.LANGUAGE_CODE = lang
