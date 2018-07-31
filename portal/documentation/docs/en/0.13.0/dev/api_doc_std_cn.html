@@ -1,0 +1,207 @@
+{% verbatim %}
+<h1>API注释撰写标准</h1>
+<ul>
+<li><a href="#API注释模块">API注释模块</a></li>
+<li><a href="#格式及示例">格式及示例</a></li>
+<li><a href="#完整示例">完整示例</a></li>
+</ul>
+<h2>API注释模块</h2>
+<p>API文档须包含以下几个模块（排列顺序为文档撰写顺序）：</p>
+<ul>
+<li>Python API Definition</li>
+</ul>
+<p>API的代码定义。</p>
+<ul>
+<li>Function Description</li>
+</ul>
+<p>API的功能描述。描述该API的含义、作用或对输入所做的操作，及参考文献和对应链接（如果有），必要时给出公式，并解释公式中关键变量的含义。</p>
+<ul>
+<li>Args Description</li>
+</ul>
+<p>API参数介绍。按代码定义中的参数顺序逐个介绍，介绍内容包含数据类型、默认值（如果有）、含义等。</p>
+<ul>
+<li>Returns</li>
+</ul>
+<p>API返回值介绍。介绍返回值含义，必要时给出对应的形状。若返回值为包含多个参数的tuple，则按顺序逐个介绍各参数。</p>
+<ul>
+<li>Raises（如果有）</li>
+</ul>
+<p>可能抛出的异常或错误及可能的产生原因，当可能抛出多种异常或错误时应分条列出。</p>
+<ul>
+<li>Note（如果有）</li>
+</ul>
+<p>注意事项。当有多条注意事项时，应分条列出。</p>
+<ul>
+<li>Examples</li>
+</ul>
+<p>API的使用示例。</p>
+<h2>格式及示例</h2>
+<p>API文档须使用reStructuredText格式撰写，该格式详情请参考<a href="http://sphinx-doc-zh.readthedocs.io/en/latest/rest.html">链接</a>。API文档各模块的内容格式及示例如下（以下以fc为例进行说明）：</p>
+<ul>
+<li>
+<p>Python API Definition</p>
+</li>
+<li>
+<p>格式：</p>
+<p>[Python API Definition]</p>
+</li>
+<li>
+<p>示例</p>
+<div class="highlight"><pre><span></span>fc(input,
+   size,
+   num_flatten_dims=1,
+   param_attr=None,
+   bias_attr=None,
+   act=None,
+   name=None,
+   main_program=None,
+   startup_program=None)
+</pre></div>
+
+</li>
+<li>
+<p>Function Description</p>
+</li>
+<li>
+<p>格式</p>
+<p>本模块应包含以下内容（排列顺序为文档撰写顺序）：</p>
+<p>[Function Description]</p>
+<p>[Formula]</p>
+<p>[Symbols' Descriptions if necessary]</p>
+<p>[References if necessary]</p>
+</li>
+<li>
+<p>示例</p>
+<p>[Function Description]</p>
+<div class="highlight"><pre><span></span>**Fully Connected Layer**
+
+The fully connected layer can take multiple tensors as its inputs. It
+creates a variable called weights for each input tensor, which represents
+a fully connected weight matrix from each input unit to each output unit.
+The fully connected layer multiplies each input tensor with its coresponding
+weight to produce an output Tensor. If multiple input tensors are given,
+the results of multiple multiplications will be sumed up. If bias_attr is
+not None, a bias variable will be created and added to the output. Finally,
+if activation is not None, it will be applied to the output as well.
+</pre></div>
+
+<p>[Formula]</p>
+<div class="highlight"><pre><span></span>This process can be formulated as follows:
+
+.. math::
+
+     Out = Act({\sum_{i=0}^{N-1}X_iW_i + b})
+</pre></div>
+
+<p>[Symbols' Descriptions if necessary]</p>
+<div class="highlight"><pre><span></span>In the above equation:
+
+* :math:`N`: Number of the input.
+* :math:`X_i`: The input tensor.
+* :math:`W`: The weights created by this layer.
+* :math:`b`: The bias parameter created by this layer (if needed).
+* :math:`Act`: The activation function.
+* :math:`Out`: The output tensor.
+</pre></div>
+
+<p>[References if necessary]</p>
+<p>因fc没有必要列出的参考文献，故该内容省略。其他情况下需明确给出对应的参考文献和对应连接，以 layer_norm 为例：</p>
+<div class="highlight"><pre><span></span>Refer to `Layer Normalization &lt;https://arxiv.org/pdf/1607.06450v1.pdf&gt;`_ for more details.
+</pre></div>
+
+</li>
+<li>
+<p>Args Description</p>
+</li>
+<li>
+<p>格式</p>
+<p>[Arg's Name][(Data Type, Default Value)][Description]</p>
+</li>
+<li>
+<p>示例</p>
+<p>fc的部分参数注释如下：</p>
+<div class="highlight"><pre><span></span>Args:
+    input (Variable|list of Variable): The input tensor(s) of this layer, and the dimension of
+        the input tensor(s) is at least 2.
+    param_attr (ParamAttr|list of ParamAttr, default None): The parameter attribute for learnable
+        parameters/weights of this layer.
+    name (str, default None): The name of this layer.
+</pre></div>
+
+</li>
+<li>
+<p>Returns</p>
+</li>
+<li>
+<p>格式</p>
+<p>[Name][Shape]</p>
+</li>
+<li>
+<p>示例</p>
+<div class="highlight"><pre><span></span>Returns:
+    A tensor variable storing the transformation result.
+</pre></div>
+
+<p>当返回值为包含多个参数的tuple时，应按顺序逐个介绍各参数，以dynamic_lstm为例：</p>
+<div class="highlight"><pre><span></span>Returns:
+    A tuple containing:
+      The hidden state of LSTM whose shape is (T X D).
+      The cell state of LSTM whose shape is (T X D).
+</pre></div>
+
+</li>
+<li>
+<p>Raises</p>
+</li>
+<li>
+<p>格式</p>
+<p>[Exception Type][Condition]</p>
+</li>
+<li>
+<p>示例</p>
+<div class="highlight"><pre><span></span>Raises:
+    ValueError: If the rank of the input is less than 2.
+</pre></div>
+
+</li>
+<li>
+<p>Note</p>
+</li>
+<li>
+<p>格式</p>
+<p>[Note]</p>
+</li>
+<li>
+<p>示例</p>
+<p>fc没有注意事项，故该模块省略不写。如有注意事项应明确给出，当有多条注意事项，须分条列出，以scaled_dot_product_attention为例：</p>
+<div class="highlight"><pre><span></span>Note:
+    1. When num_heads &gt; 1, three linear projections are learned respectively
+       to map input queries, keys and values into queries&#39;, keys&#39; and values&#39;.
+       queries&#39;, keys&#39; and values&#39; have the same shapes with queries, keys
+       and values.
+    2. When num_heads == 1, scaled_dot_product_attention has no learnable
+       parameters.
+</pre></div>
+
+</li>
+<li>
+<p>Examples</p>
+</li>
+<li>
+<p>格式</p>
+<p>[Python Code Snipper]</p>
+</li>
+<li>
+<p>示例</p>
+<div class="highlight"><pre><span></span>Examples:
+    .. code-block:: python
+
+      data = fluid.layers.data(name=&quot;data&quot;, shape=[32, 32], dtype=&quot;float32&quot;)
+      fc = fluid.layers.fc(input=data, size=1000, act=&quot;tanh&quot;)
+</pre></div>
+
+</li>
+</ul>
+<h2>完整示例</h2>
+<p>fc 的完整注释见<a href="src/fc.py">示例</a>。</p>
+{% endverbatim %}

@@ -1,0 +1,336 @@
+{% verbatim %}
+<h1>Word2Vec</h1>
+<p>This is intended as a reference tutorial. The source code of this tutorial is located at <a href="https://github.com/PaddlePaddle/book/tree/develop/04.word2vec">book/word2vec</a>.</p>
+<p>For instructions on getting started with PaddlePaddle, see <a href="https://github.com/PaddlePaddle/book/blob/develop/README.md#running-the-book">PaddlePaddle installation guide</a>.</p>
+<h2>Background Introduction</h2>
+<p>This section introduces the concept of <strong>word embeddings</strong>, which are vector representations of words. Word embeddings is a popular technique used in natural language processing to support applications such as search engines, advertising systems, and recommendation systems.</p>
+<h3>One-Hot Vectors</h3>
+<p>Building these applications requires us to quantify the similarity between two words or paragraphs. This calls for a new representation of all the words to make them more suitable for computation. An obvious way to achieve this is through the vector space model, where every word is represented as an <strong>one-hot vector</strong>.</p>
+<p>For each word, its vector representation has the corresponding entry in the vector as 1, and all other entries as 0. The lengths of one-hot vectors match the size of the dictionary. Each entry of a vector corresponds to the presence (or absence) of a word in the dictionary.</p>
+<p>One-hot vectors are intuitive, yet they have limited usefulness. Take the example of an Internet advertising system: Suppose a customer enters the query "Mother's Day", while an ad bids for the keyword "carnations". Because the one-hot vectors of these two words are perpendicular, the metric distance (either Euclidean or cosine similarity) between them would indicate  little relevance. However, <em>we</em> know that these two queries are connected semantically, since people often gift their mothers bundles of carnation flowers on Mother's Day. This discrepancy is due to the low information capacity in each vector. That is, comparing the vector representations of two words does not assess their relevance sufficiently. To calculate their similarity accurately, we need more information, which could be learned from large amounts of data through machine learning methods.</p>
+<p>Like many machine learning models, word embeddings can represent knowledge in various ways. Another model may project an one-hot vector to an embedding vector of lower dimension e.g. <span class="markdown-equation" id="equation-0">$embedding(mother's day) = [0.3, 4.2, -1.5, ...], embedding(carnations) = [0.2, 5.6, -2.3, ...]$</span>. Mapping one-hot vectors onto an embedded vector space has the potential to bring the embedding vectors of similar words (either semantically or usage-wise) closer to each other, so that the cosine similarity between the corresponding vectors for words like "Mother's Day" and "carnations" are no longer zero.</p>
+<p>A word embedding model could be a probabilistic model, a co-occurrence matrix model, or a neural network. Before people started using neural networks to generate word embedding, the traditional method was to calculate a co-occurrence matrix <span class="markdown-equation" id="equation-1">$X$</span> of words. Here, <span class="markdown-equation" id="equation-1">$X$</span> is a <span class="markdown-equation" id="equation-3">$|V| \times |V|$</span> matrix, where <span class="markdown-equation" id="equation-4">$X_{ij}$</span> represents the co-occurrence times of the <span class="markdown-equation" id="equation-5">$i$</span>th and <span class="markdown-equation" id="equation-6">$j$</span>th words in the vocabulary <code>V</code> within all corpus, and <span class="markdown-equation" id="equation-7">$|V|$</span> is the size of the vocabulary. By performing matrix decomposition on <span class="markdown-equation" id="equation-1">$X$</span> e.g. Singular Value Decomposition [<a href="#references">5</a>]</p>
+<p><span class="markdown-equation" id="equation-9">$$X = USV^T$$</span></p>
+<p>the resulting <span class="markdown-equation" id="equation-10">$U$</span> can be seen as the word embedding of all the words.</p>
+<p>However, this method suffers from many drawbacks:
+1) Since many pairs of words don't co-occur, the co-occurrence matrix is sparse. To achieve good performance of matrix factorization, further treatment on word frequency is needed;
+2) The matrix is large, frequently on the order of <span class="markdown-equation" id="equation-11">$10^6*10^6$</span>;
+3) We need to manually filter out stop words (like "although", "a", ...), otherwise these frequent words will affect the performance of matrix factorization.</p>
+<p>The neural network based model does not require storing huge hash tables of statistics on all of the corpus. It obtains the word embedding by learning from semantic information, hence could avoid the aforementioned problems in the traditional method. In this chapter, we will introduce the details of neural network word embedding model and how to train such model in PaddlePaddle.</p>
+<h2>Results Demonstration</h2>
+<p>In this section, we use the <span class="markdown-equation" id="equation-12">$t-$</span>SNE[<a href="#references">4</a>] data visualization algorithm to draw the word embedding vectors after projecting them onto a two-dimensional space (see figure below). From the figure we can see that the semantically relevant words -- <em>a</em>, <em>the</em>, and <em>these</em> or <em>big</em> and <em>huge</em> -- are close to each other in the projected space, while irrelevant words -- <em>say</em> and <em>business</em> or <em>decision</em> and <em>japan</em> -- are far from each other.</p>
+<p align="center">
+<img src="image/2d_similarity.png" width="400"/><br/>
+    Figure 1. Two dimension projection of word embeddings
+</p>
+<h3>Cosine Similarity</h3>
+<p>On the other hand, we know that the cosine similarity between two vectors falls between <span class="markdown-equation" id="equation-13">$[-1,1]$</span>. Specifically, the cosine similarity is 1 when the vectors are identical, 0 when the vectors are perpendicular, -1 when the are of opposite directions. That is, the cosine similarity between two vectors scales with their relevance. So we can calculate the cosine similarity of two word embedding vectors to represent their relevance:</p>
+<div class="highlight"><pre><span></span>please input two words: big huge
+similarity: 0.899180685161
+
+please input two words: from company
+similarity: -0.0997506977351
+</pre></div>
+<p>The above results could be obtained by running <code>calculate_dis.py</code>, which loads the words in the dictionary and their corresponding trained word embeddings. For detailed instruction, see section <a href="https://github.com/PaddlePaddle/book/tree/develop/04.word2vec#model-application">Model Application</a>.</p>
+<h2>Model Overview</h2>
+<p>In this section, we will introduce three word embedding models: N-gram model, CBOW, and Skip-gram, which all output the frequency of each word given its immediate context.</p>
+<p>For N-gram model, we will first introduce the concept of language model, and implement it using PaddlePaddle in section <a href="https://github.com/PaddlePaddle/book/tree/develop/04.word2vec#model-application">Training</a>.</p>
+<p>The latter two models, which became popular recently, are neural word embedding model developed by Tomas Mikolov at Google [<a href="#references">3</a>]. Despite their apparent simplicity, these models train very well.</p>
+<h3>Language Model</h3>
+<p>Before diving into word embedding models, we will first introduce the concept of <strong>language model</strong>. Language models build the joint probability function <span class="markdown-equation" id="equation-14">$P(w_1, ..., w_T)$</span> of a sentence, where <span class="markdown-equation" id="equation-15">$w_i$</span> is the i-th word in the sentence. The goal is to give higher probabilities to meaningful sentences, and lower probabilities to meaningless constructions.</p>
+<p>In general, models that generate the probability of a sequence can be applied to many fields, like machine translation, speech recognition, information retrieval, part-of-speech tagging, and handwriting recognition. Take information retrieval, for example. If you were to search for "how long is a football bame" (where bame is a medical noun), the search engine would have asked if you had meant "how long is a football game" instead. This is because the probability of "how long is a football bame" is very low according to the language model; in addition, among all of the words easily confused with "bame", "game" would build the most probable sentence.</p>
+<h4>Target Probability</h4>
+<p>For language model's target probability <span class="markdown-equation" id="equation-14">$P(w_1, ..., w_T)$</span>, if the words in the sentence were to be independent, the joint probability of the whole sentence would be the product of each word's probability:</p>
+<p><span class="markdown-equation" id="equation-17">$$P(w_1, ..., w_T) = \prod_{t=1}^TP(w_t)$$</span></p>
+<p>However, the frequency of words in a sentence typically relates to the words before them, so canonical language models are constructed using conditional probability in its target probability:</p>
+<p><span class="markdown-equation" id="equation-18">$$P(w_1, ..., w_T) = \prod_{t=1}^TP(w_t | w_1, ... , w_{t-1})$$</span></p>
+<h3>N-gram neural model</h3>
+<p>In computational linguistics, n-gram is an important method to represent text. An n-gram represents a contiguous sequence of n consecutive items given a text. Based on the desired application scenario, each item could be a letter, a syllable or a word. The N-gram model is also an important method in statistical language modeling. When training language models with n-grams, the first (n-1) words of an n-gram are used to predict the <em>n</em>th word.</p>
+<p>Yoshua Bengio and other scientists describe how to train a word embedding model using neural network in the famous paper of Neural Probabilistic Language Models [<a href="#references">1</a>] published in 2003. The Neural Network Language Model (NNLM) described in the paper learns the language model and word embedding simultaneously through a linear transformation and a non-linear hidden connection. That is, after training on large amounts of corpus, the model learns the word embedding; then, it computes the probability of the whole sentence, using the embedding. This type of language model can overcome the <strong>curse of dimensionality</strong> i.e. model inaccuracy caused by the difference in dimensionality between training and testing data. Note that the term <em>neural network language model</em> is ill-defined, so we will not use the name NNLM but only refer to it as <em>N-gram neural model</em> in this section.</p>
+<p>We have previously described language model using conditional probability, where the probability of the <em>t</em>-th word in a sentence depends on all <span class="markdown-equation" id="equation-19">$t-1$</span> words before it. Furthermore, since words further prior have less impact on a word, and every word within an n-gram is only effected by its previous n-1 words, we have:</p>
+<p><span class="markdown-equation" id="equation-20">$$P(w_1, ..., w_T) = \prod_{t=n}^TP(w_t|w_{t-1}, w_{t-2}, ..., w_{t-n+1})$$</span></p>
+<p>Given some real corpus in which all sentences are meaningful, the n-gram model should maximize the following objective function:</p>
+<p><span class="markdown-equation" id="equation-21">$$\frac{1}{T}\sum_t f(w_t, w_{t-1}, ..., w_{t-n+1};\theta) + R(\theta)$$</span></p>
+<p>where <span class="markdown-equation" id="equation-22">$f(w_t, w_{t-1}, ..., w_{t-n+1})$</span> represents the conditional logarithmic probability of the current word <span class="markdown-equation" id="equation-23">$w_t$</span> given its previous <span class="markdown-equation" id="equation-24">$n-1$</span> words, and <span class="markdown-equation" id="equation-25">$R(\theta)$</span> represents parameter regularization term.</p>
+<p align="center">
+<img src="image/nnlm_en.png" width="500"/><br/>
+       Figure 2. N-gram neural network model
+</p>
+<p>Figure 2 shows the N-gram neural network model. From the bottom up, the model has the following components:</p>
+<ul>
+<li>For each sample, the model gets input <span class="markdown-equation" id="equation-26">$w_{t-n+1},...w_{t-1}$</span>, and outputs the probability that the t-th word is one of <code>|V|</code> in the dictionary.</li>
+</ul>
+<p>Every input word <span class="markdown-equation" id="equation-26">$w_{t-n+1},...w_{t-1}$</span> first gets transformed into word embedding <span class="markdown-equation" id="equation-28">$C(w_{t-n+1}),...C(w_{t-1})$</span> through a transformation matrix.</p>
+<ul>
+<li>
+<p>All the word embeddings concatenate into a single vector, which is mapped (nonlinearly) into the <span class="markdown-equation" id="equation-29">$t$</span>-th word hidden representation:</p>
+<p><span class="markdown-equation" id="equation-30">$$g=Utanh(\theta^Tx + b_1) + Wx + b_2$$</span></p>
+</li>
+</ul>
+<p>where <span class="markdown-equation" id="equation-31">$x$</span> is the large vector concatenated from all the word embeddings representing the context; <span class="markdown-equation" id="equation-32">$\theta$</span>, <span class="markdown-equation" id="equation-10">$U$</span>, <span class="markdown-equation" id="equation-34">$b_1$</span>, <span class="markdown-equation" id="equation-35">$b_2$</span> and <span class="markdown-equation" id="equation-36">$W$</span> are parameters connecting word embedding layers to the hidden layers. <span class="markdown-equation" id="equation-37">$g$</span> represents the unnormalized probability of the output word, <span class="markdown-equation" id="equation-38">$g_i$</span> represents the unnormalized probability of the output word being the i-th word in the dictionary.</p>
+<ul>
+<li>Based on the definition of softmax, using normalized <span class="markdown-equation" id="equation-38">$g_i$</span>, the probability that the output word is <span class="markdown-equation" id="equation-23">$w_t$</span> is represented as:</li>
+</ul>
+<p><span class="markdown-equation" id="equation-41">$$P(w_t | w_1, ..., w_{t-n+1}) = \frac{e^{g_{w_t}}}{\sum_i^{|V|} e^{g_i}}$$</span></p>
+<ul>
+<li>The cost of the entire network is a multi-class cross-entropy and can be described by the following loss function</li>
+</ul>
+<p><span class="markdown-equation" id="equation-42">$$J(\theta) = -\sum_{i=1}^N\sum_{c=1}^{|V|}y_k^{i}log(softmax(g_k^i))$$</span></p>
+<p>where <span class="markdown-equation" id="equation-43">$y_k^i$</span> represents the true label for the <span class="markdown-equation" id="equation-44">$k$</span>-th class in the <span class="markdown-equation" id="equation-5">$i$</span>-th sample (<span class="markdown-equation" id="equation-46">$0$</span> or <span class="markdown-equation" id="equation-47">$1$</span>), <span class="markdown-equation" id="equation-48">$softmax(g_k^i)$</span> represents the softmax probability for the <span class="markdown-equation" id="equation-44">$k$</span>-th class in the <span class="markdown-equation" id="equation-5">$i$</span>-th sample.</p>
+<h3>Continuous Bag-of-Words model(CBOW)</h3>
+<p>CBOW model predicts the current word based on the N words both before and after it. When <span class="markdown-equation" id="equation-51">$N=2$</span>, the model is as the figure below:</p>
+<p align="center">
+<img src="image/cbow_en.png" width="250"/><br/>
+    Figure 3. CBOW model
+</p>
+<p>Specifically, by ignoring the order of words in the sequence, CBOW uses the average value of the word embedding of the context to predict the current word:</p>
+<p><span class="markdown-equation" id="equation-52">$$\text{context} = \frac{x_{t-1} + x_{t-2} + x_{t+1} + x_{t+2}}{4}$$</span></p>
+<p>where <span class="markdown-equation" id="equation-53">$x_t$</span> is the word embedding of the t-th word, classification score vector is <span class="markdown-equation" id="equation-54">$z=U*\text{context}$</span>, the final classification <span class="markdown-equation" id="equation-55">$y$</span> uses softmax and the loss function uses multi-class cross-entropy.</p>
+<h3>Skip-gram model</h3>
+<p>The advantages of CBOW is that it smooths over the word embeddings of the context and reduces noise, so it is very effective on small dataset. Skip-gram uses a word to predict its context and get multiple context for the given word, so it can be used in larger datasets.</p>
+<p align="center">
+<img src="image/skipgram_en.png" width="250"/><br/>
+    Figure 4. Skip-gram model
+</p>
+<p>As illustrated in the figure above, skip-gram model maps the word embedding of the given word onto <span class="markdown-equation" id="equation-56">$2n$</span> word embeddings (including <span class="markdown-equation" id="equation-57">$n$</span> words before and <span class="markdown-equation" id="equation-57">$n$</span> words after the given word), and then combine the classification loss of all those <span class="markdown-equation" id="equation-56">$2n$</span> words by softmax.</p>
+<h2>Dataset</h2>
+<p>We will use Penn Treebank (PTB) (Tomas Mikolov's pre-processed version) dataset. PTB is a small dataset, used in Recurrent Neural Network Language Modeling Toolkit[<a href="#references">2</a>]. Its statistics are as follows:</p>
+<p align="center">
+</p><table>
+<tr>
+<td>training set</td>
+<td>validation set</td>
+<td>test set</td>
+</tr>
+<tr>
+<td>ptb.train.txt</td>
+<td>ptb.valid.txt</td>
+<td>ptb.test.txt</td>
+</tr>
+<tr>
+<td>42068 lines</td>
+<td>3370 lines</td>
+<td>3761 lines</td>
+</tr>
+</table>
+<h3>Python Dataset Module</h3>
+<p>We encapsulated the PTB Data Set in our Python module <code>paddle.dataset.imikolov</code>. This module can</p>
+<ol>
+<li>download the dataset to <code>~/.cache/paddle/dataset/imikolov</code>, if not yet, and</li>
+<li><a href="#preprocessing">preprocesses</a> the dataset.</li>
+</ol>
+<h3>Preprocessing</h3>
+<p>We will be training a 5-gram model. Given five words in a window, we will predict the fifth word given the first four words.</p>
+<p>Beginning and end of a sentence have a special meaning, so we will add begin token <code>&lt;s&gt;</code> in the front of the sentence. And end token <code>&lt;e&gt;</code> in the end of the sentence. By moving the five word window in the sentence, data instances are generated.</p>
+<p>For example, the sentence "I have a dream that one day" generates five data instances:</p>
+<div class="highlight"><pre><span></span>&lt;s&gt; I have a dream
+I have a dream that
+have a dream that one
+a dream that one day
+dream that one day &lt;e&gt;
+</pre></div>
+<p>At last, each data instance will be converted into an integer sequence according it's words' index inside the dictionary.</p>
+<h2>Training</h2>
+<p>The neural network that we will be using is illustrated in the graph below:</p>
+<p align="center">
+<img src="image/ngram.en.png" width="400"/><br/>
+    Figure 5. N-gram neural network model in model configuration
+</p>
+<p><code>word2vec/train.py</code> demonstrates training word2vec using PaddlePaddle:</p>
+<ul>
+<li>Import packages.</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">paddle.v2</span> <span class="kn">as</span> <span class="nn">paddle</span>
+</pre></div>
+<ul>
+<li>Configure parameter.</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="n">embsize</span> <span class="o">=</span> <span class="mi">32</span> <span class="c1"># word vector dimension</span>
+<span class="n">hiddensize</span> <span class="o">=</span> <span class="mi">256</span> <span class="c1"># hidden layer dimension</span>
+<span class="n">N</span> <span class="o">=</span> <span class="mi">5</span> <span class="c1"># train 5-gram</span>
+</pre></div>
+<ul>
+<li>
+<p>functions used to save and load word dict and embedding table
+</p><div class="highlight"><pre><span></span><span class="c1"># save and load word dict and embedding table</span>
+<span class="k">def</span> <span class="nf">save_dict_and_embedding</span><span class="p">(</span><span class="n">word_dict</span><span class="p">,</span> <span class="n">embeddings</span><span class="p">):</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">"word_dict"</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">word_dict</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">key</span> <span class="o">+</span> <span class="s2">" "</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">word_dict</span><span class="p">[</span><span class="n">key</span><span class="p">])</span> <span class="o">+</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">"embedding_table"</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">embeddings</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">','</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">load_dict_and_embedding</span><span class="p">():</span>
+    <span class="n">word_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">"word_dict"</span><span class="p">,</span> <span class="s2">"r"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">" "</span><span class="p">)</span>
+            <span class="n">word_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="n">embeddings</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="s2">"embedding_table"</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s2">","</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">word_dict</span><span class="p">,</span> <span class="n">embeddings</span>
+</pre></div>
+</li>
+<li>
+<p>Map the <span class="markdown-equation" id="equation-24">$n-1$</span> words <span class="markdown-equation" id="equation-26">$w_{t-n+1},...w_{t-1}$</span> before <span class="markdown-equation" id="equation-23">$w_t$</span> to a D-dimensional vector though matrix of dimention <span class="markdown-equation" id="equation-63">$|V|\times D$</span> (D=32 in this example).</p>
+</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">wordemb</span><span class="p">(</span><span class="n">inlayer</span><span class="p">):</span>
+    <span class="n">wordemb</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">table_projection</span><span class="p">(</span>
+        <span class="nb">input</span><span class="o">=</span><span class="n">inlayer</span><span class="p">,</span>
+        <span class="n">size</span><span class="o">=</span><span class="n">embsize</span><span class="p">,</span>
+        <span class="n">param_attr</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">attr</span><span class="o">.</span><span class="n">Param</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">"_proj"</span><span class="p">,</span>
+            <span class="n">initial_std</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span>
+            <span class="n">learning_rate</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">l2_rate</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">sparse_update</span><span class="o">=</span><span class="bp">True</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">wordemb</span>
+</pre></div>
+<ul>
+<li>Define name and type for input to data layer.</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="n">paddle</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="n">use_gpu</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">trainer_count</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">word_dict</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">imikolov</span><span class="o">.</span><span class="n">build_dict</span><span class="p">()</span>
+<span class="n">dict_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">word_dict</span><span class="p">)</span>
+<span class="c1"># Every layer takes integer value of range [0, dict_size)</span>
+<span class="n">firstword</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">data</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"firstw"</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">data_type</span><span class="o">.</span><span class="n">integer_value</span><span class="p">(</span><span class="n">dict_size</span><span class="p">))</span>
+<span class="n">secondword</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">data</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"secondw"</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">data_type</span><span class="o">.</span><span class="n">integer_value</span><span class="p">(</span><span class="n">dict_size</span><span class="p">))</span>
+<span class="n">thirdword</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">data</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"thirdw"</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">data_type</span><span class="o">.</span><span class="n">integer_value</span><span class="p">(</span><span class="n">dict_size</span><span class="p">))</span>
+<span class="n">fourthword</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">data</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"fourthw"</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">data_type</span><span class="o">.</span><span class="n">integer_value</span><span class="p">(</span><span class="n">dict_size</span><span class="p">))</span>
+<span class="n">nextword</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">data</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"fifthw"</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">data_type</span><span class="o">.</span><span class="n">integer_value</span><span class="p">(</span><span class="n">dict_size</span><span class="p">))</span>
+
+<span class="n">Efirst</span> <span class="o">=</span> <span class="n">wordemb</span><span class="p">(</span><span class="n">firstword</span><span class="p">)</span>
+<span class="n">Esecond</span> <span class="o">=</span> <span class="n">wordemb</span><span class="p">(</span><span class="n">secondword</span><span class="p">)</span>
+<span class="n">Ethird</span> <span class="o">=</span> <span class="n">wordemb</span><span class="p">(</span><span class="n">thirdword</span><span class="p">)</span>
+<span class="n">Efourth</span> <span class="o">=</span> <span class="n">wordemb</span><span class="p">(</span><span class="n">fourthword</span><span class="p">)</span>
+</pre></div>
+<ul>
+<li>Concatenate n-1 word embedding vectors into a single feature vector.</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="n">contextemb</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="p">[</span><span class="n">Efirst</span><span class="p">,</span> <span class="n">Esecond</span><span class="p">,</span> <span class="n">Ethird</span><span class="p">,</span> <span class="n">Efourth</span><span class="p">])</span>
+</pre></div>
+<ul>
+<li>Feature vector will go through a fully connected layer which outputs a hidden feature vector.</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="n">hidden1</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">fc</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">contextemb</span><span class="p">,</span>
+                          <span class="n">size</span><span class="o">=</span><span class="n">hiddensize</span><span class="p">,</span>
+                          <span class="n">act</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">activation</span><span class="o">.</span><span class="n">Sigmoid</span><span class="p">(),</span>
+                          <span class="n">layer_attr</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">attr</span><span class="o">.</span><span class="n">Extra</span><span class="p">(</span><span class="n">drop_rate</span><span class="o">=</span><span class="mf">0.5</span><span class="p">),</span>
+                          <span class="n">bias_attr</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">attr</span><span class="o">.</span><span class="n">Param</span><span class="p">(</span><span class="n">learning_rate</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
+                          <span class="n">param_attr</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">attr</span><span class="o">.</span><span class="n">Param</span><span class="p">(</span>
+                                <span class="n">initial_std</span><span class="o">=</span><span class="mf">1.</span> <span class="o">/</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">embsize</span> <span class="o">*</span> <span class="mi">8</span><span class="p">),</span>
+                                <span class="n">learning_rate</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+</pre></div>
+<ul>
+<li>Hidden feature vector will go through another fully conected layer, turn into a <span class="markdown-equation" id="equation-7">$|V|$</span> dimensional vector. At the same time softmax will be applied to get the probability of each word being generated.</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="n">predictword</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">fc</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">hidden1</span><span class="p">,</span>
+                              <span class="n">size</span><span class="o">=</span><span class="n">dict_size</span><span class="p">,</span>
+                              <span class="n">bias_attr</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">attr</span><span class="o">.</span><span class="n">Param</span><span class="p">(</span><span class="n">learning_rate</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
+                              <span class="n">act</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">activation</span><span class="o">.</span><span class="n">Softmax</span><span class="p">())</span>
+</pre></div>
+<ul>
+<li>We will use cross-entropy cost function.</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="n">cost</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">classification_cost</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">predictword</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">nextword</span><span class="p">)</span>
+</pre></div>
+<ul>
+<li>Create parameter, optimizer and trainer.</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="n">parameters</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">cost</span><span class="p">)</span>
+<span class="n">adagrad</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">AdaGrad</span><span class="p">(</span>
+    <span class="n">learning_rate</span><span class="o">=</span><span class="mf">3e-3</span><span class="p">,</span>
+    <span class="n">regularization</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">L2Regularization</span><span class="p">(</span><span class="mf">8e-4</span><span class="p">))</span>
+<span class="n">trainer</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="n">cost</span><span class="p">,</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">adagrad</span><span class="p">)</span>
+</pre></div>
+<p>Next, we will begin the training process. <code>paddle.dataset.imikolov.train()</code> and <code>paddle.dataset.imikolov.test()</code> is our training set and test set. Both of the function will return a <strong>reader</strong>: In PaddlePaddle, reader is a python function which returns a Python iterator which output a single data instance at a time.</p>
+<p><code>paddle.batch</code> takes reader as input, outputs a <strong>batched reader</strong>: In PaddlePaddle, a reader outputs a single data instance at a time but batched reader outputs a minibatch of data instances.</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">event_handler</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">paddle</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">EndIteration</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">batch_id</span> <span class="o">%</span> <span class="mi">100</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s2">"Pass </span><span class="si">%d</span><span class="s2">, Batch </span><span class="si">%d</span><span class="s2">, Cost </span><span class="si">%f</span><span class="s2">, </span><span class="si">%s</span><span class="s2">"</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="n">event</span><span class="o">.</span><span class="n">pass_id</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">batch_id</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">cost</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">metrics</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">paddle</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">EndPass</span><span class="p">):</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">trainer</span><span class="o">.</span><span class="n">test</span><span class="p">(</span>
+                    <span class="n">paddle</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span>
+                        <span class="n">paddle</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">imikolov</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">word_dict</span><span class="p">,</span> <span class="n">N</span><span class="p">),</span> <span class="mi">32</span><span class="p">))</span>
+        <span class="k">print</span> <span class="s2">"Pass </span><span class="si">%d</span><span class="s2">, Testing metrics </span><span class="si">%s</span><span class="s2">"</span> <span class="o">%</span> <span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">pass_id</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">metrics</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">"model_</span><span class="si">%d</span><span class="s2">.tar"</span><span class="o">%</span><span class="n">event</span><span class="o">.</span><span class="n">pass_id</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">trainer</span><span class="o">.</span><span class="n">save_parameter_to_tar</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+<span class="n">trainer</span><span class="o">.</span><span class="n">train</span><span class="p">(</span>
+    <span class="n">paddle</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span><span class="n">paddle</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">imikolov</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">word_dict</span><span class="p">,</span> <span class="n">N</span><span class="p">),</span> <span class="mi">32</span><span class="p">),</span>
+    <span class="n">num_passes</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+    <span class="n">event_handler</span><span class="o">=</span><span class="n">event_handler</span><span class="p">)</span>
+</pre></div>
+<p><code>trainer.train</code> will start training, the output of <code>event_handler</code> will be similar to following:
+</p><div class="highlight"><pre><span></span>Pass 0, Batch 0, Cost 7.870579, {'classification_error_evaluator': 1.0}, Testing metrics {'classification_error_evaluator': 0.999591588973999}
+Pass 0, Batch 100, Cost 6.136420, {'classification_error_evaluator': 0.84375}, Testing metrics {'classification_error_evaluator': 0.8328699469566345}
+Pass 0, Batch 200, Cost 5.786797, {'classification_error_evaluator': 0.8125}, Testing metrics {'classification_error_evaluator': 0.8328542709350586}
+...
+</pre></div>
+<p>After 30 passes, we can get average error rate around 0.735611.</p>
+<h2>Save word dict and embedding table</h2>
+<p>after training, we can save the word dict and embedding table for the future usage.</p>
+<div class="highlight"><pre><span></span><span class="c1"># save word dict and embedding table</span>
+<span class="n">embeddings</span> <span class="o">=</span> <span class="n">parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"_proj"</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">word_dict</span><span class="p">),</span> <span class="n">embsize</span><span class="p">)</span>
+<span class="n">save_dict_and_embedding</span><span class="p">(</span><span class="n">word_dict</span><span class="p">,</span> <span class="n">embeddings</span><span class="p">)</span>
+</pre></div>
+<h2>Model Application</h2>
+<p>After the model is trained, we can load the  saved model parameters and use it for other models. We can also use the parameters in various applications.</p>
+<h3>Viewing Word Vector</h3>
+<p>Parameters trained by PaddlePaddle can be viewed by <code>parameters.get()</code>. For example, we can check the word vector for word <code>apple</code>.</p>
+<div class="highlight"><pre><span></span><span class="n">embeddings</span> <span class="o">=</span> <span class="n">parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"_proj"</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">word_dict</span><span class="p">),</span> <span class="n">embsize</span><span class="p">)</span>
+
+<span class="k">print</span> <span class="n">embeddings</span><span class="p">[</span><span class="n">word_dict</span><span class="p">[</span><span class="s1">'apple'</span><span class="p">]]</span>
+</pre></div>
+<div class="highlight"><pre><span></span>[-0.38961065 -0.02392169 -0.00093231  0.36301503  0.13538605  0.16076435
+-0.0678709   0.1090285   0.42014077 -0.24119169 -0.31847557  0.20410083
+0.04910378  0.19021918 -0.0122014  -0.04099389 -0.16924137  0.1911236
+-0.10917275  0.13068172 -0.23079982  0.42699069 -0.27679482 -0.01472992
+0.2069038   0.09005053 -0.3282454   0.12717034 -0.24218646  0.25304323
+0.19072419 -0.24286366]
+</pre></div>
+<h3>Modifying Word Vector</h3>
+<p>Word vectors (<code>embeddings</code>) that we get is a numpy array. We can modify this array and set it back to <code>parameters</code>.</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">modify_embedding</span><span class="p">(</span><span class="n">emb</span><span class="p">):</span>
+    <span class="c1"># Add your modification here.</span>
+    <span class="k">pass</span>
+
+<span class="n">modify_embedding</span><span class="p">(</span><span class="n">embeddings</span><span class="p">)</span>
+<span class="n">parameters</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"_proj"</span><span class="p">,</span> <span class="n">embeddings</span><span class="p">)</span>
+</pre></div>
+<h3>Calculating Cosine Similarity</h3>
+<p>Cosine similarity is one way of quantifying the similarity between two vectors. The range of result is <span class="markdown-equation" id="equation-65">$[-1, 1]$</span>. The bigger the value, the similar two vectors are:</p>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">spatial</span>
+
+<span class="n">emb_1</span> <span class="o">=</span> <span class="n">embeddings</span><span class="p">[</span><span class="n">word_dict</span><span class="p">[</span><span class="s1">'world'</span><span class="p">]]</span>
+<span class="n">emb_2</span> <span class="o">=</span> <span class="n">embeddings</span><span class="p">[</span><span class="n">word_dict</span><span class="p">[</span><span class="s1">'would'</span><span class="p">]]</span>
+
+<span class="k">print</span> <span class="n">spatial</span><span class="o">.</span><span class="n">distance</span><span class="o">.</span><span class="n">cosine</span><span class="p">(</span><span class="n">emb_1</span><span class="p">,</span> <span class="n">emb_2</span><span class="p">)</span>
+</pre></div>
+<div class="highlight"><pre><span></span>0.99375076448
+</pre></div>
+<h2>Conclusion</h2>
+<p>This chapter introduces word embeddings, the relationship between language model and word embedding, and how to train neural networks to learn word embedding.</p>
+<p>In information retrieval, the relevance between the query and document keyword can be computed through the cosine similarity of their word embeddings. In grammar analysis and semantic analysis, a previously trained word embedding can initialize models for better performance. In document classification, clustering the word embedding can group synonyms in the documents. We hope that readers can use word embedding models in their work after reading this chapter.</p>
+<h2>References</h2>
+<ol>
+<li>Bengio Y, Ducharme R, Vincent P, et al. <a href="http://www.jmlr.org/papers/volume3/bengio03a/bengio03a.pdf">A neural probabilistic language model</a>[J]. journal of machine learning research, 2003, 3(Feb): 1137-1155.</li>
+<li>Mikolov T, Kombrink S, Deoras A, et al. <a href="http://www.fit.vutbr.cz/~imikolov/rnnlm/rnnlm-demo.pdf">Rnnlm-recurrent neural network language modeling toolkit</a>[C]//Proc. of the 2011 ASRU Workshop. 2011: 196-201.</li>
+<li>Mikolov T, Chen K, Corrado G, et al. <a href="https://arxiv.org/pdf/1301.3781.pdf">Efficient estimation of word representations in vector space</a>[J]. arXiv preprint arXiv:1301.3781, 2013.</li>
+<li>Maaten L, Hinton G. <a href="https://lvdmaaten.github.io/publications/papers/JMLR_2008.pdf">Visualizing data using t-SNE</a>[J]. Journal of Machine Learning Research, 2008, 9(Nov): 2579-2605.</li>
+<li>https://en.wikipedia.org/wiki/Singular_value_decomposition</li>
+</ol>
+<p><br/>
+This tutorial is contributed by <a href="http://book.paddlepaddle.org" property="cc:attributionName" rel="cc:attributionURL" xmlns:cc="http://creativecommons.org/ns#">PaddlePaddle</a>, and licensed under a <a href="http://creativecommons.org/licenses/by-sa/4.0/" rel="license">Creative Commons Attribution-ShareAlike 4.0 International License</a>.</p>
+{% endverbatim %}

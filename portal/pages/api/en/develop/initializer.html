@@ -1,0 +1,118 @@
+<div class="document" itemscope="itemscope" itemtype="http://schema.org/Article" role="main">
+<div itemprop="articleBody">
+<div class="section" id="initializer">
+<h1>initializer<a class="headerlink" href="#initializer" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="constant">
+<h2>Constant<a class="headerlink" href="#constant" title="Permalink to this headline">¶</a></h2>
+<dl class="attribute">
+<dt>
+<code class="descclassname">paddle.fluid.initializer.</code><code class="descname">Constant</code></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal"><span class="pre">ConstantInitializer</span></code></p>
+</dd></dl>
+</div>
+<div class="section" id="uniform">
+<h2>Uniform<a class="headerlink" href="#uniform" title="Permalink to this headline">¶</a></h2>
+<dl class="attribute">
+<dt>
+<code class="descclassname">paddle.fluid.initializer.</code><code class="descname">Uniform</code></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal"><span class="pre">UniformInitializer</span></code></p>
+</dd></dl>
+</div>
+<div class="section" id="normal">
+<h2>Normal<a class="headerlink" href="#normal" title="Permalink to this headline">¶</a></h2>
+<dl class="attribute">
+<dt>
+<code class="descclassname">paddle.fluid.initializer.</code><code class="descname">Normal</code></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal"><span class="pre">NormalInitializer</span></code></p>
+</dd></dl>
+</div>
+<div class="section" id="xavier">
+<h2>Xavier<a class="headerlink" href="#xavier" title="Permalink to this headline">¶</a></h2>
+<dl class="attribute">
+<dt>
+<code class="descclassname">paddle.fluid.initializer.</code><code class="descname">Xavier</code></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal"><span class="pre">XavierInitializer</span></code></p>
+</dd></dl>
+</div>
+<div class="section" id="msra">
+<h2>MSRA<a class="headerlink" href="#msra" title="Permalink to this headline">¶</a></h2>
+<dl class="attribute">
+<dt>
+<code class="descclassname">paddle.fluid.initializer.</code><code class="descname">MSRA</code></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal"><span class="pre">MSRAInitializer</span></code></p>
+</dd></dl>
+</div>
+<div class="section" id="constantinitializer">
+<h2>ConstantInitializer<a class="headerlink" href="#constantinitializer" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="descclassname">paddle.fluid.initializer.</code><code class="descname">ConstantInitializer</code><span class="sig-paren">(</span><em>value=0.0</em>, <em>force_cpu=False</em><span class="sig-paren">)</span></dt>
+<dd><p>Implements the constant initializer</p>
+</dd></dl>
+</div>
+<div class="section" id="uniforminitializer">
+<h2>UniformInitializer<a class="headerlink" href="#uniforminitializer" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="descclassname">paddle.fluid.initializer.</code><code class="descname">UniformInitializer</code><span class="sig-paren">(</span><em>low=-1.0</em>, <em>high=1.0</em>, <em>seed=0</em><span class="sig-paren">)</span></dt>
+<dd><p>Implements the random uniform distribution initializer</p>
+</dd></dl>
+</div>
+<div class="section" id="normalinitializer">
+<h2>NormalInitializer<a class="headerlink" href="#normalinitializer" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="descclassname">paddle.fluid.initializer.</code><code class="descname">NormalInitializer</code><span class="sig-paren">(</span><em>loc=0.0</em>, <em>scale=1.0</em>, <em>seed=0</em><span class="sig-paren">)</span></dt>
+<dd><p>Implements the  random Normal(Gaussian) distribution initializer</p>
+</dd></dl>
+</div>
+<div class="section" id="xavierinitializer">
+<h2>XavierInitializer<a class="headerlink" href="#xavierinitializer" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="descclassname">paddle.fluid.initializer.</code><code class="descname">XavierInitializer</code><span class="sig-paren">(</span><em>uniform=True</em>, <em>fan_in=None</em>, <em>fan_out=None</em>, <em>seed=0</em><span class="sig-paren">)</span></dt>
+<dd><p>Implements the Xavier initializer</p>
+<p>This class implements the Xavier weight initializer from the paper
+Understanding the difficulty of training deep feedforward neural
+networks[1] by Xavier Glorot and Yoshua Bengio.</p>
+<p>This initializer is designed to keep the scale of the gradients
+approximately same in all the layers. In case of Uniform distribution,
+the range is [-x, x], where x = sqrt(6 / (fan_in + fan_out)).
+In case of Normal distribution, the mean is 0 and the standard deviation
+is sqrt(2/ (fan_in + fan_out)).</p>
+<p class="rubric">References</p>
+<dl class="docutils">
+<dt>[1] Understanding the difficulty of training deep feedforward neural</dt>
+<dd>networks. International conference on artificial intelligence and
+statistics.
+(<a class="reference external" href="http://proceedings.mlr.press/v9/glorot10a.html">http://proceedings.mlr.press/v9/glorot10a.html</a>)</dd>
+</dl>
+</dd></dl>
+</div>
+<div class="section" id="msrainitializer">
+<h2>MSRAInitializer<a class="headerlink" href="#msrainitializer" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="descclassname">paddle.fluid.initializer.</code><code class="descname">MSRAInitializer</code><span class="sig-paren">(</span><em>uniform=True</em>, <em>fan_in=None</em>, <em>seed=0</em><span class="sig-paren">)</span></dt>
+<dd><p>Implements the MSRA initializer a.k.a. Kaiming Initializer</p>
+<p>This class implements the weight initialization from the paper
+Delving Deep into Rectifiers: Surpassing Human-Level Performance on
+ImageNet Classification[1] by Kaiming He, Xiangyu Zhang, Shaoqing Ren
+and Jian Sun. This is a robust initialization method that particularly
+considers the rectifier nonlinearities. In case of Uniform distribution,
+the range is [-x, x], where x = sqrt(6 / fan_in). In case of Normal
+distribution, the mean is 0 and the standard deviation
+is sqrt(2/ fan_in).</p>
+<p class="rubric">References</p>
+<dl class="docutils">
+<dt>[1] Delving Deep into Rectifiers: Surpassing Human-Level Performance</dt>
+<dd>on ImageNet Classification
+(<a class="reference external" href="https://arxiv.org/abs/1502.01852">https://arxiv.org/abs/1502.01852</a>)</dd>
+</dl>
+</dd></dl>
+</div>
+</div>
+</div>
+<div class="articleComments">
+</div>
+</div>

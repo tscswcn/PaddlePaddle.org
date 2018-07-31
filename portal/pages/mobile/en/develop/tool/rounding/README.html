@@ -1,0 +1,87 @@
+{% verbatim %}
+<html><body><h1>Rounding</h1>
+<h3>Rounding test of Mobilenet(1.0,  224 * 224 input) on flowers102 dataset.</h3>
+<table>
+<thead>
+<tr>
+<th>Model</th>
+<th>Rounding</th>
+<th>Without BN</th>
+<th>Pruning</th>
+<th>modelSize(gzip)</th>
+<th>Accuracy</th>
+<th>Download</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Mobilenet</td>
+<td></td>
+<td></td>
+<td></td>
+<td>12M</td>
+<td>97.16%</td>
+<td><a href="https://pan.baidu.com/s/1geHkrw3">download</a></td>
+</tr>
+<tr>
+<td>Mobilenet</td>
+<td>√</td>
+<td></td>
+<td></td>
+<td>3.2M</td>
+<td>97.05%</td>
+<td><a href="https://pan.baidu.com/s/1bo5kqsR">download</a></td>
+</tr>
+<tr>
+<td>Mobilenet</td>
+<td></td>
+<td></td>
+<td>√</td>
+<td>4.4M</td>
+<td>96.96%</td>
+<td><a href="https://pan.baidu.com/s/1ge8wOp1">download</a></td>
+</tr>
+<tr>
+<td>Mobilenet</td>
+<td>√</td>
+<td></td>
+<td>√</td>
+<td>2.3M</td>
+<td>96.7%</td>
+<td><a href="https://pan.baidu.com/s/1bpo5CMr">download</a></td>
+</tr>
+<tr>
+<td>Mobilenet</td>
+<td></td>
+<td>√</td>
+<td></td>
+<td>12M</td>
+<td>97.16%</td>
+<td><a href="https://pan.baidu.com/s/1slodbNR">download</a></td>
+</tr>
+<tr>
+<td>Mobilenet</td>
+<td>√</td>
+<td>√</td>
+<td></td>
+<td>3.0M</td>
+<td>96.96%</td>
+<td><a href="https://pan.baidu.com/s/1bo66hUR">download</a></td>
+</tr>
+</tbody>
+</table>
+<h2>Principle</h2>
+<p>Given floating parameters <code>V</code>, first our goal is to represent <code>V</code> as 8-bit integers <code>V'</code>. And then we transformed back <code>V'</code> back into its approximate high-precision value by performing the inverse of the quantization operation. At last, we perform gzip to our quantized &amp;&amp; inverse-quantized model. The whole process can reduces our model by 70%.</p>
+<h3>Process</h3>
+<ul>
+<li>
+<p>First, we use UInt8 quantization, that is, the parameters are sacled to [0, 255]  <br/>
+<img alt="" src="./source/rounding1.png"/></p>
+</li>
+<li>
+<p>Second, we inverse the quantization.    <br/>
+<img alt="" src="./source/rounding2.png"/></p>
+</li>
+</ul>
+<p>In the last, We apply gzip to compress the inverse-quantized model, and the compression ratio can be up to 70%.</p></body></html>
+{% endverbatim %}

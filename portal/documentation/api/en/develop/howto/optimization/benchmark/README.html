@@ -1,0 +1,211 @@
+<div class="document" itemscope="itemscope" itemtype="http://schema.org/Article" role="main">
+<div itemprop="articleBody">
+<div class="section" id="cluster-training-benchmark">
+<span id="cluster-training-benchmark"></span><h1>Cluster Training Benchmark<a class="headerlink" href="#cluster-training-benchmark" title="永久链接至标题">¶</a></h1>
+<div class="section" id="setup">
+<span id="setup"></span><h2>Setup<a class="headerlink" href="#setup" title="永久链接至标题">¶</a></h2>
+<ul>
+<li><p class="first">Platform</p>
+<ul class="simple">
+<li>Kubernetes: v1.6.2</li>
+<li>Linux Kernel: v3.10.0</li>
+</ul>
+</li>
+<li><p class="first">Resource</p>
+<ul class="simple">
+<li>CPU: 10 Cores per Pod</li>
+<li>Memory: 5GB per Pod</li>
+</ul>
+</li>
+<li><p class="first">Docker Image</p>
+<p>We use different base Docker Image to run the benchmark on Kubernetes:</p>
+<ul class="simple">
+<li>PaddlePaddle v2: paddlepaddle/paddle:0.11.0</li>
+<li>PaddlePaddle Fluid: paddlepaddle/paddle:[commit-id]</li>
+<li>TensorFlow: tensorflow/tensorflow:1.5.0-rc0</li>
+</ul>
+</li>
+<li><p class="first">Model
+vgg16 is used in this benchmark.</p>
+</li>
+</ul>
+</div>
+<div class="section" id="cases">
+<span id="cases"></span><h2>Cases<a class="headerlink" href="#cases" title="永久链接至标题">¶</a></h2>
+<ul class="simple">
+<li>Variable<ul>
+<li>Batch Size of training data.</li>
+<li>PServer count of the training job.</li>
+<li>The number of trainers.</li>
+</ul>
+</li>
+<li>Invariant<ul>
+<li>The resource of trainer/pserver Pod.</li>
+</ul>
+</li>
+</ul>
+<div class="section" id="measure-the-performance-for-different-batch-size">
+<span id="measure-the-performance-for-different-batch-size"></span><h3>Measure the Performance for Different Batch Size<a class="headerlink" href="#measure-the-performance-for-different-batch-size" title="永久链接至标题">¶</a></h3>
+<ul class="simple">
+<li>PServer Count: 40</li>
+<li>Trainer Count: 100</li>
+<li>Metrics: mini-batch / sec</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Batch Size </th>
+<th> 32</th>
+<th>64</th>
+<th>128 </th>
+<th>256</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td> PaddlePaddle Fluid</td>
+<td>-</td>
+<td>- </td>
+<td>-  </td>
+<td>- </td>
+</tr>
+<tr>
+<td>PaddlePaddle v2  </td>
+<td>-  </td>
+<td>- </td>
+<td>-  </td>
+<td>- </td>
+</tr>
+<tr>
+<td>TensorFlow </td>
+<td>-  </td>
+<td>- </td>
+<td>-  </td>
+<td>- </td>
+</tr>
+</tbody>
+</table></div>
+<div class="section" id="measure-the-performance-for-different-pserver-count">
+<span id="measure-the-performance-for-different-pserver-count"></span><h3>Measure the Performance for Different PServer Count<a class="headerlink" href="#measure-the-performance-for-different-pserver-count" title="永久链接至标题">¶</a></h3>
+<ul class="simple">
+<li>Trainer Count: 100</li>
+<li>Batch Size: 64</li>
+<li>Metrics: mini-batch / sec</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>PServer Count  </th>
+<th>10</th>
+<th>20</th>
+<th>40 </th>
+<th>60</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td> PaddlePaddle Fluid</td>
+<td>-</td>
+<td>- </td>
+<td>-  </td>
+<td>- </td>
+</tr>
+<tr>
+<td>PaddlePaddle v2  </td>
+<td>-  </td>
+<td>- </td>
+<td>-  </td>
+<td>- </td>
+</tr>
+<tr>
+<td>TensorFlow </td>
+<td>-  </td>
+<td>- </td>
+<td>-  </td>
+<td>- </td>
+</tr>
+</tbody>
+</table></div>
+<div class="section" id="measure-parallel-efficiency-by-increasing-trainer-count">
+<span id="measure-parallel-efficiency-by-increasing-trainer-count"></span><h3>Measure Parallel Efficiency By Increasing Trainer Count<a class="headerlink" href="#measure-parallel-efficiency-by-increasing-trainer-count" title="永久链接至标题">¶</a></h3>
+<ul class="simple">
+<li>PServer Count: 20</li>
+<li>Batch Size: 64</li>
+<li>Metrics:</li>
+</ul>
+<p>$S = \div(T1, TN)$</p>
+<p>which S is the ratio of T1 over TN, training time of 1 and N trainers.
+The parallel efficiency is:</p>
+<p>$E = \div(S, N)$</p>
+<table>
+<thead>
+<tr>
+<th>Trainer Counter  </th>
+<th>1</th>
+<th>10</th>
+<th>20 </th>
+<th>30</th>
+<th>40</th>
+<th>50</th>
+<th>60 </th>
+<th>70</th>
+<th>80</th>
+<th>90</th>
+<th>100 </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td> PaddlePaddle Fluid</td>
+<td>-</td>
+<td>- </td>
+<td>- </td>
+<td>- </td>
+<td>-</td>
+<td>- </td>
+<td>- </td>
+<td>- </td>
+<td>-</td>
+<td>- </td>
+<td>- </td>
+</tr>
+<tr>
+<td>PaddlePaddle v2  </td>
+<td>-  </td>
+<td>- </td>
+<td>-  </td>
+<td>- </td>
+<td>-</td>
+<td>- </td>
+<td>- </td>
+<td>- </td>
+<td>-</td>
+<td>- </td>
+<td>- </td>
+</tr>
+<tr>
+<td>TensorFlow </td>
+<td>-  </td>
+<td>- </td>
+<td>-  </td>
+<td>- </td>
+<td>-</td>
+<td>- </td>
+<td>- </td>
+<td>- </td>
+<td>-</td>
+<td>- </td>
+<td>- </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="section" id="reproduce-the-benchmark">
+<span id="reproduce-the-benchmark"></span><h2>Reproduce the benchmark<a class="headerlink" href="#reproduce-the-benchmark" title="永久链接至标题">¶</a></h2>
+<p>TODO</p>
+</div>
+</div>
+</div>
+<div class="articleComments">
+</div>
+</div>

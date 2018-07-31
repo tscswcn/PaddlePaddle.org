@@ -8,14 +8,14 @@ SOURCE_DIR=$3
 echo "1:($1) 2:($2) 3:($3) 4:($4)"
 
 # Pull PaddlePaddle.org app and run the deploy_documentation command
-PPO_BRANCH=new-contribibutor-experience
+PPO_BRANCH=master
 
 curl -LOk https://github.com/PaddlePaddle/PaddlePaddle.org/archive/$PPO_BRANCH.zip
 unzip $PPO_BRANCH.zip
 cd PaddlePaddle.org-$PPO_BRANCH/portal
 sudo pip install --ignore-installed -r requirements.txt
 
-mkdir $DESTINATION_DIR
+mkdir documentation
 
 # We need to set this env so the deploy script knows whether or not this
 # is a local development build.

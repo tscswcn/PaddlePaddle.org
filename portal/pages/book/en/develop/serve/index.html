@@ -1,0 +1,202 @@
+{% verbatim %}
+<h1>Inference Server Example</h1>
+<p>The inference server can be used to perform inference on any model trained on
+PaddlePaddle. It provides an HTTP endpoint.</p>
+<h2>Run</h2>
+<p>The inference server reads a trained model (a topology file and a
+parameter file) and serves HTTP request at port <code>8000</code>. Because models
+differ in the numbers and types of inputs, <strong>the HTTP API will differ
+slightly for each model,</strong> please see <a href="#http-api">HTTP API</a> for the
+API spec,
+and
+<a href="https://github.com/PaddlePaddle/book/wiki/Using-Pre-trained-Models">here</a> for
+the request examples of different models that illustrate the
+difference.</p>
+<p>We will first show how to obtain the PaddlePaddle model, and then how
+to start the server.</p>
+<p>We will use Docker to run the demo, if you are not familiar with
+Docker, please checkout
+this
+<a href="https://github.com/PaddlePaddle/Paddle/wiki/Docker-for-Beginners">TLDR</a>.</p>
+<h3>Obtain the PaddlePaddle Model</h3>
+<p>A neural network model in PaddlePaddle contains two parts: the
+<strong>parameter</strong> and the <strong>topology</strong>.</p>
+<p>A PaddlePaddle training script contains the neural network topology,
+which is represented by layers. For example,</p>
+<div class="highlight"><pre><span></span><span class="n">img</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"img"</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">data_type</span><span class="o">.</span><span class="n">dense_vector</span><span class="p">(</span><span class="mi">784</span><span class="p">))</span>
+<span class="n">hidden</span> <span class="o">=</span> <span class="n">fc_layer</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="nb">type</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+<span class="n">prediction</span> <span class="o">=</span> <span class="n">fc_layer</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">hidden</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">act</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">activation</span><span class="o">.</span><span class="n">Softmax</span><span class="p">())</span>
+</pre></div>
+<p>The parameter instance is created by the topology and updated by the
+<code>train</code> method.</p>
+<div class="highlight"><pre><span></span><span class="o">...</span>
+<span class="n">params</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">cost</span><span class="p">)</span>
+<span class="o">...</span>
+<span class="n">trainer</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="n">cost</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+<span class="o">...</span>
+</pre></div>
+<p>PaddlePaddle stores the topology and parameter separately.</p>
+<ol>
+<li>To serialize a topology, we need to create a topology instance
+   explicitly by the outputs of the neural network. Then, invoke
+   <code>serialize_for_inference</code> method.</li>
+</ol>
+<div class="highlight"><pre><span></span><span class="c1"># Save the inference topology to protobuf.</span>
+<span class="n">inference_topology</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">Topology</span><span class="p">(</span><span class="n">layers</span><span class="o">=</span><span class="n">prediction</span><span class="p">)</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">"inference_topology.pkl"</span><span class="p">,</span> <span class="s1">'wb'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">inference_topology</span><span class="o">.</span><span class="n">serialize_for_inference</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+</pre></div>
+<ol>
+<li>To save a parameter, we need to invoke <code>save_parameter_to_tar</code> method of
+  <code>trainer</code>.</li>
+</ol>
+<div class="highlight"><pre><span></span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">'param.tar'</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">trainer</span><span class="o">.</span><span class="n">save_parameter_to_tar</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+</pre></div>
+<p>After serializing the parameter and topology into two files, we could
+ use them to set up an inference server.</p>
+<p>For a working example, please see <a href="https://github.com/reyoung/paddle_mnist_v2_demo/blob/master/train.py">train.py</a>.</p>
+<h3>Start the Server</h3>
+<p>Make sure the <code>inference_topology.pkl</code> and <code>param.tar</code> mentioned in
+the last section are in your current working directory, and run the
+command:</p>
+<div class="highlight"><pre><span></span>docker run --name paddle_serve -v <span class="sb">`</span><span class="nb">pwd</span><span class="sb">`</span>:/data -d -p <span class="m">8000</span>:80 -e <span class="nv">WITH_GPU</span><span class="o">=</span><span class="m">0</span> paddlepaddle/book:serve
+</pre></div>
+<p>The above command will mount the current working directory to the
+<code>/data/</code> directory inside the docker container. The inference server
+will load the model topology and parameters that we just created from
+there.</p>
+<p>To run the inference server with GPU support, please make sure you have
+<a href="https://github.com/NVIDIA/nvidia-docker">nvidia-docker</a>
+first, and run:</p>
+<div class="highlight"><pre><span></span>nvidia-docker run --name paddle_serve -v <span class="sb">`</span><span class="nb">pwd</span><span class="sb">`</span>:/data -d -p <span class="m">8000</span>:80 -e <span class="nv">WITH_GPU</span><span class="o">=</span><span class="m">1</span> paddlepaddle/book:serve-gpu
+</pre></div>
+<p>this command will start a server on port <code>8000</code>.</p>
+<p>After you are done with the demo, you can run <code>docker stop
+paddle_serve</code> to stop this docker container.</p>
+<h2>HTTP API</h2>
+<p>The inference server will handle HTTP POST request on path <code>/</code>. The
+content type of the request and response is json. You need to manually
+add <code>Content-Type</code> request header as <code>Content-Type: application/json</code>.</p>
+<p>The request json object is a single json dictionay object, whose key
+is the layer name of input data. The type of the corresponding value
+is decided by the data type. For most cases the corresponding value
+will be a list of floats. For completeness, we will list all data types
+below:</p>
+<p>There are twelve data types supported by PaddePaddle:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>plain</th>
+<th>a sequence</th>
+<th>a sequence of sequence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>dense</td>
+<td>[ f, f, f, f, ... ]</td>
+<td>[ [f, f, f, ...], [f, f, f, ...]]</td>
+<td>[[[f, f, ...], [f, f, ...]], [[f, f, ...], [f, f, ...]], ...]</td>
+</tr>
+<tr>
+<td>integer</td>
+<td>i</td>
+<td>[i, i, ...]</td>
+<td>[[i, i, ...], [i, i, ...], ...]</td>
+</tr>
+<tr>
+<td>sparse</td>
+<td>[i, i, ...]</td>
+<td>[[i, i, ...], [i, i, ...], ...]</td>
+<td>[[[i, i, ...], [i, i, ...], ...], [[i, i, ...], [i, i, ...], ...], ...]</td>
+</tr>
+<tr>
+<td>sparse</td>
+<td>[[i, f], [i, f], ... ]</td>
+<td>[[[i, f], [i, f], ... ], ...]</td>
+<td>[[[[i, f], [i, f], ... ], ...], ...]</td>
+</tr>
+</tbody>
+</table>
+<p>In the table, <code>i</code> stands for a <code>int</code> value and <code>f</code> stands for a
+<code>float</code> value.</p>
+<p>What <code>data_type</code> should be used is decided by the training
+topology. For example,</p>
+<ul>
+<li>
+<p>For image data, they are usually a plain dense vector, we flatten
+  the image into a vector. The pixel values of that image are usually
+  normalized in <code>[-1.0, 1.0]</code> or <code>[0.0, 1.0]</code>(depends on each neural
+  network).</p>
+<p><code>text
++-------+
+   |243 241|
+   |139 211| +----&gt;[0.95, 0.95, 0.54, 0.82]
+   +-------+</code></p>
+</li>
+<li>
+<p>For text data, each word of that text is represented by an
+  integer. The association map between word and integer is decided by
+  the training process. A sentence is represented by a list of
+  integer.</p>
+</li>
+</ul>
+<div class="highlight"><pre><span></span> I am good .
+     +
+     |
+     v
+23 942 402 19  +-----&gt;  [23, 942, 402, 19]
+</pre></div>
+<p>A sample request data of a <code>4x4</code> image and a sentence could be</p>
+<div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">"img"</span><span class="p">:</span> <span class="p">[</span>
+        <span class="mf">0.95</span><span class="p">,</span>
+        <span class="mf">0.95</span><span class="p">,</span>
+        <span class="mf">0.54</span><span class="p">,</span>
+        <span class="mf">0.82</span>
+    <span class="p">],</span>
+    <span class="nt">"sentence"</span><span class="p">:</span> <span class="p">[</span>
+        <span class="mi">23</span><span class="p">,</span>
+        <span class="mi">942</span><span class="p">,</span>
+        <span class="mi">402</span><span class="p">,</span>
+        <span class="mi">19</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+<p>The response is a json object, too. The example of return data are:</p>
+<div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">"code"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+  <span class="nt">"data"</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">[</span>
+      <span class="mf">0.10060056298971176</span><span class="p">,</span>
+      <span class="mf">0.057179879397153854</span><span class="p">,</span>
+      <span class="mf">0.1453431099653244</span><span class="p">,</span>
+      <span class="mf">0.15825574100017548</span><span class="p">,</span>
+      <span class="mf">0.04464773088693619</span><span class="p">,</span>
+      <span class="mf">0.1566203236579895</span><span class="p">,</span>
+      <span class="mf">0.05657859891653061</span><span class="p">,</span>
+      <span class="mf">0.12077419459819794</span><span class="p">,</span>
+      <span class="mf">0.08073269575834274</span><span class="p">,</span>
+      <span class="mf">0.07926714420318604</span>
+    <span class="p">]</span>
+  <span class="p">],</span>
+  <span class="nt">"message"</span><span class="p">:</span> <span class="s2">"success"</span>
+<span class="p">}</span>
+</pre></div>
+<p>Here, <code>code</code> and <code>message</code> represent the status of the request.
+<code>data</code> corresponds to the outputs of the neural network; they could be a
+probability of each class, could be the IDs of output sentence, and so
+on.</p>
+<h2>MNIST Demo Client</h2>
+<p>If you have trained an model with <a href="https://github.com/reyoung/paddle_mnist_v2_demo/blob/master/train.py">train.py</a> and
+start a inference server. Then you can use this <a href="https://github.com/PaddlePaddle/book/tree/develop/02.recognize_digits/client/client.py">client</a> to test if it works right.</p>
+<h2>Build</h2>
+<p>We have already prepared the pre-built docker image
+<code>paddlepaddle/book:serve</code>, here is the command if you want to build
+the docker image again.</p>
+<div class="highlight"><pre><span></span>docker build -t paddlepaddle/book:serve .
+docker build -t paddlepaddle/book:serve-gpu -f Dockerfile.gpu .
+</pre></div>
+{% endverbatim %}

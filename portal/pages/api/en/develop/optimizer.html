@@ -1,0 +1,141 @@
+<div class="document" itemscope="itemscope" itemtype="http://schema.org/Article" role="main">
+<div itemprop="articleBody">
+<div class="section" id="optimizer">
+<h1>optimizer<a class="headerlink" href="#optimizer" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="sgd">
+<h2>SGD<a class="headerlink" href="#sgd" title="Permalink to this headline">¶</a></h2>
+<dl class="attribute">
+<dt>
+<code class="descclassname">paddle.fluid.optimizer.</code><code class="descname">SGD</code></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal"><span class="pre">SGDOptimizer</span></code></p>
+</dd></dl>
+</div>
+<div class="section" id="momentum">
+<h2>Momentum<a class="headerlink" href="#momentum" title="Permalink to this headline">¶</a></h2>
+<dl class="attribute">
+<dt>
+<code class="descclassname">paddle.fluid.optimizer.</code><code class="descname">Momentum</code></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal"><span class="pre">MomentumOptimizer</span></code></p>
+</dd></dl>
+</div>
+<div class="section" id="adagrad">
+<h2>Adagrad<a class="headerlink" href="#adagrad" title="Permalink to this headline">¶</a></h2>
+<dl class="attribute">
+<dt>
+<code class="descclassname">paddle.fluid.optimizer.</code><code class="descname">Adagrad</code></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal"><span class="pre">AdagradOptimizer</span></code></p>
+</dd></dl>
+</div>
+<div class="section" id="adam">
+<h2>Adam<a class="headerlink" href="#adam" title="Permalink to this headline">¶</a></h2>
+<dl class="attribute">
+<dt>
+<code class="descclassname">paddle.fluid.optimizer.</code><code class="descname">Adam</code></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal"><span class="pre">AdamOptimizer</span></code></p>
+</dd></dl>
+</div>
+<div class="section" id="adamax">
+<h2>Adamax<a class="headerlink" href="#adamax" title="Permalink to this headline">¶</a></h2>
+<dl class="attribute">
+<dt>
+<code class="descclassname">paddle.fluid.optimizer.</code><code class="descname">Adamax</code></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal"><span class="pre">AdamaxOptimizer</span></code></p>
+</dd></dl>
+</div>
+<div class="section" id="decayedadagrad">
+<h2>DecayedAdagrad<a class="headerlink" href="#decayedadagrad" title="Permalink to this headline">¶</a></h2>
+<dl class="attribute">
+<dt>
+<code class="descclassname">paddle.fluid.optimizer.</code><code class="descname">DecayedAdagrad</code></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal"><span class="pre">DecayedAdagradOptimizer</span></code></p>
+</dd></dl>
+</div>
+<div class="section" id="sgdoptimizer">
+<h2>SGDOptimizer<a class="headerlink" href="#sgdoptimizer" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="descclassname">paddle.fluid.optimizer.</code><code class="descname">SGDOptimizer</code><span class="sig-paren">(</span><em>learning_rate</em>, <em>**kwargs</em><span class="sig-paren">)</span></dt>
+<dd><p>Simple SGD optimizer without any state.</p>
+</dd></dl>
+</div>
+<div class="section" id="momentumoptimizer">
+<h2>MomentumOptimizer<a class="headerlink" href="#momentumoptimizer" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="descclassname">paddle.fluid.optimizer.</code><code class="descname">MomentumOptimizer</code><span class="sig-paren">(</span><em>learning_rate</em>, <em>momentum</em>, <em>use_nesterov=False</em>, <em>**kwargs</em><span class="sig-paren">)</span></dt>
+<dd><p>Simple Momentum optimizer with velocity state</p>
+</dd></dl>
+</div>
+<div class="section" id="adagradoptimizer">
+<h2>AdagradOptimizer<a class="headerlink" href="#adagradoptimizer" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="descclassname">paddle.fluid.optimizer.</code><code class="descname">AdagradOptimizer</code><span class="sig-paren">(</span><em>learning_rate</em>, <em>epsilon=1e-06</em>, <em>**kwargs</em><span class="sig-paren">)</span></dt>
+<dd><p>Simple Adagrad optimizer with moment state</p>
+</dd></dl>
+</div>
+<div class="section" id="adamoptimizer">
+<h2>AdamOptimizer<a class="headerlink" href="#adamoptimizer" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="descclassname">paddle.fluid.optimizer.</code><code class="descname">AdamOptimizer</code><span class="sig-paren">(</span><em>learning_rate=0.001</em>, <em>beta1=0.9</em>, <em>beta2=0.999</em>, <em>epsilon=1e-08</em>, <em>**kwargs</em><span class="sig-paren">)</span></dt>
+<dd><p>Implements the Adam Optimizer</p>
+</dd></dl>
+</div>
+<div class="section" id="adamaxoptimizer">
+<h2>AdamaxOptimizer<a class="headerlink" href="#adamaxoptimizer" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="descclassname">paddle.fluid.optimizer.</code><code class="descname">AdamaxOptimizer</code><span class="sig-paren">(</span><em>learning_rate=0.001</em>, <em>beta1=0.9</em>, <em>beta2=0.999</em>, <em>epsilon=1e-08</em>, <em>**kwargs</em><span class="sig-paren">)</span></dt>
+<dd><p>Implements the Adamax Optimizer</p>
+</dd></dl>
+</div>
+<div class="section" id="decayedadagradoptimizer">
+<h2>DecayedAdagradOptimizer<a class="headerlink" href="#decayedadagradoptimizer" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="descclassname">paddle.fluid.optimizer.</code><code class="descname">DecayedAdagradOptimizer</code><span class="sig-paren">(</span><em>learning_rate</em>, <em>decay=0.95</em>, <em>epsilon=1e-06</em>, <em>**kwargs</em><span class="sig-paren">)</span></dt>
+<dd><p>Simple Decayed Adagrad optimizer with moment state</p>
+</dd></dl>
+</div>
+<div class="section" id="adadelta">
+<h2>Adadelta<a class="headerlink" href="#adadelta" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="descclassname">paddle.fluid.optimizer.</code><code class="descname">AdadeltaOptimizer</code><span class="sig-paren">(</span><em>learning_rate</em>, <em>epsilon=1e-06</em>, <em>rho=0.95</em>, <em>**kwargs</em><span class="sig-paren">)</span></dt>
+<dd><p><strong>Adadelta Optimizer</strong>
+Simple Adadelta optimizer with average squared grad state and
+average squared update state.
+The details of adadelta please refer to this
+<a class="reference external" href="http://www.matthewzeiler.com/pubs/googleTR2012/googleTR2012.pdf">ADADELTA: AN ADAPTIVE LEARNING RATE METHOD</a>.</p>
+<div class="math">
+\[\begin{split}E(g_t^2) &amp;= \rho * E(g_{t-1}^2) + (1-\rho) * g^2 \\
+learning\_rate &amp;= sqrt( ( E(dx_{t-1}^2) + \epsilon ) / ( \
+                  E(g_t^2) + \epsilon ) ) \\
+E(dx_t^2) &amp;= \rho * E(dx_{t-1}^2) + (1-\rho) * (-g*learning\_rate)^2\end{split}\]</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name"/>
+<col class="field-body"/>
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>learning_rate</strong> (<em>float</em>) – global leraning rate</li>
+<li><strong>rho</strong> (<em>float</em>) – rho in equation</li>
+<li><strong>epsilon</strong> (<em>float</em>) – epsilon in equation</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">optimizer</span> <span class="o">=</span> <span class="n">fluid</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">Adadelta</span><span class="p">(</span>
+    <span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.0003</span><span class="p">,</span> <span class="n">epsilon</span><span class="o">=</span><span class="mf">1.0e-6</span><span class="p">,</span> <span class="n">rho</span><span class="o">=</span><span class="mf">0.95</span><span class="p">)</span>
+<span class="n">_</span><span class="p">,</span> <span class="n">params_grads</span> <span class="o">=</span> <span class="n">optimizer</span><span class="o">.</span><span class="n">minimize</span><span class="p">(</span><span class="n">cost</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+</div>
+</div>
+</div>
+<div class="articleComments">
+</div>
+</div>

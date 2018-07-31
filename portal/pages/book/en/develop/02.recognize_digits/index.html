@@ -1,0 +1,312 @@
+{% verbatim %}
+<h1>Recognize Digits</h1>
+<p>The source code for this tutorial is here:  <a href="https://github.com/PaddlePaddle/book/tree/develop/02.recognize_digits">book/recognize_digits</a>. For instructions on getting started with Paddle, please refer to <a href="https://github.com/PaddlePaddle/book/blob/develop/README.md#running-the-book">installation instructions</a>.</p>
+<h2>Introduction</h2>
+<p>When one learns to program, the first task is usually to write a program that prints "Hello World!". In Machine Learning or Deep Learning, an equivalent task is to train a model to recognize hand-written digits using the <a href="http://yann.lecun.com/exdb/mnist/">MNIST</a> dataset. Handwriting recognition is a classic image classification problem. The problem is relatively easy and MNIST is a complete dataset. As a simple Computer Vision dataset, MNIST contains images of handwritten digits and their corresponding labels (Fig. 1). The input image is a <span class="markdown-equation" id="equation-0">$28\times28$</span> matrix, and the label is one of the digits from <span class="markdown-equation" id="equation-1">$0$</span> to <span class="markdown-equation" id="equation-2">$9$</span>. All images are normalized, meaning that they are both rescaled and centered.</p>
+<p align="center">
+<img src="image/mnist_example_image.png" width="400"/><br/>
+Fig. 1. Examples of MNIST images
+</p>
+<p>The MNIST dataset is from the <a href="https://www.nist.gov/srd/nist-special-database-19">NIST</a> Special Database 3 (SD-3) and the Special Database 1 (SD-1). The SD-3 is labeled by the staff of the U.S. Census Bureau, while SD-1 is labeled by high school students. Therefore the SD-3 is cleaner and easier to recognize than the SD-1 dataset. Yann LeCun et al. used half of the samples from each of SD-1 and SD-3 to create the MNIST training set of 60,000 samples and test set of 10,000 samples. 250 annotators labeled the training set, thus guaranteed that there wasn't a complete overlap of annotators of training set and test set.</p>
+<p>The MNIST dataset has been used for evaluating many image recognition algorithms such as a single layer linear classifier, Multilayer Perceptron (MLP) and Multilayer CNN LeNet[<a href="#references">1</a>], K-Nearest Neighbors (k-NN) [<a href="#references">2</a>], Support Vector Machine (SVM) [<a href="#references">3</a>], Neural Networks [<a href="#references">4-7</a>], Boosting [<a href="#references">8</a>] and preprocessing methods like distortion removal, noise removal, and blurring.  Among these algorithms, the <em>Convolutional Neural Network</em> (CNN) has achieved a series of impressive results in Image Classification tasks, including VGGNet, GoogLeNet, and ResNet (See <a href="https://github.com/PaddlePaddle/book/tree/develop/03.image_classification">Image Classification</a> tutorial).</p>
+<p>In this tutorial, we start with a simple <strong>softmax</strong> regression model and go on with MLP and CNN.  Readers will see how these methods improve the recognition accuracy step-by-step.</p>
+<h2>Model Overview</h2>
+<p>Before introducing classification algorithms and training procedure, we define the following symbols:
+- <span class="markdown-equation" id="equation-3">$X$</span> is the input: Input is a <span class="markdown-equation" id="equation-4">$28\times 28$</span> MNIST image. It is flattened to a <span class="markdown-equation" id="equation-5">$784$</span> dimensional vector. <span class="markdown-equation" id="equation-6">$X=\left (x_0, x_1, \dots, x_{783} \right )$</span>.
+- <span class="markdown-equation" id="equation-7">$Y$</span> is the output: Output of the classifier is 1 of the 10 classes (digits from 0 to 9). <span class="markdown-equation" id="equation-8">$Y=\left (y_0, y_1, \dots, y_9 \right )$</span>. Each dimension <span class="markdown-equation" id="equation-9">$y_i$</span> represents the probability that the input image belongs to class <span class="markdown-equation" id="equation-10">$i$</span>.
+- <span class="markdown-equation" id="equation-11">$L$</span> is the ground truth label: <span class="markdown-equation" id="equation-12">$L=\left ( l_0, l_1, \dots, l_9 \right )$</span>. It is also 10 dimensional, but only one entry is <span class="markdown-equation" id="equation-13">$1$</span> and all others are <span class="markdown-equation" id="equation-1">$0$</span>s.</p>
+<h3>Softmax Regression</h3>
+<p>In a simple softmax regression model, the input is first fed to fully connected layers. Then, a softmax function is applied to output probabilities of multiple output classes[<a href="#references">9</a>].</p>
+<p>The input <span class="markdown-equation" id="equation-3">$X$</span> is multiplied by weights <span class="markdown-equation" id="equation-16">$W$</span> and then added to the bias <span class="markdown-equation" id="equation-17">$b$</span> to generate activations.</p>
+<p><span class="markdown-equation" id="equation-18">$$ y_i = \text{softmax}(\sum_j W_{i,j}x_j + b_i) $$</span></p>
+<p>where <span class="markdown-equation" id="equation-19">$ \text{softmax}(x_i) = \frac{e^{x_i}}{\sum_j e^{x_j}} $</span></p>
+<p>For an <span class="markdown-equation" id="equation-20">$N$</span>-class classification problem with <span class="markdown-equation" id="equation-20">$N$</span> output nodes, Softmax normalizes the resulting <span class="markdown-equation" id="equation-20">$N$</span> dimensional vector so that each of its entries falls in the range <span class="markdown-equation" id="equation-23">$[0,1]\in {R}$</span>, representing the probability that the sample belongs to a certain class. Here <span class="markdown-equation" id="equation-9">$y_i$</span> denotes the predicted probability that an image is of digit <span class="markdown-equation" id="equation-10">$i$</span>.</p>
+<p>In such a classification problem, we usually use the cross entropy loss function:</p>
+<p><span class="markdown-equation" id="equation-26">$$  \text{crossentropy}(label, y) = -\sum_i label_ilog(y_i) $$</span></p>
+<p>Fig. 2 illustrates a softmax regression network, with the weights in blue, and the bias in red. <code>+1</code> indicates that the bias is <span class="markdown-equation" id="equation-13">$1$</span>.</p>
+<p align="center">
+<img src="image/softmax_regression_en.png" width="400"/><br/>
+Fig. 2. Softmax regression network architecture<br/>
+</p>
+<h3>Multilayer Perceptron</h3>
+<p>The softmax regression model described above uses the simplest two-layer neural network. That is, it only contains an input layer and an output layer, with limited regression capability. To achieve better recognition results, consider adding several hidden layers[<a href="#references">10</a>] between the input layer and the output layer.</p>
+<ol>
+<li>After the first hidden layer, we get <span class="markdown-equation" id="equation-28">$ H_1 = \phi(W_1X + b_1) $</span>, where <span class="markdown-equation" id="equation-29">$\phi$</span> denotes the activation function. Some <a href="###list-of-common-activation-functions">common ones</a> are sigmoid, tanh and ReLU.</li>
+<li>After the second hidden layer, we get <span class="markdown-equation" id="equation-30">$ H_2 = \phi(W_2H_1 + b_2) $</span>.</li>
+<li>Finally, the output layer outputs <span class="markdown-equation" id="equation-31">$Y=\text{softmax}(W_3H_2 + b_3)$</span>, the vector denoting our classification result.</li>
+</ol>
+<p>Fig. 3. shows a Multilayer Perceptron network, with the weights in blue, and the bias in red. +1 indicates that the bias is <span class="markdown-equation" id="equation-13">$1$</span>.</p>
+<p align="center">
+<img src="image/mlp_en.png" width="500"/><br/>
+Fig. 3. Multilayer Perceptron network architecture<br/>
+</p>
+<h3>Convolutional Neural Network</h3>
+<h4>Convolutional Layer</h4>
+<p align="center">
+<img src="image/conv_layer.png" width="750"/><br/>
+Fig. 4. Convolutional layer<br/>
+</p>
+<p>The <strong>convolutional layer</strong> is the core of a Convolutional Neural Network. The parameters in this layer are composed of a set of filters, also called kernels. We could visualize the convolution step in the following fashion: Each kernel slides horizontally and vertically till it covers the whole image. At every window, we compute the dot product of the kernel and the input. Then, we add the bias and apply an activation function. The result is a two-dimensional activation map. For example, some kernel may recognize corners, and some may recognize circles. These convolution kernels may respond strongly to the corresponding features.</p>
+<p>Fig. 4 illustrates the dynamic programming of a convolutional layer, where depths are flattened for simplicity. The input is <span class="markdown-equation" id="equation-33">$W_1=5$</span>, <span class="markdown-equation" id="equation-34">$H_1=5$</span>, <span class="markdown-equation" id="equation-35">$D_1=3$</span>. In fact, this is a common representation for colored images. <span class="markdown-equation" id="equation-36">$W_1$</span> and <span class="markdown-equation" id="equation-37">$H_1$</span> correspond to the width and height in a colored image. <span class="markdown-equation" id="equation-38">$D_1$</span> corresponds to the three color channels for RGB. The parameters of the convolutional layer are <span class="markdown-equation" id="equation-39">$K=2$</span>, <span class="markdown-equation" id="equation-40">$F=3$</span>, <span class="markdown-equation" id="equation-41">$S=2$</span>, <span class="markdown-equation" id="equation-42">$P=1$</span>. <span class="markdown-equation" id="equation-43">$K$</span> denotes the number of kernels; specifically, <span class="markdown-equation" id="equation-44">$Filter$</span> <span class="markdown-equation" id="equation-45">$W_0$</span> and <span class="markdown-equation" id="equation-44">$Filter$</span> <span class="markdown-equation" id="equation-36">$W_1$</span> are the kernels. <span class="markdown-equation" id="equation-48">$F$</span> is kernel size while <span class="markdown-equation" id="equation-49">$W0$</span> and <span class="markdown-equation" id="equation-50">$W1$</span> are both <span class="markdown-equation" id="equation-51">$F\timesF = 3\times3$</span> matrices in all depths. <span class="markdown-equation" id="equation-52">$S$</span> is the stride, which is the width of the sliding window; here, kernels move leftwards or downwards by two units each time. <span class="markdown-equation" id="equation-53">$P$</span> is the width of the padding, which denotes an extension of the input; here, the gray area shows zero padding with size 1.</p>
+<h4>Pooling Layer</h4>
+<p align="center">
+<img src="image/max_pooling_en.png" width="400px"/><br/>
+Fig. 5 Pooling layer using max-pooling<br/>
+</p>
+<p>A <strong>pooling layer</strong> performs downsampling. The main functionality of this layer is to reduce computation by reducing the network parameters. It also prevents over-fitting to some extent. Usually, a pooling layer is added after a convolutional layer. Pooling layer can use various techniques, such as max pooling and average pooling. As shown in Fig.5, max pooling uses rectangles to segment the input layer into several parts and computes the maximum value in each part as the output.</p>
+<h4>LeNet-5 Network</h4>
+<p align="center">
+<img src="image/cnn_en.png"/><br/>
+Fig. 6. LeNet-5 Convolutional Neural Network architecture<br/>
+</p>
+<p><a href="http://yann.lecun.com/exdb/lenet/"><strong>LeNet-5</strong></a> is one of the simplest Convolutional Neural Networks. Fig. 6. shows its architecture: A 2-dimensional input image is fed into two sets of convolutional layers and pooling layers. This output is then fed to a fully connected layer and a softmax classifier. Compared to multilayer, fully connected perceptrons, the LeNet-5 can recognize images better. This is due to the following three properties of the convolution:</p>
+<ul>
+<li>The 3D nature of the neurons: a convolutional layer is organized by width, height, and depth. Neurons in each layer are connected to only a small region in the previous layer. This region is called the receptive field.</li>
+<li>Local connectivity: A CNN utilizes the local space correlation by connecting local neurons. This design guarantees that the learned filter has a strong response to local input features. Stacking many such layers generates a non-linear filter that is more global. This enables the network to first obtain good representation for small parts of input and then combine them to represent a larger region.</li>
+<li>Weight sharing: In a CNN, computation is iterated on shared parameters (weights and bias) to form a feature map. This means that all the neurons in the same depth of the output response to the same feature. This allows the network to detect a feature regardless of its position in the input.</li>
+</ul>
+<p>For more details on Convolutional Neural Networks, please refer to the tutorial on <a href="https://github.com/PaddlePaddle/book/blob/develop/image_classification/README.md">Image Classification</a> and the <a href="http://cs231n.github.io/convolutional-networks/">relevant lecture</a> from a Stanford course.</p>
+<h3>List of Common Activation Functions</h3>
+<ul>
+<li>
+<p>Sigmoid activation function: <span class="markdown-equation" id="equation-54">$ f(x) = sigmoid(x) = \frac{1}{1+e^{-x}} $</span></p>
+</li>
+<li>
+<p>Tanh activation function: <span class="markdown-equation" id="equation-55">$ f(x) = tanh(x) = \frac{e^x-e^{-x}}{e^x+e^{-x}} $</span></p>
+</li>
+</ul>
+<p>In fact, tanh function is just a rescaled version of the sigmoid function. It is obtained by magnifying the value of the sigmoid function and moving it downwards by 1.</p>
+<ul>
+<li>ReLU activation function: <span class="markdown-equation" id="equation-56">$ f(x) = max(0, x) $</span></li>
+</ul>
+<p>For more information, please refer to <a href="https://en.wikipedia.org/wiki/Activation_function">Activation functions on Wikipedia</a>.</p>
+<h2>Data Preparation</h2>
+<p>PaddlePaddle provides a Python module, <code>paddle.dataset.mnist</code>, which downloads and caches the <a href="http://yann.lecun.com/exdb/mnist/">MNIST dataset</a>.  The cache is under <code>/home/username/.cache/paddle/dataset/mnist</code>:</p>
+<table>
+<thead>
+<tr>
+<th>File name</th>
+<th>Description</th>
+<th>Size</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>train-images-idx3-ubyte</td>
+<td>Training images</td>
+<td>60,000</td>
+</tr>
+<tr>
+<td>train-labels-idx1-ubyte</td>
+<td>Training labels</td>
+<td>60,000</td>
+</tr>
+<tr>
+<td>t10k-images-idx3-ubyte</td>
+<td>Evaluation images</td>
+<td>10,000</td>
+</tr>
+<tr>
+<td>t10k-labels-idx1-ubyte</td>
+<td>Evaluation labels</td>
+<td>10,000</td>
+</tr>
+</tbody>
+</table>
+<h2>Model Configuration</h2>
+<p>A PaddlePaddle program starts from importing the API package:</p>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">paddle.v2</span> <span class="kn">as</span> <span class="nn">paddle</span>
+</pre></div>
+<p>We want to use this program to demonstrate three different classifiers, each defined as a Python function:</p>
+<ul>
+<li>Softmax regression: the network has a fully-connection layer with softmax activation:</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">softmax_regression</span><span class="p">(</span><span class="n">img</span><span class="p">):</span>
+    <span class="n">predict</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">fc</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">img</span><span class="p">,</span>
+                              <span class="n">size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+                              <span class="n">act</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">activation</span><span class="o">.</span><span class="n">Softmax</span><span class="p">())</span>
+    <span class="k">return</span> <span class="n">predict</span>
+</pre></div>
+<ul>
+<li>Multi-Layer Perceptron: this network has two hidden fully-connected layers, one with ReLU and the other with softmax activation:</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">multilayer_perceptron</span><span class="p">(</span><span class="n">img</span><span class="p">):</span>
+    <span class="n">hidden1</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">fc</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">img</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">act</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">activation</span><span class="o">.</span><span class="n">Relu</span><span class="p">())</span>
+    <span class="n">hidden2</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">fc</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">hidden1</span><span class="p">,</span>
+                              <span class="n">size</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span>
+                              <span class="n">act</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">activation</span><span class="o">.</span><span class="n">Relu</span><span class="p">())</span>
+    <span class="n">predict</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">fc</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">hidden2</span><span class="p">,</span>
+                              <span class="n">size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+                              <span class="n">act</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">activation</span><span class="o">.</span><span class="n">Softmax</span><span class="p">())</span>
+    <span class="k">return</span> <span class="n">predict</span>
+</pre></div>
+<ul>
+<li>Convolution network LeNet-5: the input image is fed through two convolution-pooling layers, a fully-connected layer, and the softmax output layer:</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">convolutional_neural_network</span><span class="p">(</span><span class="n">img</span><span class="p">):</span>
+
+    <span class="n">conv_pool_1</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">networks</span><span class="o">.</span><span class="n">simple_img_conv_pool</span><span class="p">(</span>
+        <span class="nb">input</span><span class="o">=</span><span class="n">img</span><span class="p">,</span>
+        <span class="n">filter_size</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+        <span class="n">num_filters</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+        <span class="n">num_channel</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">pool_size</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="n">pool_stride</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="n">act</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">activation</span><span class="o">.</span><span class="n">Relu</span><span class="p">())</span>
+
+    <span class="n">conv_pool_2</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">networks</span><span class="o">.</span><span class="n">simple_img_conv_pool</span><span class="p">(</span>
+        <span class="nb">input</span><span class="o">=</span><span class="n">conv_pool_1</span><span class="p">,</span>
+        <span class="n">filter_size</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+        <span class="n">num_filters</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+        <span class="n">num_channel</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+        <span class="n">pool_size</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="n">pool_stride</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="n">act</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">activation</span><span class="o">.</span><span class="n">Relu</span><span class="p">())</span>
+
+    <span class="n">predict</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">fc</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">conv_pool_2</span><span class="p">,</span>
+                              <span class="n">size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+                              <span class="n">act</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">activation</span><span class="o">.</span><span class="n">Softmax</span><span class="p">())</span>
+    <span class="k">return</span> <span class="n">predict</span>
+</pre></div>
+<p>PaddlePaddle provides a special layer <code>layer.data</code> for reading data. Let us create a data layer for reading images and connect it to a classification network created using one of above three functions.  We also need a cost layer for training the model.</p>
+<div class="highlight"><pre><span></span><span class="n">paddle</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="n">use_gpu</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">trainer_count</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">images</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">data</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s1">'pixel'</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">data_type</span><span class="o">.</span><span class="n">dense_vector</span><span class="p">(</span><span class="mi">784</span><span class="p">))</span>
+<span class="n">label</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">data</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s1">'label'</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">data_type</span><span class="o">.</span><span class="n">integer_value</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
+
+<span class="c1"># predict = softmax_regression(images)</span>
+<span class="c1"># predict = multilayer_perceptron(images) # uncomment for MLP</span>
+<span class="n">predict</span> <span class="o">=</span> <span class="n">convolutional_neural_network</span><span class="p">(</span><span class="n">images</span><span class="p">)</span> <span class="c1"># uncomment for LeNet5</span>
+
+<span class="n">cost</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">classification_cost</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">predict</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
+</pre></div>
+<p>Now, it is time to specify training parameters. In the following <code>Momentum</code> optimizer, <code>momentum=0.9</code> means that 90% of the current momentum comes from that of the previous iteration. The learning rate relates to the speed at which the network training converges. Regularization is meant to prevent over-fitting; here we use the L2 regularization.</p>
+<div class="highlight"><pre><span></span><span class="n">parameters</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">cost</span><span class="p">)</span>
+
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">Momentum</span><span class="p">(</span>
+    <span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.1</span> <span class="o">/</span> <span class="mf">128.0</span><span class="p">,</span>
+    <span class="n">momentum</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span>
+    <span class="n">regularization</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">L2Regularization</span><span class="p">(</span><span class="n">rate</span><span class="o">=</span><span class="mf">0.0005</span> <span class="o">*</span> <span class="mi">128</span><span class="p">))</span>
+
+<span class="n">trainer</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="n">cost</span><span class="p">,</span>
+                             <span class="n">parameters</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span>
+                             <span class="n">update_equation</span><span class="o">=</span><span class="n">optimizer</span><span class="p">)</span>
+</pre></div>
+<p>Then we specify the training data <code>paddle.dataset.mnist.train()</code> and testing data <code>paddle.dataset.mnist.test()</code>. These two methods are <em>reader creators</em>. Once called, a reader creator returns a <em>reader</em>.  A reader is a Python method, which, once called, returns a Python generator, which yields instances of data.</p>
+<p><code>shuffle</code> is a reader decorator. It takes a reader A as input and returns a new reader B. Under the hood, B calls A to read data in the following fashion: it copies in <code>buffer_size</code> instances at a time into a buffer, shuffles the data, and yields the shuffled instances one at a time. A large buffer size would yield very shuffled data.</p>
+<p><code>batch</code> is a special decorator, which takes a reader and outputs a <em>batch reader</em>, which doesn't yield an instance, but a minibatch at a time.</p>
+<p><code>event_handler_plot</code> is used to plot a figure like below：</p>
+<p><img alt="png" src="./image/train_and_test.png"/></p>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">paddle.v2.plot</span> <span class="kn">import</span> <span class="n">Ploter</span>
+
+<span class="n">train_title</span> <span class="o">=</span> <span class="s2">"Train cost"</span>
+<span class="n">test_title</span> <span class="o">=</span> <span class="s2">"Test cost"</span>
+<span class="n">cost_ploter</span> <span class="o">=</span> <span class="n">Ploter</span><span class="p">(</span><span class="n">train_title</span><span class="p">,</span> <span class="n">test_title</span><span class="p">)</span>
+
+<span class="n">step</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="c1"># event_handler to plot a figure</span>
+<span class="k">def</span> <span class="nf">event_handler_plot</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
+    <span class="k">global</span> <span class="n">step</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">paddle</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">EndIteration</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">step</span> <span class="o">%</span> <span class="mi">100</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">cost_ploter</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">train_title</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">cost</span><span class="p">)</span>
+            <span class="n">cost_ploter</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+        <span class="n">step</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">paddle</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">EndPass</span><span class="p">):</span>
+        <span class="c1"># save parameters</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">'params_pass_</span><span class="si">%d</span><span class="s1">.tar'</span> <span class="o">%</span> <span class="n">event</span><span class="o">.</span><span class="n">pass_id</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">trainer</span><span class="o">.</span><span class="n">save_parameter_to_tar</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="n">trainer</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">reader</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span>
+            <span class="n">paddle</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">mnist</span><span class="o">.</span><span class="n">test</span><span class="p">(),</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">128</span><span class="p">))</span>
+        <span class="n">cost_ploter</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">test_title</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">cost</span><span class="p">)</span>
+</pre></div>
+<p><code>event_handler</code> is used to plot some text data when training.</p>
+<div class="highlight"><pre><span></span><span class="n">lists</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="c1"># event handler to print the progress</span>
+<span class="k">def</span> <span class="nf">event_handler</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">paddle</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">EndIteration</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">batch_id</span> <span class="o">%</span> <span class="mi">100</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s2">"Pass </span><span class="si">%d</span><span class="s2">, Batch </span><span class="si">%d</span><span class="s2">, Cost </span><span class="si">%f</span><span class="s2">, </span><span class="si">%s</span><span class="s2">"</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="n">event</span><span class="o">.</span><span class="n">pass_id</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">batch_id</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">cost</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">metrics</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">paddle</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">EndPass</span><span class="p">):</span>
+        <span class="c1"># save parameters</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">'params_pass_</span><span class="si">%d</span><span class="s1">.tar'</span> <span class="o">%</span> <span class="n">event</span><span class="o">.</span><span class="n">pass_id</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">trainer</span><span class="o">.</span><span class="n">save_parameter_to_tar</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="n">trainer</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">reader</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span>
+            <span class="n">paddle</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">mnist</span><span class="o">.</span><span class="n">test</span><span class="p">(),</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">128</span><span class="p">))</span>
+        <span class="k">print</span> <span class="s2">"Test with Pass </span><span class="si">%d</span><span class="s2">, Cost </span><span class="si">%f</span><span class="s2">, </span><span class="si">%s</span><span class="se">\n</span><span class="s2">"</span> <span class="o">%</span> <span class="p">(</span>
+            <span class="n">event</span><span class="o">.</span><span class="n">pass_id</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">cost</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">metrics</span><span class="p">)</span>
+        <span class="n">lists</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">event</span><span class="o">.</span><span class="n">pass_id</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">cost</span><span class="p">,</span>
+                      <span class="n">result</span><span class="o">.</span><span class="n">metrics</span><span class="p">[</span><span class="s1">'classification_error_evaluator'</span><span class="p">]))</span>
+</pre></div>
+<div class="highlight"><pre><span></span><span class="c1"># Train the model now</span>
+<span class="n">trainer</span><span class="o">.</span><span class="n">train</span><span class="p">(</span>
+    <span class="n">reader</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span>
+        <span class="n">paddle</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span>
+            <span class="n">paddle</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">mnist</span><span class="o">.</span><span class="n">train</span><span class="p">(),</span> <span class="n">buf_size</span><span class="o">=</span><span class="mi">8192</span><span class="p">),</span>
+        <span class="n">batch_size</span><span class="o">=</span><span class="mi">128</span><span class="p">),</span>
+    <span class="n">event_handler</span><span class="o">=</span><span class="n">event_handler_plot</span><span class="p">,</span>
+    <span class="n">num_passes</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+</pre></div>
+<p>During training, <code>trainer.train</code> invokes <code>event_handler</code> for certain events. This gives us a chance to print the training progress.</p>
+<div class="highlight"><pre><span></span># Pass 0, Batch 0, Cost 2.780790, {'classification_error_evaluator': 0.9453125}
+# Pass 0, Batch 100, Cost 0.635356, {'classification_error_evaluator': 0.2109375}
+# Pass 0, Batch 200, Cost 0.326094, {'classification_error_evaluator': 0.1328125}
+# Pass 0, Batch 300, Cost 0.361920, {'classification_error_evaluator': 0.1015625}
+# Pass 0, Batch 400, Cost 0.410101, {'classification_error_evaluator': 0.125}
+# Test with Pass 0, Cost 0.326659, {'classification_error_evaluator': 0.09470000118017197}
+</pre></div>
+<p>After the training, we can check the model's prediction accuracy.</p>
+<div class="highlight"><pre><span></span># find the best pass
+best = sorted(lists, key=lambda list: float(list[1]))[0]
+print 'Best pass is %s, testing Avgcost is %s' % (best[0], best[1])
+print 'The classification accuracy is %.2f%%' % (100 - float(best[2]) * 100)
+</pre></div>
+<p>Usually, with MNIST data, the softmax regression model achieves an accuracy around 92.34%, the MLP 97.66%, and the convolution network around 99.20%. Convolution layers have been widely considered a great invention for image processing.</p>
+<h2>Application</h2>
+<p>After training, users can use the trained model to classify images. The following code shows how to inference MNIST images through <code>paddle.infer</code> interface.</p>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="k">def</span> <span class="nf">load_image</span><span class="p">(</span><span class="nb">file</span><span class="p">):</span>
+    <span class="n">im</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="nb">file</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">'L'</span><span class="p">)</span>
+    <span class="n">im</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">resize</span><span class="p">((</span><span class="mi">28</span><span class="p">,</span> <span class="mi">28</span><span class="p">),</span> <span class="n">Image</span><span class="o">.</span><span class="n">ANTIALIAS</span><span class="p">)</span>
+    <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">im</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+    <span class="n">im</span> <span class="o">=</span> <span class="n">im</span> <span class="o">/</span> <span class="mf">255.0</span>
+    <span class="k">return</span> <span class="n">im</span>
+
+<span class="n">test_data</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">cur_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+<span class="n">test_data</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">load_image</span><span class="p">(</span><span class="n">cur_dir</span> <span class="o">+</span> <span class="s1">'/image/infer_3.png'</span><span class="p">),))</span>
+
+<span class="n">probs</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">infer</span><span class="p">(</span>
+    <span class="n">output_layer</span><span class="o">=</span><span class="n">predict</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span> <span class="nb">input</span><span class="o">=</span><span class="n">test_data</span><span class="p">)</span>
+<span class="n">lab</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="o">-</span><span class="n">probs</span><span class="p">)</span> <span class="c1"># probs and lab are the results of one batch data</span>
+<span class="k">print</span> <span class="s2">"Label of image/infer_3.png is: </span><span class="si">%d</span><span class="s2">"</span> <span class="o">%</span> <span class="n">lab</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+<h2>Conclusion</h2>
+<p>This tutorial describes a few common deep learning models using <strong>Softmax regression</strong>, <strong>Multilayer Perceptron Network</strong>, and <strong>Convolutional Neural Network</strong>. Understanding these models is crucial for future learning; the subsequent tutorials derive more sophisticated networks by building on top of them.</p>
+<p>When our model evolves from a simple softmax regression to a slightly complex Convolutional Neural Network, the recognition accuracy on the MNIST dataset achieves a large improvement. This is due to the Convolutional layers' local connections and parameter sharing. While learning new models in the future, we encourage the readers to understand the key ideas that lead a new model to improve the results of an old one.</p>
+<p>Moreover, this tutorial introduces the basic flow of PaddlePaddle model design, which starts with a <em>data provider</em>, a model layer construction, and finally training and prediction. Motivated readers can leverage the flow used in this MNIST handwritten digit classification example and experiment with different data and network architectures to train models for classification tasks of their choice.</p>
+<h2>References</h2>
+<ol>
+<li>LeCun, Yann, Léon Bottou, Yoshua Bengio, and Patrick Haffner. <a href="http://ieeexplore.ieee.org/abstract/document/726791/">"Gradient-based learning applied to document recognition."</a> Proceedings of the IEEE 86, no. 11 (1998): 2278-2324.</li>
+<li>Wejéus, Samuel. <a href="http://www.diva-portal.org/smash/record.jsf?pid=diva2:753279&amp;dswid=-434">"A Neural Network Approach to Arbitrary SymbolRecognition on Modern Smartphones."</a> (2014).</li>
+<li>Decoste, Dennis, and Bernhard Schölkopf. <a href="http://link.springer.com/article/10.1023/A:1012454411458">"Training invariant support vector machines."</a> Machine learning 46, no. 1-3 (2002): 161-190.</li>
+<li>Simard, Patrice Y., David Steinkraus, and John C. Platt. <a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.160.8494&amp;rep=rep1&amp;type=pdf">"Best Practices for Convolutional Neural Networks Applied to Visual Document Analysis."</a> In ICDAR, vol. 3, pp. 958-962. 2003.</li>
+<li>Salakhutdinov, Ruslan, and Geoffrey E. Hinton. <a href="http://www.jmlr.org/proceedings/papers/v2/salakhutdinov07a/salakhutdinov07a.pdf">"Learning a Nonlinear Embedding by Preserving Class Neighbourhood Structure."</a> In AISTATS, vol. 11. 2007.</li>
+<li>Cireşan, Dan Claudiu, Ueli Meier, Luca Maria Gambardella, and Jürgen Schmidhuber. <a href="http://www.mitpressjournals.org/doi/abs/10.1162/NECO_a_00052">"Deep, big, simple neural nets for handwritten digit recognition."</a> Neural computation 22, no. 12 (2010): 3207-3220.</li>
+<li>Deng, Li, Michael L. Seltzer, Dong Yu, Alex Acero, Abdel-rahman Mohamed, and Geoffrey E. Hinton. <a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.185.1908&amp;rep=rep1&amp;type=pdf">"Binary coding of speech spectrograms using a deep auto-encoder."</a> In Interspeech, pp. 1692-1695. 2010.</li>
+<li>Kégl, Balázs, and Róbert Busa-Fekete. <a href="http://dl.acm.org/citation.cfm?id=1553439">"Boosting products of base classifiers."</a> In Proceedings of the 26th Annual International Conference on Machine Learning, pp. 497-504. ACM, 2009.</li>
+<li>Rosenblatt, Frank. <a href="http://psycnet.apa.org/journals/rev/65/6/386/">"The perceptron: A probabilistic model for information storage and organization in the brain."</a> Psychological review 65, no. 6 (1958): 386.</li>
+<li>Bishop, Christopher M. <a href="http://users.isr.ist.utl.pt/~wurmd/Livros/school/Bishop%20-%20Pattern%20Recognition%20And%20Machine%20Learning%20-%20Springer%20%202006.pdf">"Pattern recognition."</a> Machine Learning 128 (2006): 1-58.</li>
+</ol>
+<p><br/>
+This tutorial is contributed by <a href="http://book.paddlepaddle.org" property="cc:attributionName" rel="cc:attributionURL" xmlns:cc="http://creativecommons.org/ns#">PaddlePaddle</a>, and licensed under a <a href="http://creativecommons.org/licenses/by-sa/4.0/" rel="license">Creative Commons Attribution-ShareAlike 4.0 International License</a>.</p>
+{% endverbatim %}

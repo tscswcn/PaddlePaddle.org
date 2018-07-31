@@ -1,0 +1,257 @@
+{% verbatim %}
+<h1>Linear Regression</h1>
+<p>Let us begin the tutorial with a classical problem called Linear Regression [<a href="#References">1</a>]. In this chapter, we will train a model from a realistic dataset to predict home prices. Some important concepts in Machine Learning will be covered through this example.</p>
+<p>The source code for this tutorial lives on <a href="https://github.com/PaddlePaddle/book/tree/develop/01.fit_a_line">book/fit_a_line</a>. For instructions on getting started with PaddlePaddle, see <a href="https://github.com/PaddlePaddle/book/blob/develop/README.md#running-the-book">PaddlePaddle installation guide</a>.</p>
+<h2>Problem Setup</h2>
+<p>Suppose we have a dataset of <span class="markdown-equation" id="equation-0">$n$</span> real estate properties. Each real estate property will be referred to as <strong>homes</strong> in this chapter for clarity.</p>
+<p>Each home is associated with <span class="markdown-equation" id="equation-1">$d$</span> attributes. The attributes describe characteristics such as the number of rooms in the home, the number of schools or hospitals in the neighborhood, and the traffic condition nearby.</p>
+<p>In our problem setup, the attribute <span class="markdown-equation" id="equation-2">$x_{i,j}$</span> denotes the <span class="markdown-equation" id="equation-3">$j$</span>th characteristic of the <span class="markdown-equation" id="equation-4">$i$</span>th home. In addition, <span class="markdown-equation" id="equation-5">$y_i$</span> denotes the price of the <span class="markdown-equation" id="equation-4">$i$</span>th home. Our task is to predict <span class="markdown-equation" id="equation-5">$y_i$</span> given a set of attributes <span class="markdown-equation" id="equation-8">$\{x_{i,1}, ..., x_{i,d}\}$</span>. We assume that the price of a home is a linear combination of all of its attributes, namely,</p>
+<p><span class="markdown-equation" id="equation-9">$$y_i = \omega_1x_{i,1} + \omega_2x_{i,2} + \ldots + \omega_dx_{i,d} + b,  i=1,\ldots,n$$</span></p>
+<p>where <span class="markdown-equation" id="equation-10">$\vec{\omega}$</span> and <span class="markdown-equation" id="equation-11">$b$</span> are the model parameters we want to estimate. Once they are learned, we will be able to predict the price of a home, given the attributes associated with it. We call this model <strong>Linear Regression</strong>. In other words, we want to regress a value against several values linearly. In practice, a linear model is often too simplistic to capture the real relationships between the variables. Yet, because Linear Regression is easy to train and analyze, it has been applied to a large number of real problems. As a result, it is an important topic in many classic Statistical Learning and Machine Learning textbooks [<a href="#References">2,3,4</a>].</p>
+<h2>Results Demonstration</h2>
+<p>We first show the result of our model. The dataset <a href="https://archive.ics.uci.edu/ml/datasets/Housing">UCI Housing Data Set</a> is used to train a linear model to predict the home prices in Boston. The figure below shows the predictions the model makes for some home prices. The <span class="markdown-equation" id="equation-12">$X$</span>-axis represents the median value of the prices of similar homes within a bin, while the <span class="markdown-equation" id="equation-13">$Y$</span>-axis represents the home value our linear model predicts. The dotted line represents points where <span class="markdown-equation" id="equation-14">$X=Y$</span>. When reading the diagram, the closer the point is to the dotted line, better the model's prediction.
+</p><p align="center">
+<img src="image/predictions_en.png" width="400"/><br/>
+    Figure 1. Predicted Value V.S. Actual Value
+</p>
+<h2>Model Overview</h2>
+<h3>Model Definition</h3>
+<p>In the UCI Housing Data Set, there are 13 home attributes <span class="markdown-equation" id="equation-15">$\{x_{i,j}\}$</span> that are related to the median home price <span class="markdown-equation" id="equation-5">$y_i$</span>, which we aim to predict. Thus, our model can be written as:</p>
+<p><span class="markdown-equation" id="equation-17">$$\hat{Y} = \omega_1X_{1} + \omega_2X_{2} + \ldots + \omega_{13}X_{13} + b$$</span></p>
+<p>where <span class="markdown-equation" id="equation-18">$\hat{Y}$</span> is the predicted value used to differentiate from actual value <span class="markdown-equation" id="equation-13">$Y$</span>. The model learns parameters <span class="markdown-equation" id="equation-20">$\omega_1, \ldots, \omega_{13}, b$</span>, where the entries of <span class="markdown-equation" id="equation-10">$\vec{\omega}$</span> are <strong>weights</strong> and <span class="markdown-equation" id="equation-11">$b$</span> is <strong>bias</strong>.</p>
+<p>Now we need an objective to optimize, so that the learned parameters can make <span class="markdown-equation" id="equation-18">$\hat{Y}$</span> as close to <span class="markdown-equation" id="equation-13">$Y$</span> as possible. Let's refer to the concept of <a href="https://en.wikipedia.org/wiki/Loss_function">Loss Function (Cost Function)</a>. A loss function must output a non-negative value, given any pair of the actual value <span class="markdown-equation" id="equation-5">$y_i$</span> and the predicted value <span class="markdown-equation" id="equation-26">$\hat{y_i}$</span>. This value reflects the magnitutude of the model error.</p>
+<p>For Linear Regression, the most common loss function is <a href="https://en.wikipedia.org/wiki/Mean_squared_error">Mean Square Error (MSE)</a> which has the following form:</p>
+<p><span class="markdown-equation" id="equation-27">$$MSE=\frac{1}{n}\sum_{i=1}^{n}{(\hat{Y_i}-Y_i)}^2$$</span></p>
+<p>That is, for a dataset of size <span class="markdown-equation" id="equation-0">$n$</span>, MSE is the average value of the the prediction sqaure errors.</p>
+<h3>Training</h3>
+<p>After setting up our model, there are several major steps to go through to train it:
+1. Initialize the parameters including the weights <span class="markdown-equation" id="equation-10">$\vec{\omega}$</span> and the bias <span class="markdown-equation" id="equation-11">$b$</span>. For example, we can set their mean values as <span class="markdown-equation" id="equation-31">$0$</span>s, and their standard deviations as <span class="markdown-equation" id="equation-32">$1$</span>s.
+2. Feedforward. Evaluate the network output and compute the corresponding loss.
+3. <a href="https://en.wikipedia.org/wiki/Backpropagation">Backpropagate</a> the errors. The errors will be propagated from the output layer back to the input layer, during which the model parameters will be updated with the corresponding errors.
+4. Repeat steps 2~3, until the loss is below a predefined threshold or the maximum number of epochs is reached.</p>
+<h2>Dataset</h2>
+<h3>Python Dataset Modules</h3>
+<p>Our program starts with importing necessary packages:</p>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">paddle.v2</span> <span class="kn">as</span> <span class="nn">paddle</span>
+<span class="kn">import</span> <span class="nn">paddle.v2.dataset.uci_housing</span> <span class="kn">as</span> <span class="nn">uci_housing</span>
+</pre></div>
+<p>We encapsulated the <a href="https://archive.ics.uci.edu/ml/datasets/Housing">UCI Housing Data Set</a> in our Python module <code>uci_housing</code>.  This module can</p>
+<ol>
+<li>download the dataset to <code>~/.cache/paddle/dataset/uci_housing/housing.data</code>, if you haven't yet, and</li>
+<li><a href="#preprocessing">preprocess</a> the dataset.</li>
+</ol>
+<h3>An Introduction of the Dataset</h3>
+<p>The UCI housing dataset has 506 instances. Each instance describes the attributes of a house in surburban Boston.  The attributes are explained below:</p>
+<table>
+<thead>
+<tr>
+<th>Attribute Name</th>
+<th>Characteristic</th>
+<th>Data Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CRIM</td>
+<td>per capita crime rate by town</td>
+<td>Continuous</td>
+</tr>
+<tr>
+<td>ZN</td>
+<td>proportion of residential land zoned for lots over 25,000 sq.ft.</td>
+<td>Continuous</td>
+</tr>
+<tr>
+<td>INDUS</td>
+<td>proportion of non-retail business acres per town</td>
+<td>Continuous</td>
+</tr>
+<tr>
+<td>CHAS</td>
+<td>Charles River dummy variable</td>
+<td>Discrete, 1 if tract bounds river; 0 otherwise</td>
+</tr>
+<tr>
+<td>NOX</td>
+<td>nitric oxides concentration (parts per 10 million)</td>
+<td>Continuous</td>
+</tr>
+<tr>
+<td>RM</td>
+<td>average number of rooms per dwelling</td>
+<td>Continuous</td>
+</tr>
+<tr>
+<td>AGE</td>
+<td>proportion of owner-occupied units built prior to 1940</td>
+<td>Continuous</td>
+</tr>
+<tr>
+<td>DIS</td>
+<td>weighted distances to five Boston employment centres</td>
+<td>Continuous</td>
+</tr>
+<tr>
+<td>RAD</td>
+<td>index of accessibility to radial highways</td>
+<td>Continuous</td>
+</tr>
+<tr>
+<td>TAX</td>
+<td>full-value property-tax rate per <span class="markdown-equation" id="equation-33">$10,000 | Continuous |
+| PTRATIO | pupil-teacher ratio by town | Continuous |
+| B | 1000(Bk - 0.63)^2 where Bk is the proportion of blacks by town | Continuous |
+| LSTAT | % lower status of the population | Continuous |
+| MEDV | Median value of owner-occupied homes in $</span>1000's</td>
+<td>Continuous</td>
+</tr>
+</tbody>
+</table>
+<p>The last entry is the median home price.</p>
+<h3>Preprocessing</h3>
+<h4>Continuous and Discrete Data</h4>
+<p>We define a feature vector of length 13 for each home, where each entry corresponds to an attribute. Our first observation is that, among the 13 dimensions, there are 12 continuous dimensions and 1 discrete dimension.</p>
+<p>Note that although a discrete value is also written as numeric values such as 0, 1, or 2, its meaning differs from a continuous value drastically.  The linear difference between two discrete values has no meaning. For example, suppose <span class="markdown-equation" id="equation-31">$0$</span>, <span class="markdown-equation" id="equation-32">$1$</span>, and <span class="markdown-equation" id="equation-36">$2$</span> are used to represent colors <em>Red</em>, <em>Green</em>, and <em>Blue</em> respectively. Judging from the numeric representation of these colors, <em>Red</em> differs more from <em>Blue</em> than it does from <em>Green</em>. Yet in actuality, it is not true that extent to which the color <em>Blue</em> is different from <em>Red</em> is greater than the extent to which <em>Green</em> is different from <em>Red</em>. Therefore, when handling a discrete feature that has <span class="markdown-equation" id="equation-1">$d$</span> possible values, we usually convert it to <span class="markdown-equation" id="equation-1">$d$</span> new features where each feature takes a binary value, <span class="markdown-equation" id="equation-31">$0$</span> or <span class="markdown-equation" id="equation-32">$1$</span>, indicating whether the original value is absent or present. Alternatively, the discrete features can be mapped onto a continuous multi-dimensional vector through an embedding table. For our problem here, because CHAS itself is a binary discrete value, we do not need to do any preprocessing.</p>
+<h4>Feature Normalization</h4>
+<p>We also observe a huge difference among the value ranges of the 13 features (Figure 2). For instance, the values of feature <em>B</em> fall in <span class="markdown-equation" id="equation-41">$[0.32, 396.90]$</span>, whereas those of feature <em>NOX</em> has a range of <span class="markdown-equation" id="equation-42">$[0.3850, 0.8170]$</span>. An effective optimization would require data normalization. The goal of data normalization is to scale the values of each feature into roughly the same range, perhaps <span class="markdown-equation" id="equation-43">$[-0.5, 0.5]$</span>. Here, we adopt a popular normalization technique where we subtract the mean value from the feature value and divide the result by the width of the original range.</p>
+<p>There are at least three reasons for <a href="https://en.wikipedia.org/wiki/Feature_scaling">Feature Normalization</a> (Feature Scaling):
+- A value range that is too large or too small might cause floating number overflow or underflow during computation.
+- Different value ranges might result in varying <em>importances</em> of different features to the model (at least in the beginning of the training process). This assumption about the data is often unreasonable, making the optimization difficult, which in turn results in increased training time.
+- Many machine learning techniques or models (e.g., <em>L1/L2 regularization</em> and <em>Vector Space Model</em>) assumes that all the features have roughly zero means and their value ranges are similar.</p>
+<p align="center">
+<img src="image/ranges_en.png" width="550"/><br/>
+    Figure 2. The value ranges of the features
+</p>
+<h4>Prepare Training and Test Sets</h4>
+<p>We split the dataset in two, one for adjusting the model parameters, namely, for training the model, and the other for testing. The model error on the former is called the <strong>training error</strong>, and the error on the latter is called the <strong>test error</strong>. Our goal in training a model is to find the statistical dependency between the outputs and the inputs, so that we can predict outputs given new inputs. As a result, the test error reflects the performance of the model better than the training error does. We consider two things when deciding the ratio of the training set to the test set: 1) More training data will decrease the variance of the parameter estimation, yielding more reliable models; 2) More test data will decrease the variance of the test error, yielding more reliable test errors. One standard split ratio is <span class="markdown-equation" id="equation-44">$8:2$</span>.</p>
+<p>When training complex models, we usually have one more split: the validation set. Complex models usually have <a href="https://en.wikipedia.org/wiki/Hyperparameter_optimization">Hyperparameters</a> that need to be set before the training process, such as the number of layers in the network. Because hyperparameters are not part of the model parameters, they cannot be trained using the same loss function. Thus we will try several sets of hyperparameters to train several models and cross-validate them on the validation set to pick the best one; finally, the selected trained model is tested on the test set. Because our model is relatively simple, we will omit this validation process.</p>
+<h2>Training</h2>
+<p><code>fit_a_line/trainer.py</code> demonstrates the training using <a href="http://paddlepaddle.org">PaddlePaddle</a>.</p>
+<h3>Initialize PaddlePaddle</h3>
+<div class="highlight"><pre><span></span><span class="n">paddle</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="n">use_gpu</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">trainer_count</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+<h3>Model Configuration</h3>
+<p>Linear regression is essentially a fully-connected layer with linear activation:</p>
+<div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">'x'</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">data_type</span><span class="o">.</span><span class="n">dense_vector</span><span class="p">(</span><span class="mi">13</span><span class="p">))</span>
+<span class="n">y_predict</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">fc</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">x</span><span class="p">,</span>
+                                <span class="n">size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                                <span class="n">act</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">activation</span><span class="o">.</span><span class="n">Linear</span><span class="p">())</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">'y'</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">data_type</span><span class="o">.</span><span class="n">dense_vector</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+<span class="n">cost</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">square_error_cost</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">y_predict</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
+</pre></div>
+<h3>Save Topology</h3>
+<div class="highlight"><pre><span></span><span class="c1"># Save the inference topology to protobuf.</span>
+<span class="n">inference_topology</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">Topology</span><span class="p">(</span><span class="n">layers</span><span class="o">=</span><span class="n">y_predict</span><span class="p">)</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">"inference_topology.pkl"</span><span class="p">,</span> <span class="s1">'wb'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">inference_topology</span><span class="o">.</span><span class="n">serialize_for_inference</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+</pre></div>
+<h3>Create Parameters</h3>
+<div class="highlight"><pre><span></span><span class="n">parameters</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">cost</span><span class="p">)</span>
+</pre></div>
+<h3>Create Trainer</h3>
+<div class="highlight"><pre><span></span><span class="n">optimizer</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">Momentum</span><span class="p">(</span><span class="n">momentum</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="n">trainer</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="n">cost</span><span class="p">,</span>
+                             <span class="n">parameters</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span>
+                             <span class="n">update_equation</span><span class="o">=</span><span class="n">optimizer</span><span class="p">)</span>
+</pre></div>
+<h3>Feeding Data</h3>
+<p>PaddlePaddle provides the
+<a href="https://github.com/PaddlePaddle/Paddle/tree/develop/doc/design/reader">reader mechanism</a>
+for loading the training data. A reader may return multiple columns, and we need a Python dictionary to specify the mapping from column index to data layers.</p>
+<div class="highlight"><pre><span></span><span class="n">feeding</span><span class="o">=</span><span class="p">{</span><span class="s1">'x'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">'y'</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+</pre></div>
+<p>Moreover, an event handler is provided to print the training progress:</p>
+<div class="highlight"><pre><span></span><span class="c1"># event_handler to print training and testing info</span>
+<span class="k">def</span> <span class="nf">event_handler</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">paddle</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">EndIteration</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">batch_id</span> <span class="o">%</span> <span class="mi">100</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s2">"Pass </span><span class="si">%d</span><span class="s2">, Batch </span><span class="si">%d</span><span class="s2">, Cost </span><span class="si">%f</span><span class="s2">"</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="n">event</span><span class="o">.</span><span class="n">pass_id</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">batch_id</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">cost</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">paddle</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">EndPass</span><span class="p">):</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">trainer</span><span class="o">.</span><span class="n">test</span><span class="p">(</span>
+            <span class="n">reader</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span>
+                <span class="n">uci_housing</span><span class="o">.</span><span class="n">test</span><span class="p">(),</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
+            <span class="n">feeding</span><span class="o">=</span><span class="n">feeding</span><span class="p">)</span>
+        <span class="k">print</span> <span class="s2">"Test </span><span class="si">%d</span><span class="s2">, Cost </span><span class="si">%f</span><span class="s2">"</span> <span class="o">%</span> <span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">pass_id</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">cost</span><span class="p">)</span>
+</pre></div>
+<div class="highlight"><pre><span></span><span class="c1"># event_handler to plot training and testing info</span>
+<span class="kn">from</span> <span class="nn">paddle.v2.plot</span> <span class="kn">import</span> <span class="n">Ploter</span>
+
+<span class="n">train_title</span> <span class="o">=</span> <span class="s2">"Train cost"</span>
+<span class="n">test_title</span> <span class="o">=</span> <span class="s2">"Test cost"</span>
+<span class="n">plot_cost</span> <span class="o">=</span> <span class="n">Ploter</span><span class="p">(</span><span class="n">train_title</span><span class="p">,</span> <span class="n">test_title</span><span class="p">)</span>
+
+<span class="n">step</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="k">def</span> <span class="nf">event_handler_plot</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
+    <span class="k">global</span> <span class="n">step</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">paddle</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">EndIteration</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">step</span> <span class="o">%</span> <span class="mi">10</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># every 10 batches, record a train cost</span>
+            <span class="n">plot_cost</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">train_title</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">cost</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">step</span> <span class="o">%</span> <span class="mi">100</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="c1"># every 100 batches, record a test cost</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">trainer</span><span class="o">.</span><span class="n">test</span><span class="p">(</span>
+                <span class="n">reader</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span>
+                    <span class="n">uci_housing</span><span class="o">.</span><span class="n">test</span><span class="p">(),</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
+                <span class="n">feeding</span><span class="o">=</span><span class="n">feeding</span><span class="p">)</span>
+            <span class="n">plot_cost</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">test_title</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">cost</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">step</span> <span class="o">%</span> <span class="mi">100</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="c1"># every 100 batches, update cost plot</span>
+            <span class="n">plot_cost</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+
+        <span class="n">step</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">paddle</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">EndPass</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">pass_id</span> <span class="o">%</span> <span class="mi">10</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">'params_pass_</span><span class="si">%d</span><span class="s1">.tar'</span> <span class="o">%</span> <span class="n">event</span><span class="o">.</span><span class="n">pass_id</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">trainer</span><span class="o">.</span><span class="n">save_parameter_to_tar</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+</pre></div>
+<h3>Start Training</h3>
+<div class="highlight"><pre><span></span><span class="n">trainer</span><span class="o">.</span><span class="n">train</span><span class="p">(</span>
+    <span class="n">reader</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span>
+        <span class="n">paddle</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span>
+            <span class="n">uci_housing</span><span class="o">.</span><span class="n">train</span><span class="p">(),</span> <span class="n">buf_size</span><span class="o">=</span><span class="mi">500</span><span class="p">),</span>
+        <span class="n">batch_size</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
+    <span class="n">feeding</span><span class="o">=</span><span class="n">feeding</span><span class="p">,</span>
+    <span class="n">event_handler</span><span class="o">=</span><span class="n">event_handler_plot</span><span class="p">,</span>
+    <span class="n">num_passes</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+</pre></div>
+<p><img alt="png" src="./image/train_and_test.png"/></p>
+<h3>Apply model</h3>
+<h4>1. generate testing data</h4>
+<div class="highlight"><pre><span></span><span class="n">test_data_creator</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">uci_housing</span><span class="o">.</span><span class="n">test</span><span class="p">()</span>
+<span class="n">test_data</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">test_label</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">test_data_creator</span><span class="p">():</span>
+    <span class="n">test_data</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">],))</span>
+    <span class="n">test_label</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">test_data</span><span class="p">)</span> <span class="o">==</span> <span class="mi">5</span><span class="p">:</span>
+        <span class="k">break</span>
+</pre></div>
+<h4>2. inference</h4>
+<div class="highlight"><pre><span></span><span class="c1"># load parameters from tar file.</span>
+<span class="c1"># users can remove the comments and change the model name</span>
+<span class="c1"># with open('params_pass_20.tar', 'r') as f:</span>
+<span class="c1">#     parameters = paddle.parameters.Parameters.from_tar(f)</span>
+
+<span class="n">probs</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">infer</span><span class="p">(</span>
+    <span class="n">output_layer</span><span class="o">=</span><span class="n">y_predict</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span> <span class="nb">input</span><span class="o">=</span><span class="n">test_data</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">probs</span><span class="p">)):</span>
+    <span class="k">print</span> <span class="s2">"label="</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">test_label</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="s2">", predict="</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">probs</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+</pre></div>
+<h2>Summary</h2>
+<p>This chapter introduces <em>Linear Regression</em> and how to train and test this model with PaddlePaddle, using the UCI Housing Data Set. Because a large number of more complex models and techniques are derived from linear regression, it is important to understand its underlying theory and limitation.</p>
+<h2>References</h2>
+<ol>
+<li>https://en.wikipedia.org/wiki/Linear_regression</li>
+<li>Friedman J, Hastie T, Tibshirani R. The elements of statistical learning[M]. Springer, Berlin: Springer series in statistics, 2001.</li>
+<li>Murphy K P. Machine learning: a probabilistic perspective[M]. MIT press, 2012.</li>
+<li>Bishop C M. Pattern recognition[J]. Machine Learning, 2006, 128.</li>
+</ol>
+<p><br/>
+This tutorial is contributed by <a href="http://book.paddlepaddle.org" property="cc:attributionName" rel="cc:attributionURL" xmlns:cc="http://creativecommons.org/ns#">PaddlePaddle</a>, and licensed under a <a href="http://creativecommons.org/licenses/by-sa/4.0/" rel="license">Creative Commons Attribution-ShareAlike 4.0 International License</a>.</p>
+{% endverbatim %}

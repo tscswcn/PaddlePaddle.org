@@ -1,0 +1,106 @@
+<div class="document" itemscope="itemscope" itemtype="http://schema.org/Article" role="main">
+<div itemprop="articleBody">
+<div class="section" id="paddlepaddle-fluid-towards-a-compiled-programming-language">
+<span id="paddlepaddle-fluid-towards-a-compiled-programming-language"></span><h1>PaddlePaddle Fluid: Towards a Compiled Programming Language<a class="headerlink" href="#paddlepaddle-fluid-towards-a-compiled-programming-language" title="永久链接至标题">¶</a></h1>
+<p>As described in <a class="reference internal" href="fluid.html"><span class="doc">fluid.md</span></a>, when a Fluid application program
+runs, it generates a <code class="docutils literal"><span class="pre">ProgramDesc</span></code> protobuf message as an intermediate
+representation of itself.  The C++ class <code class="docutils literal"><span class="pre">Executor</span></code> can run this
+protobuf message as an interpreter.  This article describes the Fluid
+compiler.</p>
+<p><img alt="" src="../../_images/fluid-compiler.png"/></p>
+<div class="section" id="programdesc">
+<span id="programdesc"></span><h2>ProgramDesc<a class="headerlink" href="#programdesc" title="永久链接至标题">¶</a></h2>
+<p>Before we go deeper into the idea of compiled language, let us take a
+look at a simple example Fluid application.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="s2">"fluid"</span>
+
+<span class="n">func</span> <span class="n">paddlepaddle</span><span class="p">()</span> <span class="p">{</span>
+  <span class="n">X</span> <span class="o">=</span> <span class="n">fluid</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+  <span class="n">W</span> <span class="o">=</span> <span class="n">fluid</span><span class="o">.</span><span class="n">Tensor</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+  <span class="n">Y</span> <span class="o">=</span> <span class="n">fluid</span><span class="o">.</span><span class="n">mult</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">W</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>This program consists of a <a class="reference internal" href="../concepts/block.html"><span class="doc">block</span></a> of three operators –
+<code class="docutils literal"><span class="pre">read</span></code>, <code class="docutils literal"><span class="pre">assign</span></code>, and <code class="docutils literal"><span class="pre">mult</span></code>.  Its <code class="docutils literal"><span class="pre">ProgramDesc</span></code> message looks like
+the following</p>
+<div class="highlight-protobuf"><div class="highlight"><pre><span></span><span class="kd">message</span> <span class="nc">ProgramDesc</span> <span class="p">{</span>
+  <span class="n">block</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">Block</span> <span class="p">{</span>
+    <span class="na">vars</span> <span class="o">=</span> <span class="p">[</span><span class="n">X</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">Y</span><span class="p">],</span>
+    <span class="na">ops</span> <span class="o">=</span> <span class="p">[</span>
+      <span class="n">read</span><span class="p">(</span><span class="na">output</span> <span class="o">=</span> <span class="n">X</span><span class="p">)</span>
+      <span class="n">assign</span><span class="p">(</span><span class="na">input</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span> <span class="na">output</span> <span class="o">=</span> <span class="n">W</span><span class="p">)</span>
+      <span class="n">mult</span><span class="p">(</span><span class="na">input</span> <span class="o">=</span> <span class="p">{</span><span class="n">X</span><span class="p">,</span> <span class="n">W</span><span class="p">},</span> <span class="na">output</span> <span class="o">=</span> <span class="n">Y</span><span class="p">)</span>
+    <span class="p">],</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="transpilers">
+<span id="transpilers"></span><h2>Transpilers<a class="headerlink" href="#transpilers" title="永久链接至标题">¶</a></h2>
+<p>We can write a transpiler program that takes a <code class="docutils literal"><span class="pre">ProgramDesc</span></code>, e.g.,
+the above one, and outputs another <code class="docutils literal"><span class="pre">ProgramDesc</span></code>.  Let us take some
+examples:</p>
+<ol class="simple">
+<li><em>Memory optimization transpiler</em>: We can write a transpiler that
+inserts some <code class="docutils literal"><span class="pre">FreeMemoryOp</span></code>s in the above example <code class="docutils literal"><span class="pre">ProgramDesc</span></code> so
+to free memory early, before the end of an iteration, so to keep a
+small memory footprint.</li>
+<li><em>Distributed training transpiler</em>: We can write a transpiler that
+converts a<code class="docutils literal"><span class="pre">ProgramDesc</span></code> into its distributed version of two
+<code class="docutils literal"><span class="pre">ProgramDesc</span></code>s – one for running by the trainer processes and the
+other for the parameter server.</li>
+</ol>
+<p>In the rest of this article, we talk about a special kind of
+transpiler, <em>Native code generator</em>, which takes a <code class="docutils literal"><span class="pre">ProgramDesc</span></code> and
+generates a <code class="docutils literal"><span class="pre">.cu</span></code> (or <code class="docutils literal"><span class="pre">.cc</span></code>) file, which could be built by C++
+compilers (gcc, nvcc, icc) into binaries.</p>
+</div>
+<div class="section" id="native-code-generator">
+<span id="native-code-generator"></span><h2>Native Code Generator<a class="headerlink" href="#native-code-generator" title="永久链接至标题">¶</a></h2>
+<p>For the above example, the native code generator transpiler, say, the
+CUDA code generator, should generate a <code class="docutils literal"><span class="pre">main</span></code> function:</p>
+<div class="highlight-c++"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">auto</span> <span class="n">X</span> <span class="o">=</span> <span class="n">fluid_cuda_read</span><span class="p">(...);</span>
+  <span class="k">auto</span> <span class="n">W</span> <span class="o">=</span> <span class="n">fluid_cuda_create_tensor</span><span class="p">(...);</span>
+  <span class="k">auto</span> <span class="n">Y</span> <span class="o">=</span> <span class="n">fluid_cuda_mult</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">W</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>and the definitions of functions <code class="docutils literal"><span class="pre">fluid_cuda_read</span></code>,
+<code class="docutils literal"><span class="pre">fluid_cuda_create_tensor</span></code>, and <code class="docutils literal"><span class="pre">fluid_cuda_mult</span></code>.  Please be aware
+that each function could just define a C++ instance of an operator and
+run it.  For example</p>
+<div class="highlight-c++"><div class="highlight"><pre><span></span><span class="n">paddle</span><span class="o">::</span><span class="n">Tensor</span> <span class="n">fluid_cuda_read</span><span class="p">(...)</span> <span class="p">{</span>
+  <span class="n">paddle</span><span class="o">::</span><span class="n">Tensor</span> <span class="n">t</span><span class="p">;</span>
+  <span class="n">paddle</span><span class="o">::</span><span class="k">operator</span><span class="o">::</span><span class="n">Read</span> <span class="n">r</span><span class="p">(</span><span class="o">&amp;</span><span class="n">t</span><span class="p">,</span> <span class="p">...);</span>
+  <span class="n">r</span><span class="p">.</span><span class="n">Run</span><span class="p">();</span>
+  <span class="k">return</span> <span class="n">t</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>For computational operators that have multiple <em>kernels</em>, each for a
+specific hardware platform, for example, the <code class="docutils literal"><span class="pre">mult</span></code> operator, the
+generated code should call its CUDA kernel:</p>
+<div class="highlight-c++"><div class="highlight"><pre><span></span><span class="n">paddle</span><span class="o">::</span><span class="n">Tensor</span> <span class="n">fluid_cuda_mult</span><span class="p">(</span><span class="k">const</span> <span class="n">paddle</span><span class="o">::</span><span class="n">Tensor</span><span class="o">&amp;</span> <span class="n">a</span><span class="p">,</span>
+                               <span class="k">const</span> <span class="n">paddle</span><span class="o">::</span><span class="n">Tensor</span><span class="o">&amp;</span> <span class="n">b</span><span class="p">)</span> <span class="p">{</span>
+  <span class="n">paddle</span><span class="o">::</span><span class="n">Tensor</span> <span class="n">t</span><span class="p">;</span>
+  <span class="n">paddle</span><span class="o">::</span><span class="k">operator</span><span class="o">::</span><span class="n">Mult</span> <span class="n">m</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="p">...);</span>
+  <span class="n">Mult</span><span class="p">.</span><span class="n">Run</span><span class="p">(</span><span class="n">cuda_context</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>where <code class="docutils literal"><span class="pre">cuda_context</span></code> could be a global variable of type
+<code class="docutils literal"><span class="pre">paddle::CUDADeviceContext</span></code>.</p>
+</div>
+<div class="section" id="multi-block-code-generation">
+<span id="multi-block-code-generation"></span><h2>Multi-Block Code Generation<a class="headerlink" href="#multi-block-code-generation" title="永久链接至标题">¶</a></h2>
+<p>Most Fluid application programs may have more than one blocks.  To
+execute them, we need to trace <a class="reference internal" href="../concepts/scope.html"><span class="doc">scopes</span></a>.</p>
+</div>
+</div>
+</div>
+<div class="articleComments">
+</div>
+</div>
