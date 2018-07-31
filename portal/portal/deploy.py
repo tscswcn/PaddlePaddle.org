@@ -740,6 +740,11 @@ def build_apis(source_dir, destination_dir):
             settings.BASE_DIR, '../scripts/deploy/generate_paddle_docs.sh')
 
         if os.path.exists(os.path.dirname(script_path)):
+            source_dir = os.path.dirname(source_dir.rstrip('/'))
+
+            while os.path.basename(source_dir).lower() != 'paddle':
+                source_dir = os.path.dirname(source_dir)
+
             call([script_path, source_dir, destination_dir])
 
             return destination_dir
