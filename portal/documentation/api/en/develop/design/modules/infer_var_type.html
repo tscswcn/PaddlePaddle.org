@@ -1,0 +1,72 @@
+<div class="document" itemscope="itemscope" itemtype="http://schema.org/Article" role="main">
+<div itemprop="articleBody">
+<div class="section" id="design-doc-infervartype">
+<span id="design-doc-infervartype"></span><h1>Design Doc: InferVarType<a class="headerlink" href="#design-doc-infervartype" title="永久链接至标题">¶</a></h1>
+<div class="section" id="the-problem-posed">
+<span id="the-problem-posed"></span><h2>The Problem Posed<a class="headerlink" href="#the-problem-posed" title="永久链接至标题">¶</a></h2>
+<p>The variable in our design can hold variant types. Such as <code class="docutils literal"><span class="pre">LoDTensor</span></code> and <code class="docutils literal"><span class="pre">SelectedRows</span></code>. An operator should be able to inference the variable types of its output.</p>
+<p>For example, a <code class="docutils literal"><span class="pre">lookup</span> <span class="pre">table</span></code> operator takes two <code class="docutils literal"><span class="pre">LoDTensor</span></code>; one is a float tensor as the embedding table, the other is an int tensor as word ID. The gradient operator of <code class="docutils literal"><span class="pre">lookup</span> <span class="pre">table</span></code> will generate a <code class="docutils literal"><span class="pre">SelectedRows</span></code> as its output. A <code class="docutils literal"><span class="pre">sum</span></code> operator can take both <code class="docutils literal"><span class="pre">LoDTensor</span></code> and <code class="docutils literal"><span class="pre">SelectedRows</span></code> as its inputs and will generate a <code class="docutils literal"><span class="pre">LoDTensor</span></code> if any of its inputs is <code class="docutils literal"><span class="pre">LoDTensor</span></code>, otherwise, the <code class="docutils literal"><span class="pre">sum</span></code> operator will generate <code class="docutils literal"><span class="pre">SelectedRows</span></code> as its output.</p>
+<p>The variable type will be constant at runtime. Every variable’s type can either be set by the user (input data and parameter) or be inferred by the operator in compile time.</p>
+</div>
+<div class="section" id="proposed-solution">
+<span id="proposed-solution"></span><h2>Proposed Solution<a class="headerlink" href="#proposed-solution" title="永久链接至标题">¶</a></h2>
+<p>The <code class="docutils literal"><span class="pre">InferVarType</span></code> is a compile-time function which is registered to each operator. The inferface of that function is:</p>
+<div class="highlight-c++"><div class="highlight"><pre><span></span><span class="k">using</span> <span class="n">InferVarTypeFN</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span>
+    <span class="kt">void</span> <span class="p">(</span><span class="k">const</span> <span class="n">OpDescBind</span><span class="o">&amp;</span> <span class="cm">/*op_desc*/</span><span class="p">,</span> <span class="n">BlockDescBind</span><span class="o">*</span> <span class="cm">/*block*/</span><span class="p">)</span><span class="o">&gt;</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>It takes an operator description as its input and will write the output variable type and store them in block description.</p>
+<p>The <code class="docutils literal"><span class="pre">InferVarTypeFN</span></code> will be registered in <code class="docutils literal"><span class="pre">OpInfo</span></code>, to replace <code class="docutils literal"><span class="pre">infer_var_type_</span></code> field. The <code class="docutils literal"><span class="pre">OpInfo</span></code> should be</p>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">OpInfo</span> <span class="p">{</span>
+  <span class="n">InferVarTypeFN</span> <span class="n">infer_var_type_</span><span class="p">;</span>
+  <span class="p">...</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<p>The default <code class="docutils literal"><span class="pre">InferVarType</span></code> will set output type as <code class="docutils literal"><span class="pre">LoDTensor</span></code>. It can be done by <code class="docutils literal"><span class="pre">GetInferVarType()</span></code>.</p>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">DefaultInferVarType</span><span class="p">(</span><span class="k">const</span> <span class="n">OpDescBind</span><span class="o">&amp;</span> <span class="n">op_desc</span><span class="p">,</span> <span class="n">BlockDescBind</span><span class="o">*</span> <span class="n">block</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">// set the output type of variable as `LoDTensor`.</span>
+  <span class="c1">// ...</span>
+<span class="p">}</span>
+
+<span class="k">struct</span> <span class="n">OpInfo</span> <span class="p">{</span>
+  <span class="n">InferVarTypeFN</span> <span class="n">infer_var_type_</span><span class="p">;</span>
+  <span class="n">InferVarTypeFN</span> <span class="nf">GetInferVarType</span><span class="p">()</span> <span class="k">const</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">infer_var_type_</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="n">infer_var_type_</span><span class="p">;</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="n">DefaultInferVarType</span><span class="p">;</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="register-infervartype">
+<span id="register-infervartype"></span><h2>Register InferVarType<a class="headerlink" href="#register-infervartype" title="永久链接至标题">¶</a></h2>
+<p>We provide a thin base class for registering an <code class="docutils literal"><span class="pre">InferVarTypeFN</span></code>. To use a base class will ease the implementation of registry since we can detect the registry entry is an <code class="docutils literal"><span class="pre">InferVarTypeFN</span></code> or not.</p>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">VarTypeInferer</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+  <span class="k">virtual</span> <span class="kt">void</span> <span class="k">operator</span><span class="p">()(</span><span class="k">const</span> <span class="n">OpDescBind</span><span class="o">&amp;</span> <span class="n">op_desc</span><span class="p">,</span> <span class="n">BlockDescBind</span><span class="o">*</span> <span class="n">block</span><span class="p">)</span> <span class="k">const</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Operator developers can write the specialize <code class="docutils literal"><span class="pre">VarTypeInferer</span></code> as follow.</p>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">SpecialVarTypeInferer</span> <span class="o">:</span> <span class="k">public</span> <span class="n">VarTypeInferer</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+  <span class="k">virtual</span> <span class="kt">void</span> <span class="k">operator</span><span class="p">()(</span><span class="k">const</span> <span class="n">OpDescBind</span><span class="o">&amp;</span> <span class="n">op_desc</span><span class="p">,</span> <span class="n">BlockDescBind</span><span class="o">*</span> <span class="n">block</span><span class="p">)</span> <span class="k">const</span> <span class="p">{</span>
+    <span class="c1">// .. own logic</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Then user can register the <code class="docutils literal"><span class="pre">InferVarType</span></code> just like <code class="docutils literal"><span class="pre">GradOpDescMaker</span></code> and <code class="docutils literal"><span class="pre">OpInfoMaker</span></code>.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">REGISTER_OPERATOR</span><span class="p">(</span><span class="n">some_op</span><span class="p">,</span> <span class="n">OpType</span><span class="p">,</span> <span class="n">SpecialVarTypeInferer</span><span class="p">,</span> <span class="o">...</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="articleComments">
+</div>
+</div>

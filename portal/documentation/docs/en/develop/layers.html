@@ -1,0 +1,423 @@
+<div class="document" itemscope="itemscope" itemtype="http://schema.org/Article" role="main">
+<div itemprop="articleBody">
+<div class="section" id="layers">
+<h1>layers<a class="headerlink" href="#layers" title="永久链接至标题">¶</a></h1>
+<div class="section" id="control-flow">
+<h2>control_flow<a class="headerlink" href="#control-flow" title="永久链接至标题">¶</a></h2>
+<div class="section" id="split-lod-tensor">
+<h3>split_lod_tensor<a class="headerlink" href="#split-lod-tensor" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="merge-lod-tensor">
+<h3>merge_lod_tensor<a class="headerlink" href="#merge-lod-tensor" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="blockguard">
+<h3>BlockGuard<a class="headerlink" href="#blockguard" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="blockguardwithcompletion">
+<h3>BlockGuardWithCompletion<a class="headerlink" href="#blockguardwithcompletion" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="staticrnnmemorylink">
+<h3>StaticRNNMemoryLink<a class="headerlink" href="#staticrnnmemorylink" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="whileguard">
+<h3>WhileGuard<a class="headerlink" href="#whileguard" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="while">
+<h3>While<a class="headerlink" href="#while" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="lod-rank-table">
+<h3>lod_rank_table<a class="headerlink" href="#lod-rank-table" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="max-sequence-len">
+<h3>max_sequence_len<a class="headerlink" href="#max-sequence-len" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="topk">
+<h3>topk<a class="headerlink" href="#topk" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="lod-tensor-to-array">
+<h3>lod_tensor_to_array<a class="headerlink" href="#lod-tensor-to-array" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="array-to-lod-tensor">
+<h3>array_to_lod_tensor<a class="headerlink" href="#array-to-lod-tensor" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="increment">
+<h3>increment<a class="headerlink" href="#increment" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="array-write">
+<h3>array_write<a class="headerlink" href="#array-write" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="create-array">
+<h3>create_array<a class="headerlink" href="#create-array" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="less-than">
+<h3>less_than<a class="headerlink" href="#less-than" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="array-read">
+<h3>array_read<a class="headerlink" href="#array-read" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="shrink-memory">
+<h3>shrink_memory<a class="headerlink" href="#shrink-memory" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="array-length">
+<h3>array_length<a class="headerlink" href="#array-length" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="ifelse">
+<h3>IfElse<a class="headerlink" href="#ifelse" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="dynamicrnn">
+<h3>DynamicRNN<a class="headerlink" href="#dynamicrnn" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="conditionalblock">
+<h3>ConditionalBlock<a class="headerlink" href="#conditionalblock" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="staticrnn">
+<h3>StaticRNN<a class="headerlink" href="#staticrnn" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="reorder-lod-tensor-by-rank">
+<h3>reorder_lod_tensor_by_rank<a class="headerlink" href="#reorder-lod-tensor-by-rank" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="paralleldo">
+<h3>ParallelDo<a class="headerlink" href="#paralleldo" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="print">
+<h3>Print<a class="headerlink" href="#print" title="永久链接至标题">¶</a></h3>
+</div>
+</div>
+<div class="section" id="device">
+<h2>device<a class="headerlink" href="#device" title="永久链接至标题">¶</a></h2>
+<div class="section" id="get-places">
+<h3>get_places<a class="headerlink" href="#get-places" title="永久链接至标题">¶</a></h3>
+</div>
+</div>
+<div class="section" id="io">
+<h2>io<a class="headerlink" href="#io" title="永久链接至标题">¶</a></h2>
+<div class="section" id="data">
+<h3>data<a class="headerlink" href="#data" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="blockguardserv">
+<h3>BlockGuardServ<a class="headerlink" href="#blockguardserv" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="listenandserv">
+<h3>ListenAndServ<a class="headerlink" href="#listenandserv" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="send">
+<h3>Send<a class="headerlink" href="#send" title="永久链接至标题">¶</a></h3>
+</div>
+</div>
+<div class="section" id="nn">
+<h2>nn<a class="headerlink" href="#nn" title="永久链接至标题">¶</a></h2>
+<div class="section" id="fc">
+<h3>fc<a class="headerlink" href="#fc" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="embedding">
+<h3>embedding<a class="headerlink" href="#embedding" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="dynamic-lstm">
+<h3>dynamic_lstm<a class="headerlink" href="#dynamic-lstm" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="dynamic-lstmp">
+<h3>dynamic_lstmp<a class="headerlink" href="#dynamic-lstmp" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="dynamic-gru">
+<h3>dynamic_gru<a class="headerlink" href="#dynamic-gru" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="gru-unit">
+<h3>gru_unit<a class="headerlink" href="#gru-unit" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="linear-chain-crf">
+<h3>linear_chain_crf<a class="headerlink" href="#linear-chain-crf" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="crf-decoding">
+<h3>crf_decoding<a class="headerlink" href="#crf-decoding" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="cos-sim">
+<h3>cos_sim<a class="headerlink" href="#cos-sim" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="cross-entropy">
+<h3>cross_entropy<a class="headerlink" href="#cross-entropy" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="square-error-cost">
+<h3>square_error_cost<a class="headerlink" href="#square-error-cost" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="accuracy">
+<h3>accuracy<a class="headerlink" href="#accuracy" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="chunk-eval">
+<h3>chunk_eval<a class="headerlink" href="#chunk-eval" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="sequence-conv">
+<h3>sequence_conv<a class="headerlink" href="#sequence-conv" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="conv2d">
+<h3>conv2d<a class="headerlink" href="#conv2d" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="sequence-pool">
+<h3>sequence_pool<a class="headerlink" href="#sequence-pool" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="pool2d">
+<h3>pool2d<a class="headerlink" href="#pool2d" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="batch-norm">
+<h3>batch_norm<a class="headerlink" href="#batch-norm" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="layer-norm">
+<h3>layer_norm<a class="headerlink" href="#layer-norm" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="beam-search-decode">
+<h3>beam_search_decode<a class="headerlink" href="#beam-search-decode" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="conv2d-transpose">
+<h3>conv2d_transpose<a class="headerlink" href="#conv2d-transpose" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="sequence-expand">
+<h3>sequence_expand<a class="headerlink" href="#sequence-expand" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="lstm-unit">
+<h3>lstm_unit<a class="headerlink" href="#lstm-unit" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="reduce-sum">
+<h3>reduce_sum<a class="headerlink" href="#reduce-sum" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="reduce-mean">
+<h3>reduce_mean<a class="headerlink" href="#reduce-mean" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="reduce-max">
+<h3>reduce_max<a class="headerlink" href="#reduce-max" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="reduce-min">
+<h3>reduce_min<a class="headerlink" href="#reduce-min" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="sequence-first-step">
+<h3>sequence_first_step<a class="headerlink" href="#sequence-first-step" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="sequence-last-step">
+<h3>sequence_last_step<a class="headerlink" href="#sequence-last-step" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="dropout">
+<h3>dropout<a class="headerlink" href="#dropout" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="split">
+<h3>split<a class="headerlink" href="#split" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="ctc-greedy-decoder">
+<h3>ctc_greedy_decoder<a class="headerlink" href="#ctc-greedy-decoder" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="edit-distance">
+<h3>edit_distance<a class="headerlink" href="#edit-distance" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="l2-normalize">
+<h3>l2_normalize<a class="headerlink" href="#l2-normalize" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="matmul">
+<h3>matmul<a class="headerlink" href="#matmul" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="warpctc">
+<h3>warpctc<a class="headerlink" href="#warpctc" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="sequence-reshape">
+<h3>sequence_reshape<a class="headerlink" href="#sequence-reshape" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="transpose">
+<h3>transpose<a class="headerlink" href="#transpose" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="im2sequence">
+<h3>im2sequence<a class="headerlink" href="#im2sequence" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="nce">
+<h3>nce<a class="headerlink" href="#nce" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="beam-search">
+<h3>beam_search<a class="headerlink" href="#beam-search" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="row-conv">
+<h3>row_conv<a class="headerlink" href="#row-conv" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="multiplex">
+<h3>multiplex<a class="headerlink" href="#multiplex" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="label-smooth">
+<h3>label_smooth<a class="headerlink" href="#label-smooth" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="roi-pool">
+<h3>roi_pool<a class="headerlink" href="#roi-pool" title="永久链接至标题">¶</a></h3>
+</div>
+</div>
+<div class="section" id="ops">
+<h2>ops<a class="headerlink" href="#ops" title="永久链接至标题">¶</a></h2>
+<div class="section" id="mean">
+<h3>mean<a class="headerlink" href="#mean" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="mul">
+<h3>mul<a class="headerlink" href="#mul" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="reshape">
+<h3>reshape<a class="headerlink" href="#reshape" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="pad">
+<h3>pad<a class="headerlink" href="#pad" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="scale">
+<h3>scale<a class="headerlink" href="#scale" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="sigmoid-cross-entropy-with-logits">
+<h3>sigmoid_cross_entropy_with_logits<a class="headerlink" href="#sigmoid-cross-entropy-with-logits" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="elementwise-add">
+<h3>elementwise_add<a class="headerlink" href="#elementwise-add" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="elementwise-div">
+<h3>elementwise_div<a class="headerlink" href="#elementwise-div" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="elementwise-sub">
+<h3>elementwise_sub<a class="headerlink" href="#elementwise-sub" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="elementwise-mul">
+<h3>elementwise_mul<a class="headerlink" href="#elementwise-mul" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="elementwise-max">
+<h3>elementwise_max<a class="headerlink" href="#elementwise-max" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="elementwise-min">
+<h3>elementwise_min<a class="headerlink" href="#elementwise-min" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="elementwise-pow">
+<h3>elementwise_pow<a class="headerlink" href="#elementwise-pow" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="clip">
+<h3>clip<a class="headerlink" href="#clip" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="clip-by-norm">
+<h3>clip_by_norm<a class="headerlink" href="#clip-by-norm" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="sequence-softmax">
+<h3>sequence_softmax<a class="headerlink" href="#sequence-softmax" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="sigmoid">
+<h3>sigmoid<a class="headerlink" href="#sigmoid" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="logsigmoid">
+<h3>logsigmoid<a class="headerlink" href="#logsigmoid" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="exp">
+<h3>exp<a class="headerlink" href="#exp" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="relu">
+<h3>relu<a class="headerlink" href="#relu" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="tanh">
+<h3>tanh<a class="headerlink" href="#tanh" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="tanh-shrink">
+<h3>tanh_shrink<a class="headerlink" href="#tanh-shrink" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="softshrink">
+<h3>softshrink<a class="headerlink" href="#softshrink" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="sqrt">
+<h3>sqrt<a class="headerlink" href="#sqrt" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="abs">
+<h3>abs<a class="headerlink" href="#abs" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="ceil">
+<h3>ceil<a class="headerlink" href="#ceil" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="floor">
+<h3>floor<a class="headerlink" href="#floor" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="round">
+<h3>round<a class="headerlink" href="#round" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="reciprocal">
+<h3>reciprocal<a class="headerlink" href="#reciprocal" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="log">
+<h3>log<a class="headerlink" href="#log" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="square">
+<h3>square<a class="headerlink" href="#square" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="softplus">
+<h3>softplus<a class="headerlink" href="#softplus" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="softsign">
+<h3>softsign<a class="headerlink" href="#softsign" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="brelu">
+<h3>brelu<a class="headerlink" href="#brelu" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="leaky-relu">
+<h3>leaky_relu<a class="headerlink" href="#leaky-relu" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="soft-relu">
+<h3>soft_relu<a class="headerlink" href="#soft-relu" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="elu">
+<h3>elu<a class="headerlink" href="#elu" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="relu6">
+<h3>relu6<a class="headerlink" href="#relu6" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="pow">
+<h3>pow<a class="headerlink" href="#pow" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="stanh">
+<h3>stanh<a class="headerlink" href="#stanh" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="hard-shrink">
+<h3>hard_shrink<a class="headerlink" href="#hard-shrink" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="thresholded-relu">
+<h3>thresholded_relu<a class="headerlink" href="#thresholded-relu" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="hard-sigmoid">
+<h3>hard_sigmoid<a class="headerlink" href="#hard-sigmoid" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="swish">
+<h3>swish<a class="headerlink" href="#swish" title="永久链接至标题">¶</a></h3>
+</div>
+</div>
+<div class="section" id="tensor">
+<h2>tensor<a class="headerlink" href="#tensor" title="永久链接至标题">¶</a></h2>
+<div class="section" id="create-tensor">
+<h3>create_tensor<a class="headerlink" href="#create-tensor" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="create-parameter">
+<h3>create_parameter<a class="headerlink" href="#create-parameter" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="create-global-var">
+<h3>create_global_var<a class="headerlink" href="#create-global-var" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="cast">
+<h3>cast<a class="headerlink" href="#cast" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="concat">
+<h3>concat<a class="headerlink" href="#concat" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="sums">
+<h3>sums<a class="headerlink" href="#sums" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="assign">
+<h3>assign<a class="headerlink" href="#assign" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="fill-constant-batch-size-like">
+<h3>fill_constant_batch_size_like<a class="headerlink" href="#fill-constant-batch-size-like" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="fill-constant">
+<h3>fill_constant<a class="headerlink" href="#fill-constant" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="ones">
+<h3>ones<a class="headerlink" href="#ones" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="zeros">
+<h3>zeros<a class="headerlink" href="#zeros" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="id1">
+<h3>topk<a class="headerlink" href="#id1" title="永久链接至标题">¶</a></h3>
+</div>
+</div>
+</div>
+</div>
+<div class="articleComments">
+</div>
+</div>

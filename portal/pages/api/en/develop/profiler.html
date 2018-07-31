@@ -1,0 +1,87 @@
+<div class="document" itemscope="itemscope" itemtype="http://schema.org/Article" role="main">
+<div itemprop="articleBody">
+<div class="section" id="profiler">
+<h1>profiler<a class="headerlink" href="#profiler" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="cuda-profiler">
+<h2>cuda_profiler<a class="headerlink" href="#cuda-profiler" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt>
+<code class="descclassname">paddle.fluid.profiler.</code><code class="descname">cuda_profiler</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwds</em><span class="sig-paren">)</span></dt>
+<dd><p>The CUDA profiler.
+This fuctions is used to profile CUDA program by CUDA runtime application
+programming interface. The profiling result will be written into
+<cite>output_file</cite> with Key-Value pair format or Comma separated values format.
+The user can set the output mode by <cite>output_mode</cite> argument and set the
+counters/options for profiling by <cite>config</cite> argument. The default config
+is [‘gpustarttimestamp’, ‘gpustarttimestamp’, ‘gridsize3d’,
+‘threadblocksize’, ‘streamid’, ‘enableonstart 0’, ‘conckerneltrace’].</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name"/>
+<col class="field-body"/>
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>output_file</strong> (<em>string</em>) – The output file name, the result will be
+written into this file.</li>
+<li><strong>output_mode</strong> (<em>string</em>) – The output mode has Key-Value pair format and
+Comma separated values format. It should be ‘kvp’ or ‘csv’.</li>
+<li><strong>config</strong> (<em>list of string</em>) – The profiler options and counters can refer
+to “Compute Command Line Profiler User Guide”.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+</div>
+<div class="section" id="reset-profiler">
+<h2>reset_profiler<a class="headerlink" href="#reset-profiler" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt>
+<code class="descclassname">paddle.fluid.profiler.</code><code class="descname">reset_profiler</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd><p>The profiler clear interface.
+reset_profiler will clear the previous time record.</p>
+</dd></dl>
+</div>
+<div class="section" id="id1">
+<h2>profiler<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt>
+<code class="descclassname">paddle.fluid.profiler.</code><code class="descname">profiler</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwds</em><span class="sig-paren">)</span></dt>
+<dd><p>The profiler interface.
+Different from cuda_profiler, this profiler can be used to profile both CPU
+and GPU program. By defalut, it records the CPU and GPU operator kernels,
+if you want to profile other program, you can refer the profiling tutorial
+to add more records.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name"/>
+<col class="field-body"/>
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>state</strong> (<em>string</em>) – The profiling state, which should be ‘CPU’ or ‘GPU’,
+telling the profiler to use CPU timer or GPU timer for profiling.
+Although users may have already specified the execution place
+(CPUPlace/CUDAPlace) in the begining, for flexibility the profiler
+would not inherit this place.</li>
+<li><strong>sorted_key</strong> (<em>string</em>) – If None, the profiling results will be printed
+in the order of first end time of events. Otherwise, the profiling
+results will be sorted by the this flag. This flag should be one
+of ‘calls’, ‘total’, ‘max’, ‘min’ or ‘ave’.
+The <cite>calls</cite> means sorting by the number of calls.
+The <cite>total</cite> means sorting by the total execution time.
+The <cite>max</cite> means sorting by the maximum execution time.
+The <cite>min</cite> means sorting by the minimum execution time.
+The <cite>ave</cite> means sorting by the average execution time.</li>
+<li><strong>profile_path</strong> (<em>string</em>) – If state == ‘All’, it will write a profile
+proto output file.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+</div>
+</div>
+</div>
+<div class="articleComments">
+</div>
+</div>

@@ -1,0 +1,44 @@
+<div class="document" itemscope="itemscope" itemtype="http://schema.org/Article" role="main">
+<div itemprop="articleBody">
+<div class="section" id="design-doc-the-c-class-parameters">
+<span id="design-doc-the-c-class-parameters"></span><h1>Design Doc: The C++ Class <code class="docutils literal"><span class="pre">Parameters</span></code><a class="headerlink" href="#design-doc-the-c-class-parameters" title="永久链接至标题">¶</a></h1>
+<p><code class="docutils literal"><span class="pre">Parameters</span></code> is a concept we designed in PaddlePaddle V2 API. <code class="docutils literal"><span class="pre">Parameters</span></code> is a container of parameters, which makes PaddlePaddle capable of  sharing parameter between topologies. We described usages of <code class="docutils literal"><span class="pre">Parameter</span></code> in <a class="reference external" href="design/others/api.md">api.md</a>.</p>
+<p>We used Python to implement Parameters when designing V2 API before. There are several defects for the current implementation:</p>
+<ul class="simple">
+<li>We just use <code class="docutils literal"><span class="pre">memcpy</span></code> to share Parameters between topologies, but this is very inefficient.</li>
+<li>We did not support sharing Parameters while training. We just trigger <code class="docutils literal"><span class="pre">memcpy</span></code> when start training.</li>
+</ul>
+<p>It is necessary that we implement Parameters in CPP side. However, it could result a code refactoring for PaddlePaddle, because PaddlePaddle was designed for training only one topology before, i.e., each GradientMachine contains its Parameter as a data member. In current PaddlePaddle implementation, there are three concepts associated with <code class="docutils literal"><span class="pre">Parameters</span></code>:</p>
+<ol class="simple">
+<li><code class="docutils literal"><span class="pre">paddle::Parameter</span></code>. A <code class="docutils literal"><span class="pre">Parameters</span></code> is a container for <code class="docutils literal"><span class="pre">paddle::Parameter</span></code>.
+It is evident that we should use <code class="docutils literal"><span class="pre">paddle::Parameter</span></code> when developing <code class="docutils literal"><span class="pre">Parameters</span></code>.
+However, the <code class="docutils literal"><span class="pre">Parameter</span></code> class contains many functions and does not have a clear interface.
+It contains <code class="docutils literal"><span class="pre">create/store</span> <span class="pre">Parameter</span></code>, <code class="docutils literal"><span class="pre">serialize/deserialize</span></code>, <code class="docutils literal"><span class="pre">optimize(i.e</span> <span class="pre">SGD)</span></code>, <code class="docutils literal"><span class="pre">randomize/zero</span></code>.
+When we developing <code class="docutils literal"><span class="pre">Parameters</span></code>, we only use <code class="docutils literal"><span class="pre">create/store</span> <span class="pre">Parameter</span></code> functionality.
+We should extract functionalities of Parameter into many classes to clean PaddlePaddle CPP implementation.</li>
+<li><code class="docutils literal"><span class="pre">paddle::GradientMachine</span></code> and its sub-classes, e.g., <code class="docutils literal"><span class="pre">paddle::MultiGradientMachine</span></code>, <code class="docutils literal"><span class="pre">paddle::NeuralNetwork</span></code>.
+We should pass <code class="docutils literal"><span class="pre">Parameters</span></code> to <code class="docutils literal"><span class="pre">paddle::GradientMachine</span></code> when <code class="docutils literal"><span class="pre">forward/backward</span></code> to avoid <code class="docutils literal"><span class="pre">memcpy</span></code> between topologies.
+Also, we should handle multi-GPU/CPU training, because <code class="docutils literal"><span class="pre">forward</span></code> and <code class="docutils literal"><span class="pre">backward</span></code> would perform on multi-GPUs and multi-CPUs.
+<code class="docutils literal"><span class="pre">Parameters</span></code> should dispatch the parameter value to each device, and gather the parameter gradient from each device.</li>
+<li><code class="docutils literal"><span class="pre">paddle::ParameterUpdater</span></code>. The ParameterUpdater is used to update parameters in Paddle.
+So <code class="docutils literal"><span class="pre">Parameters</span></code> should be used by <code class="docutils literal"><span class="pre">paddle::ParameterUpdater</span></code>, and <code class="docutils literal"><span class="pre">paddle::ParameterUpdater</span></code> should optimize <code class="docutils literal"><span class="pre">Parameters</span></code> (by SGD).</li>
+</ol>
+<p>The step by step approach for implementation Parameters in PaddlePaddle C++ core is listed below. Each step should be a PR and could be merged into PaddlePaddle one by one.</p>
+<ol class="simple">
+<li>Clean <code class="docutils literal"><span class="pre">paddle::Parameter</span></code> interface. Extract the functionalities of <code class="docutils literal"><span class="pre">paddle::Parameter</span></code> to prepare for the implementation of Parameters.</li>
+<li>Implementation a <code class="docutils literal"><span class="pre">Parameters</span></code> class. It just stores the <code class="docutils literal"><span class="pre">paddle::Parameter</span></code> inside. Make <code class="docutils literal"><span class="pre">GradientMachine</span></code> uses <code class="docutils literal"><span class="pre">Parameters</span></code> as a class member.</li>
+<li>Make <code class="docutils literal"><span class="pre">Parameters</span></code> support Multi-CPU and Multi-GPU training to prepare for sharing <code class="docutils literal"><span class="pre">Parameter</span></code> between topologies.
+Because we need share <code class="docutils literal"><span class="pre">Parameters</span></code> between topologies, it is <code class="docutils literal"><span class="pre">Parameters</span></code>‘s response to exchange Parameters between GPUs.
+<code class="docutils literal"><span class="pre">GradientMachine</span></code> should not handle how to exchange Parameters because <code class="docutils literal"><span class="pre">GradientMachine</span></code> only used to train one topology and we need to support train many topologies in Paddle, i.e., there could be many GradientMachines use one <code class="docutils literal"><span class="pre">Parameters</span></code>.<ul>
+<li>We should use a global function to exchange Parameters between GPUs, not a member function in <code class="docutils literal"><span class="pre">Parameters</span></code>. The <code class="docutils literal"><span class="pre">MultiGradientMachine</span></code> invoke this function, which uses <code class="docutils literal"><span class="pre">Parameters</span></code> as this function inputs.</li>
+<li>The MultiGradientMachine contains many functionalities. Extracting the Parameters exchanging logic could make MultiGradientMachine clearer and simpler.</li>
+</ul>
+</li>
+<li>Make <code class="docutils literal"><span class="pre">Parameters</span></code> as an argument for <code class="docutils literal"><span class="pre">forward/backward</span></code> function, not a data member for <code class="docutils literal"><span class="pre">GradientMachine</span></code>. For example, <code class="docutils literal"><span class="pre">forward</span></code> could be <code class="docutils literal"><span class="pre">forward(const</span> <span class="pre">Parameters&amp;</span> <span class="pre">params,</span> <span class="pre">...)</span></code> and <code class="docutils literal"><span class="pre">backward</span></code> could be <code class="docutils literal"><span class="pre">backward(Parameters*</span> <span class="pre">params,</span> <span class="pre">...)</span></code>. After this step, Paddle could share <code class="docutils literal"><span class="pre">Parameters</span></code> between topologies.</li>
+<li><code class="docutils literal"><span class="pre">ParameterUpdater</span></code> is invoked by <code class="docutils literal"><span class="pre">GradientMachine</span></code> and <code class="docutils literal"><span class="pre">Trainer</span></code>, but it updates <code class="docutils literal"><span class="pre">Parameters</span></code>. In the end of this code refactoring, we could change <code class="docutils literal"><span class="pre">ParameterUpdater</span></code> directly uses <code class="docutils literal"><span class="pre">Parameters</span></code> to make <code class="docutils literal"><span class="pre">ParameterUpdater</span></code>‘s implementation clear.</li>
+</ol>
+</div>
+</div>
+<div class="articleComments">
+</div>
+</div>

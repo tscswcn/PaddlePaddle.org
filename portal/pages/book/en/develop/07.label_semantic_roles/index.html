@@ -1,0 +1,506 @@
+{% verbatim %}
+<h1>Semantic Role Labeling</h1>
+<p>The source code of this chapter locates at <a href="https://github.com/PaddlePaddle/book/tree/develop/07.label_semantic_roles">book/label_semantic_roles</a>.</p>
+<p>For instructions on getting started with PaddlePaddle, see <a href="https://github.com/PaddlePaddle/book/blob/develop/README.md#running-the-book">PaddlePaddle installation guide</a>.</p>
+<h2>Background</h2>
+<p>Natural language analysis techniques consist of lexical, syntactic, and semantic analysis. <strong>Semantic Role Labeling (SRL)</strong> is an instance of <strong>Shallow Semantic Analysis</strong>.</p>
+<p>In a sentence, a <strong>predicate</strong> states a property or a characterization of a <em>subject</em>, such as what it does and what it is like. The predicate represents the core of an event, whereas the words accompanying the predicate are <strong>arguments</strong>. A <strong>semantic role</strong> refers to the abstract role an argument of a predicate take on in the event, including <em>agent</em>, <em>patient</em>, <em>theme</em>, <em>experiencer</em>, <em>beneficiary</em>, <em>instrument</em>, <em>location</em>, <em>goal</em>, and <em>source</em>.</p>
+<p>In the following example of a Chinese sentence, "to encounter" is the predicate (<em>pred</em>); "Ming" is the <em>agent</em>; "Hong" is the <em>patient</em>; "yesterday" and "evening" are the <em>time</em>; finally, "the park" is the <em>location</em>.</p>
+<p><span class="markdown-equation" id="equation-0">$$\mbox{[小明 Ming]}_{\mbox{Agent}}\mbox{[昨天 yesterday]}_{\mbox{Time}}\mbox{[晚上 evening]}_\mbox{Time}\mbox{在[公园 a park]}_{\mbox{Location}}\mbox{[遇到 to encounter]}_{\mbox{Predicate}}\mbox{了[小红 Hong]}_{\mbox{Patient}}\mbox{。}$$</span></p>
+<p>Instead of analyzing the semantic information, <strong>Semantic Role Labeling</strong> (<strong>SRL</strong>) identifies the relationship between the predicate and the other constituents surrounding it. The predicate-argument structures are labeled as specific semantic roles. A wide range of natural language understanding tasks, including <em>information extraction</em>, <em>discourse analysis</em>, and <em>deepQA</em>. Research usually assumes a predicate of a sentence to be specified; the only task is to identify its arguments and their semantic roles.</p>
+<p>Conventional SRL systems mostly build on top of syntactic analysis, usually consisting of five steps:</p>
+<ol>
+<li>Construct a syntax tree, as shown in Fig. 1</li>
+<li>Identity the candidate arguments of the given predicate on the tree.</li>
+<li>Prune the most unlikely candidate arguments.</li>
+<li>Identify the real arguments, often by a binary classifier.</li>
+<li>Multi-classify on results from step 4 to label the semantic roles. Steps 2 and 3 usually introduce hand-designed features based on syntactic analysis (step 1).</li>
+</ol>
+<div align="center">
+<img align="center" src="image/dependency_parsing_en.png" width="80%"/><br/>
+Fig 1. Syntax tree
+</div>
+<p>However, a complete syntactic analysis requires identifying the relationship among all constituents. Thus, the accuracy of SRL is sensitive to the preciseness of the syntactic analysis, making SRL challenging. To reduce its complexity and obtain some information on the syntactic structures, we often use <em>shallow syntactic analysis</em> a.k.a. partial parsing or chunking. Unlike complete syntactic analysis, which requires the construction of the complete parsing tree, <em>Shallow Syntactic Analysis</em> only requires identifying some independent constituents with relatively simple structures, such as verb phrases (chunk). To avoid difficulties in constructing a syntax tree with high accuracy, some work[<a href="#reference">1</a>] proposed semantic chunking-based SRL methods, which reduces SRL into a sequence tagging problem. Sequence tagging tasks classify syntactic chunks using <strong>BIO representation</strong>. For syntactic chunks forming role A, its first chunk receives the B-A tag (Begin) and the remaining ones receive the tag I-A (Inside); in the end, the chunks left out will receive the tag O.</p>
+<p>The BIO representation of above example is shown in Fig.1.</p>
+<div align="center">
+<img align="center" src="image/bio_example_en.png" width="90%"/><br/>
+Fig 2. BIO representation
+</div>
+<p>This example illustrates the simplicity of sequence tagging, since</p>
+<ol>
+<li>It only relies on shallow syntactic analysis, reduces the precision requirement of syntactic analysis;</li>
+<li>Pruning the candidate arguments is no longer necessary;</li>
+<li>Arguments are identified and tagged at the same time. Simplifying the workflow reduces the risk of accumulating errors; oftentimes, methods that unify multiple steps boost performance.</li>
+</ol>
+<p>In this tutorial, our SRL system is built as an end-to-end system via a neural network. The system takes only text sequences as input, without using any syntactic parsing results or complex hand-designed features. The public dataset <a href="http://www.cs.upc.edu/~srlconll/">CoNLL-2004 and CoNLL-2005 Shared Tasks</a> is used for the following task: given a sentence with predicates marked, identify the corresponding arguments and their semantic roles through sequence tagging.</p>
+<h2>Model</h2>
+<p><strong>Recurrent Neural Networks</strong> (<em>RNN</em>) are important tools for sequence modeling and have been successfully used in some natural language processing tasks. Unlike feed-forward neural networks, RNNs can model the dependencies between elements of sequences. As a variant of RNNs', LSTMs aim modeling long-term dependency in long sequences. We have introduced this in <a href="https://github.com/PaddlePaddle/book/tree/develop/05.understand_sentiment">understand_sentiment</a>. In this chapter, we continue to use LSTMs to solve SRL problems.</p>
+<h3>Stacked Recurrent Neural Network</h3>
+<p><em>Deep Neural Networks</em> can extract hierarchical representations. The higher layers can form relatively abstract/complex representations, based on primitive features discovered through the lower layers. Unfolding LSTMs through time results in a deep feed-forward neural network. This is because any computational path between the input at time <span class="markdown-equation" id="equation-1">$k &lt; t$</span> to the output at time <span class="markdown-equation" id="equation-2">$t$</span> crosses several nonlinear layers. On the other hand, due to parameter sharing over time, LSTMs are also <em>shallow</em>; that is, the computation carried out at each time-step is just a linear transformation. Deep LSTM networks are typically constructed by stacking multiple LSTM layers on top of each other and taking the output from lower LSTM layer at time <span class="markdown-equation" id="equation-2">$t$</span> as the input of upper LSTM layer at time <span class="markdown-equation" id="equation-2">$t$</span>. Deep, hierarchical neural networks can be efficient at representing some functions and modeling varying-length dependencies[<a href="#reference">2</a>].</p>
+<p>However, in a deep LSTM network, any gradient propagated back in depth needs to traverse a large number of nonlinear steps. As a result, while LSTMs of 4 layers can be trained properly, those with 4-8 have much worse performance. Conventional LSTMs prevent back-propagated errors from vanishing or exploding by introducing shortcut connections to skip the intermediate nonlinear layers. Therefore, deep LSTMs can consider shortcut connections in depth as well.</p>
+<p>A single LSTM cell has three operations:</p>
+<ol>
+<li>input-to-hidden: map input <span class="markdown-equation" id="equation-5">$x$</span> to the input of the forget gates, input gates, memory cells and output gates by linear transformation (i.e., matrix mapping);</li>
+<li>hidden-to-hidden: calculate forget gates, input gates, output gates and update memory cell, this is the main part of LSTMs;</li>
+<li>hidden-to-output: this part typically involves an activation operation on hidden states.</li>
+</ol>
+<p>Based on the stacked LSTMs, we add shortcut connections: take the input-to-hidden from the previous layer as a new input and learn another linear transformation.</p>
+<p>Fig.3 illustrates the final stacked recurrent neural networks.</p>
+<p align="center">
+<img align="center" src="./image/stacked_lstm_en.png" width="40%"/><br/>
+Fig 3. Stacked Recurrent Neural Networks
+</p>
+<h3>Bidirectional Recurrent Neural Network</h3>
+<p>While LSTMs can summarize the history, they can not see the future. Because most NLP (natural language processing) tasks provide the entirety of sentences, sequential learning can benefit from having the future encoded as well as the history.</p>
+<p>To address this, we can design a bidirectional recurrent neural network by making a minor modification. A higher LSTM layer can process the sequence in reversed direction with regards to its immediate lower LSTM layer, i.e., deep LSTM layers take turns to train on input sequences from left-to-right and right-to-left. Therefore, LSTM layers at time-step <span class="markdown-equation" id="equation-2">$t$</span> can see both histories and the future, starting from the second layer. Fig. 4 illustrates the bidirectional recurrent neural networks.</p>
+<p align="center">
+<img align="center" src="./image/bidirectional_stacked_lstm_en.png" width="60%"/><br/>
+Fig 4. Bidirectional LSTMs
+</p>
+<p>Note that, this bidirectional RNNs is different from the one proposed by Bengio et al. in machine translation tasks [<a href="#reference">3</a>, <a href="#reference">4</a>]. We will introduce another bidirectional RNNs in the following chapter <a href="https://github.com/PaddlePaddle/book/blob/develop/08.machine_translation/README.md">machine translation</a></p>
+<h3>Conditional Random Field (CRF)</h3>
+<p>Typically, a neural network's lower layers learn representations while its very top layer accomplishes the final task. These principles can guide our problem-solving approaches. In SRL tasks, a <strong>Conditional Random Field</strong> (<em>CRF</em>) is built on top of the network in order to perform the final prediction to tag sequences. It takes representations provided by the last LSTM layer as input.</p>
+<p>The CRF is an undirected probabilistic graph with nodes denoting random variables and edges denoting dependencies between these variables. In essence, CRFs learn the conditional probability <span class="markdown-equation" id="equation-7">$P(Y|X)$</span>, where <span class="markdown-equation" id="equation-8">$X = (x_1, x_2, ... , x_n)$</span> are sequences of input and <span class="markdown-equation" id="equation-9">$Y = (y_1, y_2, ... , y_n)$</span> are label sequences; to decode, simply search through <span class="markdown-equation" id="equation-10">$Y$</span> for a sequence that maximizes the conditional probability <span class="markdown-equation" id="equation-7">$P(Y|X)$</span>, i.e., <span class="markdown-equation" id="equation-12">$Y^* = \mbox{arg max}_{Y} P(Y | X)$</span>。</p>
+<p>Sequence tagging tasks do not assume a lot of conditional independence, because they only concern about the input and the output being linear sequences. Thus, the graph model of sequence tagging tasks is usually a simple chain or line, which results in a <strong>Linear-Chain Conditional Random Field</strong>, shown in Fig.5.</p>
+<p align="center">
+<img align="center" src="./image/linear_chain_crf.png" width="35%"/><br/>
+Fig 5. Linear Chain Conditional Random Field used in SRL tasks
+</p>
+<p>By the fundamental theorem of random fields [<a href="#reference">5</a>], the joint distribution over the label sequence <span class="markdown-equation" id="equation-10">$Y$</span> given <span class="markdown-equation" id="equation-14">$X$</span> has the form:</p>
+<p><span class="markdown-equation" id="equation-15">$$p(Y | X) = \frac{1}{Z(X)} \text{exp}\left(\sum_{i=1}^{n}\left(\sum_{j}\lambda_{j}t_{j} (y_{i - 1}, y_{i}, X, i) + \sum_{k} \mu_k s_k (y_i, X, i)\right)\right)$$</span></p>
+<p>where, <span class="markdown-equation" id="equation-16">$Z(X)$</span> is normalization constant, <span class="markdown-equation" id="equation-17">${t_j}$</span> represents the feature functions defined on edges called the <em>transition feature</em>, which denotes the transition probabilities from <span class="markdown-equation" id="equation-18">$y_{i-1}$</span> to <span class="markdown-equation" id="equation-19">$y_i$</span> given input sequence <span class="markdown-equation" id="equation-14">$X$</span>. <span class="markdown-equation" id="equation-21">${s_k}$</span> represents the feature function defined on nodes, called the state feature, denoting the probability of <span class="markdown-equation" id="equation-19">$y_i$</span> given input sequence <span class="markdown-equation" id="equation-14">$X$</span>. In addition, <span class="markdown-equation" id="equation-24">$\lambda_j$</span> and <span class="markdown-equation" id="equation-25">$\mu_k$</span> are weights corresponding to <span class="markdown-equation" id="equation-26">$t_j$</span> and <span class="markdown-equation" id="equation-27">$s_k$</span>. Alternatively, <span class="markdown-equation" id="equation-2">$t$</span> and <span class="markdown-equation" id="equation-29">$s$</span> can be written in the same form that depends on <span class="markdown-equation" id="equation-30">$y_{i - 1}$</span>, <span class="markdown-equation" id="equation-19">$y_i$</span>, <span class="markdown-equation" id="equation-14">$X$</span>, and <span class="markdown-equation" id="equation-33">$i$</span>. Taking its summation over all nodes <span class="markdown-equation" id="equation-33">$i$</span>, we have: <span class="markdown-equation" id="equation-35">$f_{k}(Y, X) = \sum_{i=1}^{n}f_k({y_{i - 1}, y_i, X, i})$</span>, which defines the <em>feature function</em> <span class="markdown-equation" id="equation-36">$f$</span>. Thus, <span class="markdown-equation" id="equation-7">$P(Y|X)$</span> can be written as:</p>
+<p><span class="markdown-equation" id="equation-38">$$p(Y|X, W) = \frac{1}{Z(X)}\text{exp}\sum_{k}\omega_{k}f_{k}(Y, X)$$</span></p>
+<p>where <span class="markdown-equation" id="equation-39">$\omega$</span> are the weights to the feature function that the CRF learns. While training, given input sequences and label sequences <span class="markdown-equation" id="equation-40">$D = \left[(X_1,  Y_1), (X_2 , Y_2) , ... , (X_N, Y_N)\right]$</span>, by maximum likelihood estimation (<strong>MLE</strong>), we construct the following objective function:</p>
+<p><span class="markdown-equation" id="equation-41">$$\DeclareMathOperator*{\argmax}{arg\,max} L(\lambda, D) = - \text{log}\left(\prod_{m=1}^{N}p(Y_m|X_m, W)\right) + C \frac{1}{2}\lVert W\rVert^{2}$$</span></p>
+<p>This objective function can be solved via back-propagation in an end-to-end manner. While decoding, given input sequences <span class="markdown-equation" id="equation-14">$X$</span>, search for sequence <span class="markdown-equation" id="equation-43">$\bar{Y}$</span> to maximize the conditional probability <span class="markdown-equation" id="equation-44">$\bar{P}(Y|X)$</span> via decoding methods (such as <em>Viterbi</em>, or <a href="https://github.com/PaddlePaddle/book/blob/develop/08.machine_translation/README.md#beam-search-algorithm">Beam Search Algorithm</a>).</p>
+<h3>Deep Bidirectional LSTM (DB-LSTM) SRL model</h3>
+<p>Given predicates and a sentence, SRL tasks aim to identify arguments of the given predicate and their semantic roles. If a sequence has <span class="markdown-equation" id="equation-45">$n$</span> predicates, we will process this sequence <span class="markdown-equation" id="equation-45">$n$</span> times. Here is the breakdown of a straight-forward model:</p>
+<ol>
+<li>Construct inputs;</li>
+<li>input 1: predicate, input 2: sentence</li>
+<li>expand input 1 into a sequence of the same length with input 2's sentence, using one-hot representation;</li>
+<li>Convert the one-hot sequences from step 1 to vector sequences via a word embedding's lookup table;</li>
+<li>Learn the representation of input sequences by taking vector sequences from step 2 as inputs;</li>
+<li>Take the representation from step 3 as input, label sequence as a supervisory signal, and realize sequence tagging tasks.</li>
+</ol>
+<p>Here, we propose some improvements by introducing two simple but effective features:</p>
+<ul>
+<li>
+<p>predicate context (<strong>ctx-p</strong>): A single predicate word may not describe all the predicate information, especially when the same words appear multiple times in a sentence. With the expanded context, the ambiguity can be largely eliminated. Thus, we extract <span class="markdown-equation" id="equation-45">$n$</span> words before and after predicate to construct a window chunk.</p>
+</li>
+<li>
+<p>region mark (<span class="markdown-equation" id="equation-48">$m_r$</span>): The binary marker on a word, <span class="markdown-equation" id="equation-48">$m_r$</span>, takes the value of <span class="markdown-equation" id="equation-50">$1$</span> when the word is in the predicate context region, and <span class="markdown-equation" id="equation-51">$0$</span> if not.</p>
+</li>
+</ul>
+<p>After these modifications, the model is as follows, as illustrated in Figure 6:</p>
+<ol>
+<li>Construct inputs</li>
+<li>Input 1: word sequence. Input 2: predicate. Input 3: predicate context, extract <span class="markdown-equation" id="equation-45">$n$</span> words before and after predicate. Input 4: region mark sequence, where an entry is 1 if the word is located in the predicate context region, 0 otherwise.</li>
+<li>expand input 2~3 into sequences with the same length with input 1</li>
+<li>Convert input 1~4 to vector sequences via word embedding lookup tables; While input 1 and 3 shares the same lookup table, input 2 and 4 have separate lookup tables.</li>
+<li>Take the four vector sequences from step 2 as inputs to bidirectional LSTMs; Train the LSTMs to update representations.</li>
+<li>Take the representation from step 3 as input to CRF, label sequence as a supervisory signal, and complete sequence tagging tasks.</li>
+</ol>
+<div align="center">
+<img align="center" src="image/db_lstm_network_en.png" width="60%"/><br/>
+Fig 6. DB-LSTM for SRL tasks
+</div>
+<h2>Data Preparation</h2>
+<p>In the tutorial, we use <a href="http://www.cs.upc.edu/~srlconll/">CoNLL 2005</a> SRL task open dataset as an example. Note that the training set and development set of the CoNLL 2005 SRL task are not free to download after the competition. Currently, only the test set can be obtained, including 23 sections of the Wall Street Journal and three sections of the Brown corpus. In this tutorial, we use the WSJ corpus as the training dataset to explain the model. However, since the training set is small, for a usable neural network SRL system, please consider paying for the full corpus.</p>
+<p>The original data includes a variety of information such as POS tagging, naming entity recognition, syntax tree, etc. In this tutorial, we only use the data under <code>test.wsj/words/</code> (text sequence) and <code>test.wsj/props/</code> (label results). The data directory used in this tutorial is as follows:</p>
+<div class="highlight"><pre><span></span>conll05st-release/
+└── test.wsj
+    ├── props  # label results
+    └── words  # text sequence
+</pre></div>
+<p>The annotation information is derived from the results of Penn TreeBank[<a href="#references">7</a>] and PropBank [<a href="#references">8</a>]. The labeling of the PropBank is different from the labeling methods mentioned before, but shares with it the same underlying principle. For descriptions of the labeling, please refer to the paper [<a href="#references">9</a>].</p>
+<p>The raw data needs to be preprocessed into formats that PaddlePaddle can handle. The preprocessing consists of the following steps:</p>
+<ol>
+<li>Merge the text sequence and the tag sequence into the same record;</li>
+<li>If a sentence contains <span class="markdown-equation" id="equation-45">$n$</span> predicates, the sentence will be processed <span class="markdown-equation" id="equation-45">$n$</span> times into <span class="markdown-equation" id="equation-45">$n$</span> separate training samples, each sample with a different predicate;</li>
+<li>Extract the predicate context and construct the predicate context region marker;</li>
+<li>Construct the markings in BIO format;</li>
+<li>Obtain the integer index corresponding to the word according to the dictionary.</li>
+</ol>
+<div class="highlight"><pre><span></span><span class="c1"># import paddle.v2.dataset.conll05 as conll05</span>
+<span class="c1"># conll05.corpus_reader does step 1 and 2 as mentioned above.</span>
+<span class="c1"># conll05.reader_creator does step 3 to 5.</span>
+<span class="c1"># conll05.test gets preprocessed training instances.</span>
+</pre></div>
+<p>After preprocessing, a training sample contains nine features, namely: word sequence, predicate, predicate context (5 columns), region mark sequence, label sequence. The following table is an example of a training sample.</p>
+<table>
+<thead>
+<tr>
+<th>word sequence</th>
+<th>predicate</th>
+<th>predicate context（5 columns）</th>
+<th>region mark sequence</th>
+<th>label sequence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A</td>
+<td>set</td>
+<td>n't been set . ×</td>
+<td>0</td>
+<td>B-A1</td>
+</tr>
+<tr>
+<td>record</td>
+<td>set</td>
+<td>n't been set . ×</td>
+<td>0</td>
+<td>I-A1</td>
+</tr>
+<tr>
+<td>date</td>
+<td>set</td>
+<td>n't been set . ×</td>
+<td>0</td>
+<td>I-A1</td>
+</tr>
+<tr>
+<td>has</td>
+<td>set</td>
+<td>n't been set . ×</td>
+<td>0</td>
+<td>O</td>
+</tr>
+<tr>
+<td>n't</td>
+<td>set</td>
+<td>n't been set . ×</td>
+<td>1</td>
+<td>B-AM-NEG</td>
+</tr>
+<tr>
+<td>been</td>
+<td>set</td>
+<td>n't been set . ×</td>
+<td>1</td>
+<td>O</td>
+</tr>
+<tr>
+<td>set</td>
+<td>set</td>
+<td>n't been set . ×</td>
+<td>1</td>
+<td>B-V</td>
+</tr>
+<tr>
+<td>.</td>
+<td>set</td>
+<td>n't been set . ×</td>
+<td>1</td>
+<td>O</td>
+</tr>
+</tbody>
+</table>
+<p>In addition to the data, we provide following resources:</p>
+<table>
+<thead>
+<tr>
+<th>filename</th>
+<th>explanation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>word_dict</td>
+<td>dictionary of input sentences, total 44068 words</td>
+</tr>
+<tr>
+<td>label_dict</td>
+<td>dictionary of labels, total 106 labels</td>
+</tr>
+<tr>
+<td>predicate_dict</td>
+<td>predicate dictionary, total 3162 predicates</td>
+</tr>
+<tr>
+<td>emb</td>
+<td>a pre-trained word vector lookup table, 32-dimensional</td>
+</tr>
+</tbody>
+</table>
+<p>We trained a language model on the English Wikipedia to get a word vector lookup table used to initialize the SRL model. While training the SRL model, the word vector lookup table is no longer updated. To learn more about the language model and the word vector lookup table, please refer to the tutorial <a href="https://github.com/PaddlePaddle/book/blob/develop/04.word2vec/README.md">word vector</a>. There are 995,000,000 tokens in the training corpus, and the dictionary size is 4900,000 words. In the CoNLL 2005 training corpus, 5% of the words are not in the 4900,000 words, and we see them all as unknown words, represented by <code>&lt;unk&gt;</code>.</p>
+<p>Here we fetch the dictionary, and print its size:</p>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">paddle.v2</span> <span class="kn">as</span> <span class="nn">paddle</span>
+<span class="kn">import</span> <span class="nn">paddle.v2.dataset.conll05</span> <span class="kn">as</span> <span class="nn">conll05</span>
+<span class="kn">import</span> <span class="nn">paddle.v2.evaluator</span> <span class="kn">as</span> <span class="nn">evaluator</span>
+
+<span class="n">paddle</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="n">use_gpu</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">trainer_count</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">word_dict</span><span class="p">,</span> <span class="n">verb_dict</span><span class="p">,</span> <span class="n">label_dict</span> <span class="o">=</span> <span class="n">conll05</span><span class="o">.</span><span class="n">get_dict</span><span class="p">()</span>
+<span class="n">word_dict_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">word_dict</span><span class="p">)</span>
+<span class="n">label_dict_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">label_dict</span><span class="p">)</span>
+<span class="n">pred_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">verb_dict</span><span class="p">)</span>
+
+<span class="k">print</span> <span class="n">word_dict_len</span>
+<span class="k">print</span> <span class="n">label_dict_len</span>
+<span class="k">print</span> <span class="n">pred_len</span>
+</pre></div>
+<h2>Model Configuration</h2>
+<ul>
+<li>Define input data dimensions and model hyperparameters.</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="n">mark_dict_len</span> <span class="o">=</span> <span class="mi">2</span>    <span class="c1"># value range of region mark. Region mark is either 0 or 1, so range is 2</span>
+<span class="n">word_dim</span> <span class="o">=</span> <span class="mi">32</span>        <span class="c1"># word vector dimension</span>
+<span class="n">mark_dim</span> <span class="o">=</span> <span class="mi">5</span>         <span class="c1"># adjacent dimension</span>
+<span class="n">hidden_dim</span> <span class="o">=</span> <span class="mi">512</span>     <span class="c1"># the dimension of LSTM hidden layer vector is 128 (512/4)</span>
+<span class="n">depth</span> <span class="o">=</span> <span class="mi">8</span>            <span class="c1"># depth of stacked LSTM</span>
+
+<span class="c1"># There are 9 features per sample, so we will define 9 data layers.</span>
+<span class="c1"># They type for each layer is integer_value_sequence.</span>
+<span class="k">def</span> <span class="nf">d_type</span><span class="p">(</span><span class="n">value_range</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">paddle</span><span class="o">.</span><span class="n">data_type</span><span class="o">.</span><span class="n">integer_value_sequence</span><span class="p">(</span><span class="n">value_range</span><span class="p">)</span>
+
+<span class="c1"># word sequence</span>
+<span class="n">word</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">'word_data'</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">d_type</span><span class="p">(</span><span class="n">word_dict_len</span><span class="p">))</span>
+<span class="c1"># predicate</span>
+<span class="n">predicate</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">'verb_data'</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">d_type</span><span class="p">(</span><span class="n">pred_len</span><span class="p">))</span>
+
+<span class="c1"># 5 features for predicate context</span>
+<span class="n">ctx_n2</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">'ctx_n2_data'</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">d_type</span><span class="p">(</span><span class="n">word_dict_len</span><span class="p">))</span>
+<span class="n">ctx_n1</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">'ctx_n1_data'</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">d_type</span><span class="p">(</span><span class="n">word_dict_len</span><span class="p">))</span>
+<span class="n">ctx_0</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">'ctx_0_data'</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">d_type</span><span class="p">(</span><span class="n">word_dict_len</span><span class="p">))</span>
+<span class="n">ctx_p1</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">'ctx_p1_data'</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">d_type</span><span class="p">(</span><span class="n">word_dict_len</span><span class="p">))</span>
+<span class="n">ctx_p2</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">'ctx_p2_data'</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">d_type</span><span class="p">(</span><span class="n">word_dict_len</span><span class="p">))</span>
+
+<span class="c1"># region marker sequence</span>
+<span class="n">mark</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">'mark_data'</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">d_type</span><span class="p">(</span><span class="n">mark_dict_len</span><span class="p">))</span>
+
+<span class="c1"># label sequence</span>
+<span class="n">target</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">'target'</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">d_type</span><span class="p">(</span><span class="n">label_dict_len</span><span class="p">))</span>
+</pre></div>
+<p>Note that <code>hidden_dim = 512</code> means a LSTM hidden vector of 128 dimension (512/4). Please refer to PaddlePaddle's official documentation for detail: <a href="http://www.paddlepaddle.org/doc/ui/api/trainer_config_helpers/layers.html#lstmemory">lstmemory</a>。</p>
+<ul>
+<li>Transform the word sequence itself, the predicate, the predicate context, and the region mark sequence into embedded vector sequences.</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="c1"># Since word vectorlookup table is pre-trained, we won't update it this time.</span>
+<span class="c1"># is_static being True prevents updating the lookup table during training.</span>
+<span class="n">emb_para</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">attr</span><span class="o">.</span><span class="n">Param</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">'emb'</span><span class="p">,</span> <span class="n">initial_std</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">is_static</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="c1"># hyperparameter configurations</span>
+<span class="n">default_std</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">hidden_dim</span><span class="p">)</span> <span class="o">/</span> <span class="mf">3.0</span>
+<span class="n">std_default</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">attr</span><span class="o">.</span><span class="n">Param</span><span class="p">(</span><span class="n">initial_std</span><span class="o">=</span><span class="n">default_std</span><span class="p">)</span>
+<span class="n">std_0</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">attr</span><span class="o">.</span><span class="n">Param</span><span class="p">(</span><span class="n">initial_std</span><span class="o">=</span><span class="mf">0.</span><span class="p">)</span>
+
+<span class="n">predicate_embedding</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">embedding</span><span class="p">(</span>
+    <span class="n">size</span><span class="o">=</span><span class="n">word_dim</span><span class="p">,</span>
+    <span class="nb">input</span><span class="o">=</span><span class="n">predicate</span><span class="p">,</span>
+    <span class="n">param_attr</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">attr</span><span class="o">.</span><span class="n">Param</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">'vemb'</span><span class="p">,</span> <span class="n">initial_std</span><span class="o">=</span><span class="n">default_std</span><span class="p">))</span>
+<span class="n">mark_embedding</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">embedding</span><span class="p">(</span>
+    <span class="n">size</span><span class="o">=</span><span class="n">mark_dim</span><span class="p">,</span> <span class="nb">input</span><span class="o">=</span><span class="n">mark</span><span class="p">,</span> <span class="n">param_attr</span><span class="o">=</span><span class="n">std_0</span><span class="p">)</span>
+
+<span class="n">word_input</span> <span class="o">=</span> <span class="p">[</span><span class="n">word</span><span class="p">,</span> <span class="n">ctx_n2</span><span class="p">,</span> <span class="n">ctx_n1</span><span class="p">,</span> <span class="n">ctx_0</span><span class="p">,</span> <span class="n">ctx_p1</span><span class="p">,</span> <span class="n">ctx_p2</span><span class="p">]</span>
+<span class="n">emb_layers</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">embedding</span><span class="p">(</span>
+        <span class="n">size</span><span class="o">=</span><span class="n">word_dim</span><span class="p">,</span> <span class="nb">input</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">param_attr</span><span class="o">=</span><span class="n">emb_para</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">word_input</span>
+<span class="p">]</span>
+<span class="n">emb_layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">predicate_embedding</span><span class="p">)</span>
+<span class="n">emb_layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mark_embedding</span><span class="p">)</span>
+</pre></div>
+<ul>
+<li>8 LSTM units are trained through alternating left-to-right / right-to-left order denoted by the variable <code>reverse</code>.</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="n">hidden_0</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">mixed</span><span class="p">(</span>
+    <span class="n">size</span><span class="o">=</span><span class="n">hidden_dim</span><span class="p">,</span>
+    <span class="n">bias_attr</span><span class="o">=</span><span class="n">std_default</span><span class="p">,</span>
+    <span class="nb">input</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">full_matrix_projection</span><span class="p">(</span>
+            <span class="nb">input</span><span class="o">=</span><span class="n">emb</span><span class="p">,</span> <span class="n">param_attr</span><span class="o">=</span><span class="n">std_default</span><span class="p">)</span> <span class="k">for</span> <span class="n">emb</span> <span class="ow">in</span> <span class="n">emb_layers</span>
+    <span class="p">])</span>
+
+<span class="n">mix_hidden_lr</span> <span class="o">=</span> <span class="mf">1e-3</span>
+<span class="n">lstm_para_attr</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">attr</span><span class="o">.</span><span class="n">Param</span><span class="p">(</span><span class="n">initial_std</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">learning_rate</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+<span class="n">hidden_para_attr</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">attr</span><span class="o">.</span><span class="n">Param</span><span class="p">(</span>
+    <span class="n">initial_std</span><span class="o">=</span><span class="n">default_std</span><span class="p">,</span> <span class="n">learning_rate</span><span class="o">=</span><span class="n">mix_hidden_lr</span><span class="p">)</span>
+
+<span class="n">lstm_0</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">lstmemory</span><span class="p">(</span>
+    <span class="nb">input</span><span class="o">=</span><span class="n">hidden_0</span><span class="p">,</span>
+    <span class="n">act</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">activation</span><span class="o">.</span><span class="n">Relu</span><span class="p">(),</span>
+    <span class="n">gate_act</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">activation</span><span class="o">.</span><span class="n">Sigmoid</span><span class="p">(),</span>
+    <span class="n">state_act</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">activation</span><span class="o">.</span><span class="n">Sigmoid</span><span class="p">(),</span>
+    <span class="n">bias_attr</span><span class="o">=</span><span class="n">std_0</span><span class="p">,</span>
+    <span class="n">param_attr</span><span class="o">=</span><span class="n">lstm_para_attr</span><span class="p">)</span>
+
+<span class="c1"># stack L-LSTM and R-LSTM with direct edges</span>
+<span class="n">input_tmp</span> <span class="o">=</span> <span class="p">[</span><span class="n">hidden_0</span><span class="p">,</span> <span class="n">lstm_0</span><span class="p">]</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">depth</span><span class="p">):</span>
+    <span class="n">mix_hidden</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">mixed</span><span class="p">(</span>
+        <span class="n">size</span><span class="o">=</span><span class="n">hidden_dim</span><span class="p">,</span>
+        <span class="n">bias_attr</span><span class="o">=</span><span class="n">std_default</span><span class="p">,</span>
+        <span class="nb">input</span><span class="o">=</span><span class="p">[</span>
+            <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">full_matrix_projection</span><span class="p">(</span>
+                <span class="nb">input</span><span class="o">=</span><span class="n">input_tmp</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">param_attr</span><span class="o">=</span><span class="n">hidden_para_attr</span><span class="p">),</span>
+            <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">full_matrix_projection</span><span class="p">(</span>
+                <span class="nb">input</span><span class="o">=</span><span class="n">input_tmp</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">param_attr</span><span class="o">=</span><span class="n">lstm_para_attr</span><span class="p">)</span>
+        <span class="p">])</span>
+
+    <span class="n">lstm</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">lstmemory</span><span class="p">(</span>
+        <span class="nb">input</span><span class="o">=</span><span class="n">mix_hidden</span><span class="p">,</span>
+        <span class="n">act</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">activation</span><span class="o">.</span><span class="n">Relu</span><span class="p">(),</span>
+        <span class="n">gate_act</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">activation</span><span class="o">.</span><span class="n">Sigmoid</span><span class="p">(),</span>
+        <span class="n">state_act</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">activation</span><span class="o">.</span><span class="n">Sigmoid</span><span class="p">(),</span>
+        <span class="n">reverse</span><span class="o">=</span><span class="p">((</span><span class="n">i</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">),</span>
+        <span class="n">bias_attr</span><span class="o">=</span><span class="n">std_0</span><span class="p">,</span>
+        <span class="n">param_attr</span><span class="o">=</span><span class="n">lstm_para_attr</span><span class="p">)</span>
+
+    <span class="n">input_tmp</span> <span class="o">=</span> <span class="p">[</span><span class="n">mix_hidden</span><span class="p">,</span> <span class="n">lstm</span><span class="p">]</span>
+</pre></div>
+<ul>
+<li>In PaddlePaddle, state features and transition features of a CRF are implemented by a fully connected layer and a CRF layer seperately. The fully connected layer with linear activation learns the state features, here we use paddle.layer.mixed (paddle.layer.fc can be uesed as well), and the CRF layer in PaddlePaddle: paddle.layer.crf only learns the transition features, which is a cost layer and is the last layer of the network. paddle.layer.crf outputs the log probability of true tag sequence as the cost by given the input sequence and it requires the true tag sequence as target in the learning process.</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="c1"># The output of the top LSTM unit and its input are feed into a fully connected layer,</span>
+<span class="c1"># size of which equals to size of tag labels.</span>
+<span class="c1"># The fully connected layer learns the state features</span>
+
+<span class="n">feature_out</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">mixed</span><span class="p">(</span>
+    <span class="n">size</span><span class="o">=</span><span class="n">label_dict_len</span><span class="p">,</span>
+    <span class="n">bias_attr</span><span class="o">=</span><span class="n">std_default</span><span class="p">,</span>
+    <span class="nb">input</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">full_matrix_projection</span><span class="p">(</span>
+            <span class="nb">input</span><span class="o">=</span><span class="n">input_tmp</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">param_attr</span><span class="o">=</span><span class="n">hidden_para_attr</span><span class="p">),</span>
+        <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">full_matrix_projection</span><span class="p">(</span>
+            <span class="nb">input</span><span class="o">=</span><span class="n">input_tmp</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">param_attr</span><span class="o">=</span><span class="n">lstm_para_attr</span><span class="p">)],</span> <span class="p">)</span>
+
+<span class="n">crf_cost</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">crf</span><span class="p">(</span>
+    <span class="n">size</span><span class="o">=</span><span class="n">label_dict_len</span><span class="p">,</span>
+    <span class="nb">input</span><span class="o">=</span><span class="n">feature_out</span><span class="p">,</span>
+    <span class="n">label</span><span class="o">=</span><span class="n">target</span><span class="p">,</span>
+    <span class="n">param_attr</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">attr</span><span class="o">.</span><span class="n">Param</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">'crfw'</span><span class="p">,</span>
+        <span class="n">initial_std</span><span class="o">=</span><span class="n">default_std</span><span class="p">,</span>
+        <span class="n">learning_rate</span><span class="o">=</span><span class="n">mix_hidden_lr</span><span class="p">))</span>
+</pre></div>
+<ul>
+<li>The CRF decoding layer is used for evaluation and inference. It shares weights with CRF layer.  The sharing of parameters among multiple layers is specified by using the same parameter name in these layers. If true tag sequence is provided in training process, <code>paddle.layer.crf_decoding</code> calculates labelling error for each input token and <code>evaluator.sum</code> sum the error over the entire sequence. Otherwise, <code>paddle.layer.crf_decoding</code>  generates the labelling tags.</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="n">crf_dec</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">crf_decoding</span><span class="p">(</span>
+   <span class="n">size</span><span class="o">=</span><span class="n">label_dict_len</span><span class="p">,</span>
+   <span class="nb">input</span><span class="o">=</span><span class="n">feature_out</span><span class="p">,</span>
+   <span class="n">label</span><span class="o">=</span><span class="n">target</span><span class="p">,</span>
+   <span class="n">param_attr</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">attr</span><span class="o">.</span><span class="n">Param</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">'crfw'</span><span class="p">))</span>
+<span class="n">evaluator</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">crf_dec</span><span class="p">)</span>
+</pre></div>
+<h2>Train model</h2>
+<h3>Create Parameters</h3>
+<p>All necessary parameters will be traced created given output layers that we need to use.</p>
+<div class="highlight"><pre><span></span><span class="n">parameters</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">crf_cost</span><span class="p">)</span>
+</pre></div>
+<p>We can print out parameter name. It will be generated if not specified.</p>
+<div class="highlight"><pre><span></span><span class="k">print</span> <span class="n">parameters</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+</pre></div>
+<p>Now we load the pre-trained word lookup tables from word embeddings trained on the English language Wikipedia.</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">load_parameter</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">w</span><span class="p">):</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="s1">'rb'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">fromfile</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+<span class="n">parameters</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">'emb'</span><span class="p">,</span> <span class="n">load_parameter</span><span class="p">(</span><span class="n">conll05</span><span class="o">.</span><span class="n">get_embedding</span><span class="p">(),</span> <span class="mi">44068</span><span class="p">,</span> <span class="mi">32</span><span class="p">))</span>
+</pre></div>
+<h3>Create Trainer</h3>
+<p>We will create trainer given model topology, parameters, and optimization method. We will use the most basic <strong>SGD</strong> method, which is a momentum optimizer with 0 momentum. Meanwhile, we will set learning rate and regularization.</p>
+<div class="highlight"><pre><span></span><span class="n">optimizer</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">Momentum</span><span class="p">(</span>
+    <span class="n">momentum</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">learning_rate</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span>
+    <span class="n">regularization</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">L2Regularization</span><span class="p">(</span><span class="n">rate</span><span class="o">=</span><span class="mf">8e-4</span><span class="p">),</span>
+    <span class="n">model_average</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">ModelAverage</span><span class="p">(</span>
+        <span class="n">average_window</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">max_average_window</span><span class="o">=</span><span class="mi">10000</span><span class="p">),</span> <span class="p">)</span>
+
+<span class="n">trainer</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="n">crf_cost</span><span class="p">,</span>
+                             <span class="n">parameters</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span>
+                             <span class="n">update_equation</span><span class="o">=</span><span class="n">optimizer</span><span class="p">,</span>
+                             <span class="n">extra_layers</span><span class="o">=</span><span class="n">crf_dec</span><span class="p">)</span>
+</pre></div>
+<h3>Trainer</h3>
+<p>As mentioned in data preparation section, we will use CoNLL 2005 test corpus as the training data set. <code>conll05.test()</code> outputs one training instance at a time. It is shuffled and batched into mini batches, and used as input.</p>
+<div class="highlight"><pre><span></span><span class="n">reader</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span>
+    <span class="n">paddle</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span>
+        <span class="n">conll05</span><span class="o">.</span><span class="n">test</span><span class="p">(),</span> <span class="n">buf_size</span><span class="o">=</span><span class="mi">8192</span><span class="p">),</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+<p><code>feeding</code> is used to specify the correspondence between data instance and data layer. For example, according to following <code>feeding</code>, the 0th column of data instance produced by<code>conll05.test()</code> is matched to the data layer named <code>word_data</code>.</p>
+<div class="highlight"><pre><span></span><span class="n">feeding</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">'word_data'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s1">'ctx_n2_data'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s1">'ctx_n1_data'</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="s1">'ctx_0_data'</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+    <span class="s1">'ctx_p1_data'</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+    <span class="s1">'ctx_p2_data'</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+    <span class="s1">'verb_data'</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>
+    <span class="s1">'mark_data'</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span>
+    <span class="s1">'target'</span><span class="p">:</span> <span class="mi">8</span>
+<span class="p">}</span>
+</pre></div>
+<p><code>event_handler</code> can be used as callback for training events, it will be used as an argument for the <code>train</code> method. Following <code>event_handler</code> prints cost during training.</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">event_handler</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">paddle</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">EndIteration</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">batch_id</span> <span class="ow">and</span> <span class="n">event</span><span class="o">.</span><span class="n">batch_id</span> <span class="o">%</span> <span class="mi">10</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s2">"Pass </span><span class="si">%d</span><span class="s2">, Batch </span><span class="si">%d</span><span class="s2">, Cost </span><span class="si">%f</span><span class="s2">, </span><span class="si">%s</span><span class="s2">"</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="n">event</span><span class="o">.</span><span class="n">pass_id</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">batch_id</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">cost</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">metrics</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">batch_id</span> <span class="o">%</span> <span class="mi">400</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">trainer</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">reader</span><span class="o">=</span><span class="n">reader</span><span class="p">,</span> <span class="n">feeding</span><span class="o">=</span><span class="n">feeding</span><span class="p">)</span>
+            <span class="k">print</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">Test with Pass </span><span class="si">%d</span><span class="s2">, Batch </span><span class="si">%d</span><span class="s2">, </span><span class="si">%s</span><span class="s2">"</span> <span class="o">%</span> <span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">pass_id</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">batch_id</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">metrics</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">paddle</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">EndPass</span><span class="p">):</span>
+        <span class="c1"># save parameters</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">'params_pass_</span><span class="si">%d</span><span class="s1">.tar'</span> <span class="o">%</span> <span class="n">event</span><span class="o">.</span><span class="n">pass_id</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">trainer</span><span class="o">.</span><span class="n">save_parameter_to_tar</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="n">trainer</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">reader</span><span class="o">=</span><span class="n">reader</span><span class="p">,</span> <span class="n">feeding</span><span class="o">=</span><span class="n">feeding</span><span class="p">)</span>
+        <span class="k">print</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">Test with Pass </span><span class="si">%d</span><span class="s2">, </span><span class="si">%s</span><span class="s2">"</span> <span class="o">%</span> <span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">pass_id</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">metrics</span><span class="p">)</span>
+</pre></div>
+<p><code>trainer.train</code> will train the model.</p>
+<div class="highlight"><pre><span></span><span class="n">trainer</span><span class="o">.</span><span class="n">train</span><span class="p">(</span>
+    <span class="n">reader</span><span class="o">=</span><span class="n">reader</span><span class="p">,</span>
+    <span class="n">event_handler</span><span class="o">=</span><span class="n">event_handler</span><span class="p">,</span>
+    <span class="n">num_passes</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span>
+    <span class="n">feeding</span><span class="o">=</span><span class="n">feeding</span><span class="p">)</span>
+</pre></div>
+<h3>Application</h3>
+<p>When training is completed, we need to select an optimal model based one performance index to do inference. In this task, one can simply select the model with the least number of marks on the test set. The <code>paddle.layer.crf_decoding</code> layer is used in the inference, but its inputs do not include the ground truth label.</p>
+<div class="highlight"><pre><span></span><span class="n">predict</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">crf_decoding</span><span class="p">(</span>
+    <span class="n">size</span><span class="o">=</span><span class="n">label_dict_len</span><span class="p">,</span>
+    <span class="nb">input</span><span class="o">=</span><span class="n">feature_out</span><span class="p">,</span>
+    <span class="n">param_attr</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">attr</span><span class="o">.</span><span class="n">Param</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">'crfw'</span><span class="p">))</span>
+</pre></div>
+<p>Here, using one testing sample as an example.</p>
+<div class="highlight"><pre><span></span><span class="n">test_creator</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">conll05</span><span class="o">.</span><span class="n">test</span><span class="p">()</span>
+<span class="n">test_data</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">test_creator</span><span class="p">():</span>
+    <span class="n">test_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">8</span><span class="p">])</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">test_data</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">break</span>
+</pre></div>
+<p>The inference interface <code>paddle.infer</code> returns the index of predicting labels. Then printing the tagging results based dictionary <code>labels_reverse</code>.</p>
+<div class="highlight"><pre><span></span><span class="n">labs</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">infer</span><span class="p">(</span>
+    <span class="n">output_layer</span><span class="o">=</span><span class="n">predict</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span> <span class="nb">input</span><span class="o">=</span><span class="n">test_data</span><span class="p">,</span> <span class="n">field</span><span class="o">=</span><span class="s1">'id'</span><span class="p">)</span>
+<span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">labs</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">test_data</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">labels_reverse</span><span class="o">=</span><span class="p">{}</span>
+<span class="k">for</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="n">label_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">labels_reverse</span><span class="p">[</span><span class="n">v</span><span class="p">]</span><span class="o">=</span><span class="n">k</span>
+<span class="n">pre_lab</span> <span class="o">=</span> <span class="p">[</span><span class="n">labels_reverse</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">labs</span><span class="p">]</span>
+<span class="k">print</span> <span class="n">pre_lab</span>
+</pre></div>
+<h2>Conclusion</h2>
+<p>Semantic Role Labeling is an important intermediate step in a wide range of natural language processing tasks. In this tutorial, we use SRL as an example to illustrate using PaddlePaddle to do sequence tagging tasks. The models proposed are from our published paper[<a href="#Reference">10</a>]. We only use test data for illustration since the training data on the CoNLL 2005 dataset is not completely public. This aims to propose an end-to-end neural network model with fewer dependencies on natural language processing tools but is comparable, or even better than traditional models in terms of performance. Please check out our paper for more information and discussions.</p>
+<h2>References</h2>
+<ol>
+<li>Sun W, Sui Z, Wang M, et al. <a href="http://www.aclweb.org/anthology/D09-1#page=1513">Chinese semantic role labeling with shallow parsing</a>[C]//Proceedings of the 2009 Conference on Empirical Methods in Natural Language Processing: Volume 3-Volume 3. Association for Computational Linguistics, 2009: 1475-1483.</li>
+<li>Pascanu R, Gulcehre C, Cho K, et al. <a href="https://arxiv.org/abs/1312.6026">How to construct deep recurrent neural networks</a>[J]. arXiv preprint arXiv:1312.6026, 2013.</li>
+<li>Cho K, Van Merriënboer B, Gulcehre C, et al. <a href="https://arxiv.org/abs/1406.1078">Learning phrase representations using RNN encoder-decoder for statistical machine translation</a>[J]. arXiv preprint arXiv:1406.1078, 2014.</li>
+<li>Bahdanau D, Cho K, Bengio Y. <a href="https://arxiv.org/abs/1409.0473">Neural machine translation by jointly learning to align and translate</a>[J]. arXiv preprint arXiv:1409.0473, 2014.</li>
+<li>Lafferty J, McCallum A, Pereira F. <a href="http://www.jmlr.org/papers/volume15/doppa14a/source/biblio.bib.old">Conditional random fields: Probabilistic models for segmenting and labeling sequence data</a>[C]//Proceedings of the eighteenth international conference on machine learning, ICML. 2001, 1: 282-289.</li>
+<li>李航. 统计学习方法[J]. 清华大学出版社, 北京, 2012.</li>
+<li>Marcus M P, Marcinkiewicz M A, Santorini B. <a href="http://repository.upenn.edu/cgi/viewcontent.cgi?article=1246&amp;context=cis_reports">Building a large annotated corpus of English: The Penn Treebank</a>[J]. Computational linguistics, 1993, 19(2): 313-330.</li>
+<li>Palmer M, Gildea D, Kingsbury P. <a href="http://www.mitpressjournals.org/doi/pdfplus/10.1162/0891201053630264">The proposition bank: An annotated corpus of semantic roles</a>[J]. Computational linguistics, 2005, 31(1): 71-106.</li>
+<li>Carreras X, Màrquez L. <a href="http://www.cs.upc.edu/~srlconll/st05/papers/intro.pdf">Introduction to the CoNLL-2005 shared task: Semantic role labeling</a>[C]//Proceedings of the Ninth Conference on Computational Natural Language Learning. Association for Computational Linguistics, 2005: 152-164.</li>
+<li>Zhou J, Xu W. <a href="http://www.aclweb.org/anthology/P/P15/P15-1109.pdf">End-to-end learning of semantic role labeling using recurrent neural networks</a>[C]//Proceedings of the Annual Meeting of the Association for Computational Linguistics. 2015.</li>
+</ol>
+<p><br/>
+This tutorial is contributed by <a href="http://book.paddlepaddle.org" property="cc:attributionName" rel="cc:attributionURL" xmlns:cc="http://creativecommons.org/ns#">PaddlePaddle</a>, and licensed under a <a href="http://creativecommons.org/licenses/by-sa/4.0/" rel="license">Creative Commons Attribution-ShareAlike 4.0 International License</a>.</p>
+{% endverbatim %}

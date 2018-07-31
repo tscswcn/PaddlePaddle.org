@@ -1,0 +1,50 @@
+<div class="document" itemscope="itemscope" itemtype="http://schema.org/Article" role="main">
+<div itemprop="articleBody">
+<div class="section" id="id1">
+<h1>快速开始<a class="headerlink" href="#id1" title="永久链接至标题">¶</a></h1>
+<div class="section" id="id2">
+<h2>快速安装<a class="headerlink" href="#id2" title="永久链接至标题">¶</a></h2>
+<p>PaddlePaddle支持使用pip快速安装，目前支持CentOS 6以上, Ubuntu 14.04以及MacOS 10.12，并安装有Python2.7。
+执行下面的命令完成快速安装，版本为cpu_avx_openblas：</p>
+<blockquote>
+<div><div class="highlight-bash"><div class="highlight"><pre><span></span>pip install paddlepaddle
+</pre></div>
+</div>
+</div></blockquote>
+<p>如果需要安装支持GPU的版本（cuda7.5_cudnn5_avx_openblas），需要执行：</p>
+<blockquote>
+<div><div class="highlight-bash"><div class="highlight"><pre><span></span>pip install paddlepaddle-gpu
+</pre></div>
+</div>
+</div></blockquote>
+<p>更详细的安装和编译方法参考： <span class="xref std std-ref">install_steps</span> 。</p>
+</div>
+<div class="section" id="id3">
+<h2>快速使用<a class="headerlink" href="#id3" title="永久链接至标题">¶</a></h2>
+<p>创建一个 housing.py 并粘贴此Python代码：</p>
+<blockquote>
+<div><div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">paddle.dataset.uci_housing</span> <span class="kn">as</span> <span class="nn">uci_housing</span>
+<span class="kn">import</span> <span class="nn">paddle.fluid</span> <span class="kn">as</span> <span class="nn">fluid</span>
+
+<span class="k">with</span> <span class="n">fluid</span><span class="o">.</span><span class="n">scope_guard</span><span class="p">(</span><span class="n">fluid</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">Scope</span><span class="p">()):</span>
+    <span class="c1"># initialize executor with cpu</span>
+    <span class="n">exe</span> <span class="o">=</span> <span class="n">fluid</span><span class="o">.</span><span class="n">Executor</span><span class="p">(</span><span class="n">place</span><span class="o">=</span><span class="n">fluid</span><span class="o">.</span><span class="n">CPUPlace</span><span class="p">())</span>
+    <span class="c1"># load inference model</span>
+    <span class="p">[</span><span class="n">inference_program</span><span class="p">,</span> <span class="n">feed_target_names</span><span class="p">,</span><span class="n">fetch_targets</span><span class="p">]</span> <span class="o">=</span>  \
+        <span class="n">fluid</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">load_inference_model</span><span class="p">(</span><span class="n">uci_housing</span><span class="o">.</span><span class="n">fluid_model</span><span class="p">(),</span> <span class="n">exe</span><span class="p">)</span>
+    <span class="c1"># run inference</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">exe</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">inference_program</span><span class="p">,</span>
+                     <span class="n">feed</span><span class="o">=</span><span class="p">{</span><span class="n">feed_target_names</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span> <span class="n">uci_housing</span><span class="o">.</span><span class="n">predict_reader</span><span class="p">()},</span>
+                     <span class="n">fetch_list</span><span class="o">=</span><span class="n">fetch_targets</span><span class="p">)</span>
+    <span class="c1"># print predicted price is $12,273.97</span>
+    <span class="k">print</span> <span class="s1">'Predicted price: ${:,.2f}'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>执行 <code class="code docutils literal"><span class="pre">python</span> <span class="pre">housing.py</span></code> 瞧！ 它应该打印出预测住房数据的清单。</p>
+</div>
+</div>
+</div>
+<div class="articleComments">
+</div>
+</div>

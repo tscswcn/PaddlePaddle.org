@@ -1,0 +1,33 @@
+{% verbatim %}
+<html><body><h1>Mobile</h1>
+<p>Here mainly describes how to deploy PaddlePaddle to the mobile end, as well as some deployment optimization methods and some benchmark.</p>
+<h2>How to build PaddlePaddle for mobile</h2>
+<ul>
+<li><a href="https://github.com/PaddlePaddle/Paddle/blob/develop/doc/howto/cross_compiling/cross_compiling_for_android_cn.md">Build PaddlePaddle for Android</a></li>
+<li>Build PaddlePaddle for IOS</li>
+<li><a href="https://github.com/PaddlePaddle/Paddle/blob/develop/doc/howto/cross_compiling/cross_compiling_for_raspberry_cn.md">Build PaddlePaddle for Raspberry Pi3</a></li>
+<li>Build PaddlePaddle for PX2</li>
+<li>How to build PaddlePaddle mobile inference library with minimum size.</li>
+</ul>
+<h2>Demo</h2>
+<ul>
+<li><a href="./benchmark/tool/C/README.html">An inference demo program based on the Paddle C API.</a></li>
+</ul>
+<h2>Deployment optimization methods</h2>
+<ul>
+<li><a href="./tool/merge_batch_normalization/README.html">Merge batch normalization before deploying the model to the mobile.</a></li>
+<li><a href="./tool/rounding/README.html">Compress the model before deploying the model to the mobile.</a></li>
+<li>Merge multiple model parameter files into one file.</li>
+<li>How to deploy int8 model in mobile inference with PaddlePaddle.</li>
+</ul>
+<h2>Model compression</h2>
+<ul>
+<li><a href="./model_compression/pruning/README.html">How to use pruning to train smaller model</a></li>
+</ul>
+<h2>PaddlePaddle mobile benchmark</h2>
+<ul>
+<li><a href="./benchmark/README.html">Benchmark of Mobilenet</a></li>
+<li>Benchmark of ENet</li>
+<li><a href="https://github.com/hedaoyuan/Function/blob/master/src/conv/README.md">Benchmark of DepthwiseConvolution in PaddlePaddle</a></li>
+</ul></body></html>
+{% endverbatim %}

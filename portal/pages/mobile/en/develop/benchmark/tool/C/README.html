@@ -1,0 +1,41 @@
+{% verbatim %}
+<html><body><h1>Inference demo</h1>
+<p>This is an inference demo program based on the C API of PaddlePaddle.
+The demo explained here is based on the C++ code, so we need to use g++ or clang++ to compile.
+The demo can be run from the command line and can be used to test the inference performance of various different models.</p>
+<h2>Android</h2>
+<p>To compile and run this demo in an Android environment, please follow the following steps:</p>
+<ol>
+<li>Refer to <a href="https://github.com/PaddlePaddle/Paddle/blob/develop/doc/howto/cross_compiling/cross_compiling_for_android_cn.md">this document</a> to compile the Android version of PaddlePaddle. After following the mentioned steps, make install will generate an output directory containing three subdirectories: include, lib, and third_party.</li>
+<li>Compile <code>inference.cc</code> to an executable program for the Android environment as follows:<ul>
+<li>For armeabi-v7a
+<div class="highlight"><pre><span></span>mkdir build
+cd build
+
+cmake .. \
+-DANDROID_ABI=armeabi-v7a \
+-DANDROID_STANDALONE_TOOLCHAIN=your/path/to/arm_standalone_toolchain \
+-DPADDLE_ROOT=The output path generated in the first step \
+-DCMAKE_BUILD_TYPE=MinSizeRel
+
+make
+</pre></div></li>
+<li>For arm64-v8a
+<div class="highlight"><pre><span></span>mkdir build
+cd build
+
+cmake .. \
+-DANDROID_ABI=arm64-v8a \
+-DANDROID_STANDALONE_TOOLCHAIN=your/path/to/arm64_standalone_toolchain \
+-DPADDLE_ROOT=The output path generated in the first step \
+-DCMAKE_BUILD_TYPE=MinSizeRel
+
+make
+</pre></div></li>
+</ul>
+</li>
+<li>Run the demo program by logging into the Android environment via adb and specifying the PaddlePaddle model from the command line as follows:
+<div class="highlight"><pre><span></span>./inference --merged_model ./model/mobilenet.paddle --input_size 150528
+</pre></div></li>
+</ol></body></html>
+{% endverbatim %}

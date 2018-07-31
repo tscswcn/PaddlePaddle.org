@@ -1,0 +1,217 @@
+<div class="document" itemscope="itemscope" itemtype="http://schema.org/Article" role="main">
+<div itemprop="articleBody">
+<div class="section" id="paddlepaddle-releasing-process">
+<span id="paddlepaddle-releasing-process"></span><h1>PaddlePaddle Releasing Process<a class="headerlink" href="#paddlepaddle-releasing-process" title="Permalink to this headline">¶</a></h1>
+<p>PaddlePaddle manages its branches using “git-flow branching model”, and <a class="reference external" href="http://semver.org/">Semantic Versioning</a> as it’s version number semantics.</p>
+<p>Each time we release a new PaddlePaddle version, we should follow the below steps:</p>
+<ol class="simple">
+<li>Fork a new branch from <code class="docutils literal"><span class="pre">develop</span></code> named <code class="docutils literal"><span class="pre">release/[version]</span></code>, e.g. <code class="docutils literal"><span class="pre">release/0.10.0</span></code>.</li>
+<li>Push a new tag on the release branch, the tag name should be like <code class="docutils literal"><span class="pre">[version]rc.patch</span></code>. The
+first tag should be <code class="docutils literal"><span class="pre">0.10.0rc1</span></code>, and the second should be <code class="docutils literal"><span class="pre">0.10.0.rc2</span></code> and so on.</li>
+<li>After that, we should do:</li>
+</ol>
+<ul class="simple">
+<li>Run all regression test on the Regression Test List (see PaddlePaddle TeamCity CI), to confirm
+that this release has no major bugs.
+* If regression test fails, we must fix those bugs and create a new <code class="docutils literal"><span class="pre">release/[version]</span></code>
+branch from previous release branch.<ul>
+<li>Modify <code class="docutils literal"><span class="pre">python/setup.py.in</span></code>, change the version number and change <code class="docutils literal"><span class="pre">ISTAGED</span></code> to <code class="docutils literal"><span class="pre">True</span></code>.</li>
+<li>Publish PaddlePaddle release wheel packages to pypi (see below instructions for detail).</li>
+<li>Update the Docker images (see below instructions for detail).</li>
+</ul>
+</li>
+</ul>
+<ol class="simple">
+<li>After above step, merge <code class="docutils literal"><span class="pre">release/[version]</span></code> branch to master and push a tag on the master commit,
+then merge <code class="docutils literal"><span class="pre">master</span></code> to <code class="docutils literal"><span class="pre">develop</span></code>.</li>
+<li>Update the Release Note.</li>
+</ol>
+<p><strong><em>NOTE:</em></strong></p>
+<ul class="simple">
+<li>Do <strong><em>NOT</em></strong> merge commits from develop branch to release branches to keep the release branch contain
+features only for current release, so that we can test on that version.</li>
+<li>If we want to fix bugs on release branches, we must merge the fix to master, develop and release branch.</li>
+</ul>
+<div class="section" id="publish-wheel-packages-to-pypi">
+<span id="publish-wheel-packages-to-pypi"></span><h2>Publish Wheel Packages to pypi<a class="headerlink" href="#publish-wheel-packages-to-pypi" title="Permalink to this headline">¶</a></h2>
+<ol>
+<li><p class="first">Use our <a class="reference external" href="https://paddleci.ngrok.io/project.html?projectId=Manylinux1&amp;tab=projectOverview">CI tool</a>
+to build all wheel packages needed to publish. As shown in the following picture, choose a build
+version, click ”...” button on the right side of “Run” button, and switch to the second tab in the
+pop-up box, choose the current release branch and click “Run Build” button. You may repeat this
+step to start different versions of builds.
+<img src="https://raw.githubusercontent.com/PaddlePaddle/Paddle/develop/doc/fluid/images/ci_build_whl.png"/></p>
+</li>
+<li><p class="first">After the build succeeds, download the outputs under “Artifacts” including capi, <code class="docutils literal"><span class="pre">cp27m</span></code> and <code class="docutils literal"><span class="pre">cp27mu</span></code>.</p>
+</li>
+<li><p class="first">Since pypi.python.org follows <a class="reference external" href="https://www.python.org/dev/peps/pep-0513">PEP 513</a>, before we
+upload the package using <code class="docutils literal"><span class="pre">twine</span></code>, we need to rename the package from <code class="docutils literal"><span class="pre">linux_x86_64</span></code> to
+<code class="docutils literal"><span class="pre">manylinux1_x86_64</span></code>.</p>
+</li>
+<li><p class="first">Start the upload:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">build</span><span class="o">/</span><span class="n">python</span>
+<span class="n">pip</span> <span class="n">install</span> <span class="n">twine</span>
+<span class="n">twine</span> <span class="n">upload</span> <span class="n">dist</span><span class="o">/</span><span class="p">[</span><span class="n">package</span> <span class="n">to</span> <span class="n">upload</span><span class="p">]</span>
+</pre></div>
+</div>
+</li>
+</ol>
+<ul class="simple">
+<li>NOTE: We use a special Docker image to build our releases to support more Linux distributions, you can
+download it from https://hub.docker.com/r/paddlepaddle/paddle_manylinux_devel/tags/, or build it using
+scripts under <code class="docutils literal"><span class="pre">tools/manylinux1</span></code>.</li>
+<li>pypi does not allow overwrite the already uploaded version of wheel package, even if you delete the
+old version. you must change the version number before upload a new one.</li>
+</ul>
+</div>
+<div class="section" id="publish-docker-images">
+<span id="publish-docker-images"></span><h2>Publish Docker Images<a class="headerlink" href="#publish-docker-images" title="Permalink to this headline">¶</a></h2>
+<p>Our CI tool will push latest images to DockerHub, so we only need to push a version tag like:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">pull</span> <span class="p">[</span><span class="n">image</span><span class="p">]:</span><span class="n">latest</span>
+<span class="n">docker</span> <span class="n">tag</span> <span class="p">[</span><span class="n">image</span><span class="p">]:</span><span class="n">latest</span> <span class="p">[</span><span class="n">image</span><span class="p">]:[</span><span class="n">version</span><span class="p">]</span>
+<span class="n">docker</span> <span class="n">push</span> <span class="p">[</span><span class="n">image</span><span class="p">]:[</span><span class="n">version</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Tags that need to be updated are:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">[version]</span></code>: CPU only version image</li>
+<li><code class="docutils literal"><span class="pre">[version]-openblas</span></code>: openblas version image</li>
+<li><code class="docutils literal"><span class="pre">[version]-gpu</span></code>: GPU version（using CUDA 8.0 cudnn 5）</li>
+<li><code class="docutils literal"><span class="pre">[version]-gpu-[cudaver]-[cudnnver]</span></code>: tag for different cuda, cudnn versions</li>
+</ul>
+<p>You can then checkout the latest pushed tags at https://hub.docker.com/r/paddlepaddle/paddle/tags/.</p>
+</div>
+<div class="section" id="branching-model">
+<span id="branching-model"></span><h2>Branching Model<a class="headerlink" href="#branching-model" title="Permalink to this headline">¶</a></h2>
+<p>We use <a class="reference external" href="http://nvie.com/posts/a-successful-git-branching-model/">git-flow</a> as our branching model,
+with some modifications:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">master</span></code> branch is the stable branch. Each version on the master branch is tested and guaranteed.</li>
+<li><code class="docutils literal"><span class="pre">develop</span></code> branch is for development. Each commit on develop branch has passed CI unit test, but no
+regression tests are run.</li>
+<li><code class="docutils literal"><span class="pre">release/[version]</span></code> branch is used to publish each release. Latest release version branches have
+bugfix only for that version, but no feature updates.</li>
+<li>Developer forks are not required to follow
+<a class="reference external" href="http://nvie.com/posts/a-successful-git-branching-model/">git-flow</a>
+branching model, all forks is like a feature branch.<ul>
+<li>Advise: developer fork’s develop branch is used to sync up with main repo’s develop branch.</li>
+<li>Advise: developer use it’s fork’s develop branch to for new branch to start developing.</li>
+<li>Use that branch on developer’s fork to create pull requests and start reviews.<ul>
+<li>developer can push new commits to that branch when the pull request is open.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Bug fixes are also started from developers forked repo. And, bug fixes branch can merge to
+<code class="docutils literal"><span class="pre">master</span></code>, <code class="docutils literal"><span class="pre">develop</span></code> and <code class="docutils literal"><span class="pre">releases</span></code>.</li>
+</ul>
+</div>
+<div class="section" id="paddlepaddle-regression-test-list">
+<span id="paddlepaddle-regression-test-list"></span><h2>PaddlePaddle Regression Test List<a class="headerlink" href="#paddlepaddle-regression-test-list" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="all-chapters-of-paddlepaddle-book">
+<span id="all-chapters-of-paddlepaddle-book"></span><h3>All Chapters of PaddlePaddle Book<a class="headerlink" href="#all-chapters-of-paddlepaddle-book" title="Permalink to this headline">¶</a></h3>
+<p>We need to guarantee that all the chapters of PaddlePaddle Book can run correctly. Including
+V1 (<code class="docutils literal"><span class="pre">paddle_trainer</span></code> training) and V2 training and Fluid training.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Linear Regression</th>
+<th>Recognize Digits</th>
+<th>Image Classification</th>
+<th>Word2Vec</th>
+<th>Personalized Recommendation</th>
+<th>Sentiment Analysis</th>
+<th>Semantic Role Labeling</th>
+<th>Machine Translation</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>API.V2 + Docker + GPU </td>
+<td> </td>
+<td> </td>
+<td> </td>
+<td> </td>
+<td> </td>
+<td> </td>
+<td> </td>
+<td> </td>
+</tr><tr>
+<td> API.V2 + Docker + CPU </td>
+<td> </td>
+<td> </td>
+<td> </td>
+<td> </td>
+<td> </td>
+<td> </td>
+<td> </td>
+<td> </td>
+</tr><tr>
+<td>`paddle_trainer` + Docker + GPU </td>
+<td> </td>
+<td> </td>
+<td> </td>
+<td> </td>
+<td> </td>
+<td> </td>
+<td> </td>
+<td> </td>
+</tr><tr>
+<td>`paddle_trainer` + Docker + CPU </td>
+<td> </td>
+<td> </td>
+<td> </td>
+<td> </td>
+<td> </td>
+<td> </td>
+<td> </td>
+<td> </td>
+</tr><tr>
+<td> API.V2 + Ubuntu + GPU</td>
+<td> </td>
+<td> </td>
+<td> </td>
+<td> </td>
+<td> </td>
+<td> </td>
+<td> </td>
+<td> </td>
+</tr><tr>
+<td>API.V2 + Ubuntu + CPU </td>
+<td> </td>
+<td> </td>
+<td> </td>
+<td> </td>
+<td> </td>
+<td> </td>
+<td> </td>
+<td> </td>
+</tr><tr>
+<td> `paddle_trainer` + Ubuntu + GPU</td>
+<td> </td>
+<td> </td>
+<td> </td>
+<td> </td>
+<td> </td>
+<td> </td>
+<td> </td>
+<td> </td>
+</tr><tr>
+<td> `paddle_trainer` + Ubuntu + CPU</td>
+<td> </td>
+<td> </td>
+<td> </td>
+<td> </td>
+<td> </td>
+<td> </td>
+<td> </td>
+<td> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+</div>
+<div class="articleComments">
+</div>
+</div>

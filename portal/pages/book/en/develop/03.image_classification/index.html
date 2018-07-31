@@ -1,0 +1,430 @@
+{% verbatim %}
+<h1>Image Classification</h1>
+<p>The source code for this chapter is at <a href="https://github.com/PaddlePaddle/book/tree/develop/03.image_classification">book/image_classification</a>. First-time users, please refer to PaddlePaddle <a href="https://github.com/PaddlePaddle/book/blob/develop/README.md#running-the-book">Installation Tutorial</a> for installation instructions.</p>
+<h2>Background</h2>
+<p>Compared to words, images provide much more vivid and easier to understand information with an artistic sense. They are an important source for people to express and exchange ideas. In this chapter, we focus on one of the essential problems in image recognition -- image classification.</p>
+<p>Image classification is the task of distinguishing images in different categories based on their semantic meaning. It is a core problem in computer vision and is also the foundation of other higher level computer vision tasks such as object detection, image segmentation, object tracking, action recognition, etc. Image classification has applications in many areas such as face recognition, intelligent video analysis in security systems, traffic scene recognition in transportation systems, content-based image retrieval and automatic photo indexing in web services, image classification in medicine, etc.</p>
+<p>To classify an image we firstly encode the entire image using handcrafted or learned features and then determine the category using a classifier. Thus, feature extraction plays an important role in image classification. Prior to deep learning the BoW(Bag of Words) model was the most widely used method for classifying an image as well as an object. The BoW technique was introduced in Natural Language Processing where a training sentence is represented as a bag of words. In the context of image classification, the BoW model requires constructing a dictionary. The simplest BoW framework can be designed with three steps: <strong>feature extraction</strong>, <strong>feature encoding</strong> and <strong>classifier design</strong>.</p>
+<p>Using Deep learning, image classification can be framed as a supervised or unsupervised learning problem that uses hierarchical features automatically without any need for manually crafted features from the image. In recent years, Convolutional Neural Networks (CNNs) have made significant progress in image classification. CNNs use raw image pixels as input, extract low-level and high-level abstract features through convolution operations, and directly output the classification results from the model. This style of end-to-end learning has lead to not only increased performance but also wider adoption various applications.</p>
+<p>In this chapter, we introduce deep-learning-based image classification methods and explain how to train a CNN model using PaddlePaddle.</p>
+<h2>Demonstration</h2>
+<p>An image can be classified by a general as well as fine-grained image classifier.</p>
+<p>Figure 1 shows the results of a general image classifier -- the trained model can correctly recognize the main objects in the images.</p>
+<p align="center">
+<img src="image/dog_cat.png " width="350"/><br/>
+Figure 1. General image classification
+</p>
+<p>Figure 2 shows the results of a fine-grained image classifier. This task of flower recognition requires correctly recognizing of the flower's categories.</p>
+<p align="center">
+<img src="image/flowers.png" width="400"/><br/>
+Figure 2. Fine-grained image classification
+</p>
+<p>A good model should recognize objects of different categories correctly. The results of such a model should not vary due to viewpoint variation, illumination conditions, object distortion or occlusion.
+Figure 3 shows some images with various disturbances. A good model should classify these images correctly like humans.</p>
+<p align="center">
+<img src="image/variations_en.png" width="550"/><br/>
+Figure 3. Disturbed images [22]
+</p>
+<h2>Model Overview</h2>
+<p>A large amount of research in image classification is built upon public datasets such as <a href="http://host.robots.ox.ac.uk/pascal/VOC/">PASCAL VOC</a>, <a href="http://image-net.org/">ImageNet</a> etc. Many image classification algorithms are usually evaluated and compared on top of these datasets. PASCAL VOC is a computer vision competition started in 2005, and ImageNet is a dataset for Large Scale Visual Recognition Challenge (ILSVRC) started in 2010. In this chapter, we introduce some image classification models from the submissions to these competitions.</p>
+<p>Before 2012, traditional image classification was accomplished with the three steps described in the background section. A complete model construction usually involves the following stages: low-level feature extraction, feature encoding, spatial constraint or feature clustering, classifier design, model ensemble.</p>
+<p>1). <strong>Low-level feature extraction</strong>: This step extracts large amounts of local features according to fixed strides and scales. Popular local features include Scale-Invariant Feature Transform (SIFT)[1], Histogram of Oriented Gradient(HOG)[2], Local Binary Pattern(LBP)[3], etc. A common practice is to employ multiple feature descriptors in order to avoid missing a lot of information.</p>
+<p>2). <strong>Feature encoding</strong>: Low-level features contain a large amount of redundancy and noise. In order to improve the robustness of features, it is necessary to employ a feature transformation to encode low-level features. This is called feature encoding. Common feature encoding methods include vector quantization [4], sparse coding [5], locality-constrained linear coding [6], Fisher vector encoding [7], etc.</p>
+<p>3). <strong>Spatial constraint</strong>: Spatial constraint or feature clustering is usually adopted after feature encoding for extracting the maximum or average of each dimension in the spatial domain. Pyramid feature matching--a popular feature clustering method--divides an image uniformly into patches and performs feature clustering in each patch.</p>
+<p>4). <strong>Classification</strong>: In the above steps an image can be described by a vector of fixed dimension. Then a classifier can be used to classify the image into categories. Common classifiers include Support Vector Machine(SVM), random forest etc. Kernel SVM is the most popular classifier and has achieved very good performance in traditional image classification tasks.</p>
+<p>This method has been used widely as image classification algorithm in PASCAL VOC [18]. NEC Labs(http://www.nec-labs.com/) won the championship by employing SIFT and LBP features, two non-linear encoders and SVM in ILSVRC 2010 [8].</p>
+<p>The CNN model--AlexNet proposed by Alex Krizhevsky et al.[9], made a breakthrough in ILSVRC 2012. It dramatically outperformed traditional methods and won the ILSVRC championship in 2012. This was also the first time that a deep learning method was used for large-scale image classification. Since AlexNet, a series of CNN models have been proposed that have advanced the state of the art steadily on Imagenet as shown in Figure 4. With deeper and more sophisticated architectures, Top-5 error rate is getting lower and lower (to around 3.5%). The error rate of human raters on the same Imagenet dataset is 5.1%, which means that the image classification capability of a deep learning model has surpassed human raters.</p>
+<p align="center">
+<img src="image/ilsvrc.png" width="500"/><br/>
+Figure 4. Top-5 error rates on ILSVRC image classification
+</p>
+<h3>CNN</h3>
+<p>Traditional CNNs consist of convolutional and fully-connected layers and use the softmax multi-category classifier with the cross-entropy loss function. Figure 5 shows a typical CNN. We first introduce the common components of a CNN.</p>
+<p align="center">
+<img src="image/lenet_en.png"/><br/>
+Figure 5. A CNN example [20]
+</p>
+<ul>
+<li>
+<p>convolutional layer: this layer uses the convolution operation to extract (low-level and high-level) features and to discover local correlation and spatial invariance.</p>
+</li>
+<li>
+<p>pooling layer: this layer down samples feature maps by extracting local max (max-pooling) or average (avg-pooling) value of each patch in the feature map. Down-sampling is a common operation in image processing and is used to filter out high-frequency information.</p>
+</li>
+<li>
+<p>fully-connected layer: this layer fully connects neurons between two adjacent layers.</p>
+</li>
+<li>
+<p>non-linear activation: Convolutional and fully-connected layers are usually followed by some non-linear activation layers. Non-linearities enhance the expression capability of the network. Some examples of non-linear activation functions are Sigmoid, Tanh and ReLU. ReLU is the most commonly used activation function in CNN.</p>
+</li>
+<li>
+<p>Dropout [10]: At each training stage, individual nodes are dropped out of the network with a certain probability. This improves the network's ability to generalize and avoids overfitting.</p>
+</li>
+</ul>
+<p>Parameter updates at each layer during training causes input layer distributions to change and in turn requires hyper-parameters to be carefully tuned. In 2015, Sergey Ioffe and Christian Szegedy proposed a Batch Normalization (BN) algorithm [14], which normalizes the features of each batch in a layer, and enables relatively stable distribution in each layer. Not only does BN algorithm act as a regularizer, but also reduces the need for careful hyper-parameter design. Experiments demonstrate that BN algorithm accelerates the training convergence and has been widely used in later deeper models.</p>
+<p>In the following sections, we will introduce the following network architectures - VGG, GoogleNet and ResNets.</p>
+<h3>VGG</h3>
+<p>The Oxford Visual Geometry Group (VGG) proposed the VGG network in ILSVRC 2014 [11]. This model is deeper and wider than previous neural architectures. It consists of five main groups of convolution operations. Adjacent convolution groups are connected via max-pooling layers. Each group contains a series of 3x3 convolutional layers (i.e. kernels). The number of convolution kernels stays the same within the group and increases from 64 in the first group to 512 in the last one. The total number of learnable layers could be 11, 13, 16, or 19 depending on the number of convolutional layers in each group. Figure 6 illustrates a 16-layer VGG. The neural architecture of VGG is relatively simple and has been adopted by many papers such as the first one that surpassed human-level performance on ImageNet [19].</p>
+<p align="center">
+<img src="image/vgg16.png" width="750"/><br/>
+Figure 6. VGG16 model for ImageNet
+</p>
+<h3>GoogleNet</h3>
+<p>GoogleNet [12] won the ILSVRC championship in 2014. GoogleNet borrowed some ideas from the Network in Network(NIN) model [13] and is built on the Inception blocks. Let us first familiarize ourselves with these first.</p>
+<p>The two main characteristics of the NIN model are:</p>
+<p>1) A single-layer convolutional network is replaced with a Multi-Layer Perceptron Convolution (MLPconv). MLPconv is a tiny multi-layer convolutional network. It enhances non-linearity by adding several 1x1 convolutional layers after linear ones.</p>
+<p>2) In traditional CNNs, the last fewer layers are usually fully-connected with a large number of parameters. In contrast, NIN replaces all fully-connected layers with convolutional layers with feature maps of the same size as the category dimension and a global average pooling. This replacement of fully-connected layers significantly reduces the number of parameters.</p>
+<p>Figure 7 depicts two Inception blocks. Figure 7(a) is the simplest design. The output is a concatenation of features from three convolutional layers and one pooling layer. The disadvantage of this design is that the pooling layer does not change the number of filters and leads to an increase in the number of outputs. After several of such blocks, the number of outputs and parameters become larger and larger and lead to higher computation complexity. To overcome this drawback, the Inception block in Figure 7(b) employs three 1x1 convolutional layers. These reduce dimensions or the number of channels but improve the non-linearity of the network.</p>
+<p align="center">
+<img src="image/inception_en.png" width="800"/><br/>
+Figure 7. Inception block
+</p>
+<p>GoogleNet consists of multiple stacked Inception blocks followed by an avg-pooling layer as in NIN instead of traditional fully connected layers. The difference between GoogleNet and NIN is that GoogleNet adds a fully connected layer after avg-pooling layer to output a vector of category size. Besides these two characteristics, the features from middle layers of a GoogleNet are also very discriminative. Therefore, GoogeleNet inserts two auxiliary classifiers in the model for enhancing gradient and regularization when doing backpropagation. The loss function of the whole network is the weighted sum of these three classifiers.</p>
+<p>Figure 8 illustrates the neural architecture of a GoogleNet which consists of 22 layers: it starts with three regular convolutional layers followed by three groups of sub-networks -- the first group contains two Inception blocks, the second group has five, and the third group has two. It ends with an average pooling and a fully-connected layer.</p>
+<p align="center">
+<img src="image/googlenet.jpeg"/><br/>
+Figure 8. GoogleNet[12]
+</p>
+<p>The above model is the first version of GoogleNet or GoogelNet-v1. GoogleNet-v2 [14] introduced BN layer; GoogleNet-v3 [16] further split some convolutional layers, which increases non-linearity and network depth; GoogelNet-v4 [17] leads to the design idea of ResNet which will be introduced in the next section. The evolution from v1 to v4 improved the accuracy rate consistently. We will not go into details of the neural architectures of v2 to v4.</p>
+<h3>ResNet</h3>
+<p>Residual Network(ResNet)[15] won the 2015 championship on three ImageNet competitions -- image classification, object localization, and object detection. The main challenge in training deeper networks is that accuracy degrades with network depth. The authors of ResNet proposed a residual learning approach to ease the difficulty of training deeper networks. Based on the design ideas of BN, small convolutional kernels, full convolutional network, ResNets reformulate the layers as residual blocks, with each block containing two branches, one directly connecting input to the output, the other performing two to three convolutions and calculating the residual function with reference to the layer's inputs. The outputs of these two branches are then added up.</p>
+<p>Figure 9 illustrates the ResNet architecture. To the left is the basic building block, it consists of two 3x3 convolutional layers of the same channels. To the right is a Bottleneck block. The bottleneck is a 1x1 convolutional layer used to reduce dimension from 256 to 64. The other 1x1 convolutional layer is used to increase dimension from 64 to 256. Thus, the number of input and output channels of the middle 3x3 convolutional layer is 64, which is relatively small.</p>
+<p align="center">
+<img src="image/resnet_block.jpg" width="400"/><br/>
+Figure 9. Residual block
+</p>
+<p>Figure 10 illustrates ResNets with 50, 101, 152 layers, respectively. All three networks use bottleneck blocks of different numbers of repetitions. ResNet converges very fast and can be trained with hundreds or thousands of layers.</p>
+<p align="center">
+<img src="image/resnet.png"/><br/>
+Figure 10. ResNet model for ImageNet
+</p>
+<h2>Dataset</h2>
+<p>Commonly used public datasets for image classification are <a href="https://www.cs.toronto.edu/~kriz/cifar.html">CIFAR</a>, <a href="http://image-net.org/">ImageNet</a>, <a href="http://mscoco.org/">COCO</a>, etc. Those used for fine-grained image classification are <a href="http://www.vision.caltech.edu/visipedia/CUB-200-2011.html">CUB-200-2011</a>, <a href="http://vision.stanford.edu/aditya86/ImageNetDogs/">Stanford Dog</a>, <a href="http://www.robots.ox.ac.uk/~vgg/data/flowers/">Oxford-flowers</a>, etc. Among these, the ImageNet dataset is the largest. Most research results are reported on ImageNet as mentioned in the Model Overview section. Since 2010, the ImageNet dataset has gone through some changes. The commonly used ImageNet-2012 dataset contains 1000 categories. There are 1,281,167 training images, ranging from 732 to 1200 images per category, and 50,000 validation images with 50 images per category in average.</p>
+<p>Since ImageNet is too large to be downloaded and trained efficiently, we use <a href="https://www.cs.toronto.edu/~kriz/cifar.html">CIFAR-10</a> in this tutorial. The CIFAR-10 dataset consists of 60000 32x32 color images in 10 classes, with 6000 images per class. There are 50000 training images and 10000 test images. Figure 11 shows all the classes in CIFAR-10 as well as 10 images randomly sampled from each category.</p>
+<p align="center">
+<img src="image/cifar.png" width="350"/><br/>
+Figure 11. CIFAR10 dataset[21]
+</p>
+<p><code>paddle.datasets</code> package encapsulates multiple public datasets, including <code>cifar</code>, <code>imdb</code>, <code>mnist</code>, <code>moivelens</code> and <code>wmt14</code>, etc. There's no need to manually download and preprocess CIFAR-10.</p>
+<p>After running the command <code>python train.py</code>, training will start immediately. The following sections will describe in details.</p>
+<h2>Model Structure</h2>
+<h3>Initialize PaddlePaddle</h3>
+<p>We must import and initialize PaddlePaddle (enable/disable GPU, set the number of trainers, etc).</p>
+<p></p><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">paddle.v2</span> <span class="kn">as</span> <span class="nn">paddle</span>
+<span class="kn">from</span> <span class="nn">vgg</span> <span class="kn">import</span> <span class="n">vgg_bn_drop</span>
+<span class="kn">from</span> <span class="nn">resnet</span> <span class="kn">import</span> <span class="n">resnet_cifar10</span>
+
+<span class="c1"># PaddlePaddle init</span>
+<span class="n">paddle</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="n">use_gpu</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">trainer_count</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+Now we are going to walk you through the implementations of the VGG and ResNet.
+<h3>VGG</h3>
+<p>Let's start with the VGG model. Since the image size and amount of CIFAR10 are relatively small comparing to ImageNet, we use a small version of VGG network for CIFAR10. Convolution groups incorporate BN and dropout operations.</p>
+<ol>
+<li>
+<p>Define input data and its dimension</p>
+<p>The input to the network is defined as <code>paddle.layer.data</code>, or image pixels in the context of image classification. The images in CIFAR10 are 32x32 color images of three channels. Therefore, the size of the input data is 3072 (3x32x32), and the number of categories is 10.</p>
+<div class="highlight"><pre><span></span><span class="n">datadim</span> <span class="o">=</span> <span class="mi">3</span> <span class="o">*</span> <span class="mi">32</span> <span class="o">*</span> <span class="mi">32</span>
+<span class="n">classdim</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">image</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">data</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"image"</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">data_type</span><span class="o">.</span><span class="n">dense_vector</span><span class="p">(</span><span class="n">datadim</span><span class="p">))</span>
+</pre></div>
+</li>
+<li>
+<p>Define VGG main module</p>
+<p></p><div class="highlight"><pre><span></span><span class="n">net</span> <span class="o">=</span> <span class="n">vgg_bn_drop</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+</pre></div>
+The input to VGG main module is from the data layer. <code>vgg_bn_drop</code> defines a 16-layer VGG network, with each convolutional layer followed by BN and dropout layers. Here is the definition in detail:
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">vgg_bn_drop</span><span class="p">(</span><span class="nb">input</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">conv_block</span><span class="p">(</span><span class="n">ipt</span><span class="p">,</span> <span class="n">num_filter</span><span class="p">,</span> <span class="n">groups</span><span class="p">,</span> <span class="n">dropouts</span><span class="p">,</span> <span class="n">num_channels</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">paddle</span><span class="o">.</span><span class="n">networks</span><span class="o">.</span><span class="n">img_conv_group</span><span class="p">(</span>
+            <span class="nb">input</span><span class="o">=</span><span class="n">ipt</span><span class="p">,</span>
+            <span class="n">num_channels</span><span class="o">=</span><span class="n">num_channels</span><span class="p">,</span>
+            <span class="n">pool_size</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+            <span class="n">pool_stride</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+            <span class="n">conv_num_filter</span><span class="o">=</span><span class="p">[</span><span class="n">num_filter</span><span class="p">]</span> <span class="o">*</span> <span class="n">groups</span><span class="p">,</span>
+            <span class="n">conv_filter_size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+            <span class="n">conv_act</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">activation</span><span class="o">.</span><span class="n">Relu</span><span class="p">(),</span>
+            <span class="n">conv_with_batchnorm</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+            <span class="n">conv_batchnorm_drop_rate</span><span class="o">=</span><span class="n">dropouts</span><span class="p">,</span>
+            <span class="n">pool_type</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">pooling</span><span class="o">.</span><span class="n">Max</span><span class="p">())</span>
+
+    <span class="n">conv1</span> <span class="o">=</span> <span class="n">conv_block</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.3</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">3</span><span class="p">)</span>
+    <span class="n">conv2</span> <span class="o">=</span> <span class="n">conv_block</span><span class="p">(</span><span class="n">conv1</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.4</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+    <span class="n">conv3</span> <span class="o">=</span> <span class="n">conv_block</span><span class="p">(</span><span class="n">conv2</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+    <span class="n">conv4</span> <span class="o">=</span> <span class="n">conv_block</span><span class="p">(</span><span class="n">conv3</span><span class="p">,</span> <span class="mi">512</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+    <span class="n">conv5</span> <span class="o">=</span> <span class="n">conv_block</span><span class="p">(</span><span class="n">conv4</span><span class="p">,</span> <span class="mi">512</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+
+    <span class="n">drop</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">dropout</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">conv5</span><span class="p">,</span> <span class="n">dropout_rate</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+    <span class="n">fc1</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">fc</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">drop</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">512</span><span class="p">,</span> <span class="n">act</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">activation</span><span class="o">.</span><span class="n">Linear</span><span class="p">())</span>
+    <span class="n">bn</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">batch_norm</span><span class="p">(</span>
+        <span class="nb">input</span><span class="o">=</span><span class="n">fc1</span><span class="p">,</span>
+        <span class="n">act</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">activation</span><span class="o">.</span><span class="n">Relu</span><span class="p">(),</span>
+        <span class="n">layer_attr</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">attr</span><span class="o">.</span><span class="n">Extra</span><span class="p">(</span><span class="n">drop_rate</span><span class="o">=</span><span class="mf">0.5</span><span class="p">))</span>
+    <span class="n">fc2</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">fc</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">bn</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">512</span><span class="p">,</span> <span class="n">act</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">activation</span><span class="o">.</span><span class="n">Linear</span><span class="p">())</span>
+    <span class="k">return</span> <span class="n">fc2</span>
+</pre></div>
+<p>2.1. Firstly, it defines a convolution block or conv_block. The default convolution kernel is 3x3, and the default pooling size is 2x2 with stride 2. Dropout specifies the probability in dropout operation. Function <code>img_conv_group</code> is defined in <code>paddle.networks</code> consisting of a series of <code>Conv-&gt;BN-&gt;ReLu-&gt;Dropout</code> and a <code>Pooling</code>.</p>
+<p>2.2. Five groups of convolutions. The first two groups perform two convolutions, while the last three groups perform three convolutions. The dropout rate of the last convolution in each group is set to 0, which means there is no dropout for this layer.</p>
+<p>2.3. The last two layers are fully-connected layers of dimension 512.</p>
+</li>
+<li>
+<p>Define Classifier</p>
+<p>The above VGG network extracts high-level features and maps them to a vector of the same size as the categories. Softmax function or classifier is then used for calculating the probability of the image belonging to each category.</p>
+<div class="highlight"><pre><span></span><span class="n">out</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">fc</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">net</span><span class="p">,</span>
+                      <span class="n">size</span><span class="o">=</span><span class="n">classdim</span><span class="p">,</span>
+                      <span class="n">act</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">activation</span><span class="o">.</span><span class="n">Softmax</span><span class="p">())</span>
+</pre></div>
+</li>
+<li>
+<p>Define Loss Function and Outputs</p>
+<p>In the context of supervised learning, labels of training images are defined in <code>paddle.layer.data</code> as well. During training, the cross-entropy loss function is used and the loss is the output of the network. During testing, the outputs are the probabilities calculated in the classifier.</p>
+<div class="highlight"><pre><span></span><span class="n">lbl</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">data</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"label"</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">data_type</span><span class="o">.</span><span class="n">integer_value</span><span class="p">(</span><span class="n">classdim</span><span class="p">))</span>
+<span class="n">cost</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">classification_cost</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">out</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">lbl</span><span class="p">)</span>
+</pre></div>
+</li>
+</ol>
+<h3>ResNet</h3>
+<p>The first, third and fourth steps of a ResNet are the same as a VGG. The second step is the main module of ResNet.</p>
+<div class="highlight"><pre><span></span><span class="n">net</span> <span class="o">=</span> <span class="n">resnet_cifar10</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="mi">56</span><span class="p">)</span>
+</pre></div>
+<p>Here are some basic functions used in <code>resnet_cifar10</code>:</p>
+<ul>
+<li><code>conv_bn_layer</code> : convolutional layer followed by BN.</li>
+<li>
+<p><code>shortcut</code> : the shortcut branch in a residual block. There are two kinds of shortcuts: 1x1 convolution used when the number of channels between input and output is different; direct connection used otherwise.</p>
+</li>
+<li>
+<p><code>basicblock</code> : a basic residual module as shown in the left of Figure 9, it consists of two sequential 3x3 convolutions and one "shortcut" branch.</p>
+</li>
+<li><code>bottleneck</code> : a bottleneck module as shown in the right of Figure 9, it consists of two 1x1 convolutions with one 3x3 convolution in between branch and a "shortcut" branch.</li>
+<li><code>layer_warp</code> : a group of residual modules consisting of several stacking blocks. In each group, the sliding window size of the first residual block could be different from the rest of blocks, in order to reduce the size of feature maps along horizontal and vertical directions.</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">conv_bn_layer</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span>
+                  <span class="n">ch_out</span><span class="p">,</span>
+                  <span class="n">filter_size</span><span class="p">,</span>
+                  <span class="n">stride</span><span class="p">,</span>
+                  <span class="n">padding</span><span class="p">,</span>
+                  <span class="n">active_type</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">activation</span><span class="o">.</span><span class="n">Relu</span><span class="p">(),</span>
+                  <span class="n">ch_in</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="n">tmp</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">img_conv</span><span class="p">(</span>
+        <span class="nb">input</span><span class="o">=</span><span class="nb">input</span><span class="p">,</span>
+        <span class="n">filter_size</span><span class="o">=</span><span class="n">filter_size</span><span class="p">,</span>
+        <span class="n">num_channels</span><span class="o">=</span><span class="n">ch_in</span><span class="p">,</span>
+        <span class="n">num_filters</span><span class="o">=</span><span class="n">ch_out</span><span class="p">,</span>
+        <span class="n">stride</span><span class="o">=</span><span class="n">stride</span><span class="p">,</span>
+        <span class="n">padding</span><span class="o">=</span><span class="n">padding</span><span class="p">,</span>
+        <span class="n">act</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">activation</span><span class="o">.</span><span class="n">Linear</span><span class="p">(),</span>
+        <span class="n">bias_attr</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">batch_norm</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">tmp</span><span class="p">,</span> <span class="n">act</span><span class="o">=</span><span class="n">active_type</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">shortcut</span><span class="p">(</span><span class="n">ipt</span><span class="p">,</span> <span class="n">n_in</span><span class="p">,</span> <span class="n">n_out</span><span class="p">,</span> <span class="n">stride</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">n_in</span> <span class="o">!=</span> <span class="n">n_out</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">conv_bn_layer</span><span class="p">(</span><span class="n">ipt</span><span class="p">,</span> <span class="n">n_out</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">stride</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span>
+                             <span class="n">paddle</span><span class="o">.</span><span class="n">activation</span><span class="o">.</span><span class="n">Linear</span><span class="p">())</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ipt</span>
+
+<span class="k">def</span> <span class="nf">basicblock</span><span class="p">(</span><span class="n">ipt</span><span class="p">,</span> <span class="n">ch_out</span><span class="p">,</span> <span class="n">stride</span><span class="p">):</span>
+    <span class="n">ch_in</span> <span class="o">=</span> <span class="n">ch_out</span> <span class="o">*</span> <span class="mi">2</span>
+    <span class="n">tmp</span> <span class="o">=</span> <span class="n">conv_bn_layer</span><span class="p">(</span><span class="n">ipt</span><span class="p">,</span> <span class="n">ch_out</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">stride</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">tmp</span> <span class="o">=</span> <span class="n">conv_bn_layer</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">ch_out</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">paddle</span><span class="o">.</span><span class="n">activation</span><span class="o">.</span><span class="n">Linear</span><span class="p">())</span>
+    <span class="n">short</span> <span class="o">=</span> <span class="n">shortcut</span><span class="p">(</span><span class="n">ipt</span><span class="p">,</span> <span class="n">ch_in</span><span class="p">,</span> <span class="n">ch_out</span><span class="p">,</span> <span class="n">stride</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">addto</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="p">[</span><span class="n">tmp</span><span class="p">,</span> <span class="n">short</span><span class="p">],</span> <span class="n">act</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">activation</span><span class="o">.</span><span class="n">Relu</span><span class="p">())</span>
+
+<span class="k">def</span> <span class="nf">layer_warp</span><span class="p">(</span><span class="n">block_func</span><span class="p">,</span> <span class="n">ipt</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">count</span><span class="p">,</span> <span class="n">stride</span><span class="p">):</span>
+    <span class="n">tmp</span> <span class="o">=</span> <span class="n">block_func</span><span class="p">(</span><span class="n">ipt</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">stride</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">count</span><span class="p">):</span>
+        <span class="n">tmp</span> <span class="o">=</span> <span class="n">block_func</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">tmp</span>
+</pre></div>
+<p>The following are the components of <code>resnet_cifar10</code>:</p>
+<ol>
+<li>The lowest level is <code>conv_bn_layer</code>.</li>
+<li>The middle level consists of three <code>layer_warp</code>, each of which uses the left residual block in Figure 9.</li>
+<li>The last level is average pooling layer.</li>
+</ol>
+<p>Note: besides the first convolutional layer and the last fully-connected layer, the total number of layers in three <code>layer_warp</code> should be dividable by 6, that is the depth of <code>resnet_cifar10</code> should satisfy <span class="markdown-equation" id="equation-0">$(depth - 2) % 6 == 0$</span>.</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">resnet_cifar10</span><span class="p">(</span><span class="n">ipt</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="mi">32</span><span class="p">):</span>
+    <span class="c1"># depth should be one of 20, 32, 44, 56, 110, 1202</span>
+    <span class="k">assert</span> <span class="p">(</span><span class="n">depth</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span> <span class="o">%</span> <span class="mi">6</span> <span class="o">==</span> <span class="mi">0</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="p">(</span><span class="n">depth</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="mi">6</span>
+    <span class="n">nStages</span> <span class="o">=</span> <span class="p">{</span><span class="mi">16</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">}</span>
+    <span class="n">conv1</span> <span class="o">=</span> <span class="n">conv_bn_layer</span><span class="p">(</span>
+        <span class="n">ipt</span><span class="p">,</span> <span class="n">ch_in</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">ch_out</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">filter_size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">res1</span> <span class="o">=</span> <span class="n">layer_warp</span><span class="p">(</span><span class="n">basicblock</span><span class="p">,</span> <span class="n">conv1</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">res2</span> <span class="o">=</span> <span class="n">layer_warp</span><span class="p">(</span><span class="n">basicblock</span><span class="p">,</span> <span class="n">res1</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">res3</span> <span class="o">=</span> <span class="n">layer_warp</span><span class="p">(</span><span class="n">basicblock</span><span class="p">,</span> <span class="n">res2</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">pool</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">img_pool</span><span class="p">(</span>
+        <span class="nb">input</span><span class="o">=</span><span class="n">res3</span><span class="p">,</span> <span class="n">pool_size</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">pool_type</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">pooling</span><span class="o">.</span><span class="n">Avg</span><span class="p">())</span>
+    <span class="k">return</span> <span class="n">pool</span>
+</pre></div>
+<h2>Model Training</h2>
+<h3>Define Parameters</h3>
+<p>Firstly, we create the model parameters according to the previous model configuration <code>cost</code>.</p>
+<div class="highlight"><pre><span></span><span class="c1"># Create parameters</span>
+<span class="n">parameters</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">cost</span><span class="p">)</span>
+</pre></div>
+<h3>Create Trainer</h3>
+<p>Before creating a training module, it is necessary to set the algorithm.
+Here we specify <code>Momentum</code> optimization algorithm via <code>paddle.optimizer</code>.</p>
+<div class="highlight"><pre><span></span><span class="c1"># Create optimizer</span>
+<span class="n">momentum_optimizer</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">Momentum</span><span class="p">(</span>
+    <span class="n">momentum</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span>
+    <span class="n">regularization</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">L2Regularization</span><span class="p">(</span><span class="n">rate</span><span class="o">=</span><span class="mf">0.0002</span> <span class="o">*</span> <span class="mi">128</span><span class="p">),</span>
+    <span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.1</span> <span class="o">/</span> <span class="mf">128.0</span><span class="p">,</span>
+    <span class="n">learning_rate_decay_a</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+    <span class="n">learning_rate_decay_b</span><span class="o">=</span><span class="mi">50000</span> <span class="o">*</span> <span class="mi">100</span><span class="p">,</span>
+    <span class="n">learning_rate_schedule</span><span class="o">=</span><span class="s1">'discexp'</span><span class="p">)</span>
+
+<span class="c1"># Create trainer</span>
+<span class="n">trainer</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="n">cost</span><span class="p">,</span>
+                             <span class="n">parameters</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span>
+                             <span class="n">update_equation</span><span class="o">=</span><span class="n">momentum_optimizer</span><span class="p">)</span>
+</pre></div>
+<p>The learning rate adjustment policy can be defined with variables <code>learning_rate_decay_a</code>(<span class="markdown-equation" id="equation-1">$a$</span>), <code>learning_rate_decay_b</code>(<span class="markdown-equation" id="equation-2">$b$</span>) and <code>learning_rate_schedule</code>. In this example, discrete exponential method is used for adjusting learning rate. The formula is as follows,
+<span class="markdown-equation" id="equation-3">$$  lr = lr_{0} * a^ {\lfloor \frac{n}{ b}\rfloor} $$</span>
+where <span class="markdown-equation" id="equation-4">$n$</span> is the number of processed samples, <span class="markdown-equation" id="equation-5">$lr_{0}$</span> is the learning_rate.</p>
+<h3>Training</h3>
+<p><code>cifar.train10()</code> will yield records during each pass, after shuffling, a batch input is generated for training.</p>
+<div class="highlight"><pre><span></span><span class="n">reader</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span>
+    <span class="n">paddle</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span>
+        <span class="n">paddle</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">cifar</span><span class="o">.</span><span class="n">train10</span><span class="p">(),</span> <span class="n">buf_size</span><span class="o">=</span><span class="mi">50000</span><span class="p">),</span>
+        <span class="n">batch_size</span><span class="o">=</span><span class="mi">128</span><span class="p">)</span>
+</pre></div>
+<p><code>feeding</code> is devoted to specifying the correspondence between each yield record and <code>paddle.layer.data</code>. For instance,
+ the first column of data generated by <code>cifar.train10()</code> corresponds to image layer's feature.</p>
+<div class="highlight"><pre><span></span><span class="n">feeding</span><span class="o">=</span><span class="p">{</span><span class="s1">'image'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+         <span class="s1">'label'</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+</pre></div>
+<p>Callback function <code>event_handler</code> will be called during training when a pre-defined event happens.</p>
+<p><code>event_handler_plot</code>is used to plot a figure like below：</p>
+<p><img alt="png" src="./image/train_and_test.png"/></p>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">paddle.v2.plot</span> <span class="kn">import</span> <span class="n">Ploter</span>
+
+<span class="n">train_title</span> <span class="o">=</span> <span class="s2">"Train cost"</span>
+<span class="n">test_title</span> <span class="o">=</span> <span class="s2">"Test cost"</span>
+<span class="n">cost_ploter</span> <span class="o">=</span> <span class="n">Ploter</span><span class="p">(</span><span class="n">train_title</span><span class="p">,</span> <span class="n">test_title</span><span class="p">)</span>
+
+<span class="n">step</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="k">def</span> <span class="nf">event_handler_plot</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
+    <span class="k">global</span> <span class="n">step</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">paddle</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">EndIteration</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">step</span> <span class="o">%</span> <span class="mi">1</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">cost_ploter</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">train_title</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">cost</span><span class="p">)</span>
+            <span class="n">cost_ploter</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+        <span class="n">step</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">paddle</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">EndPass</span><span class="p">):</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">trainer</span><span class="o">.</span><span class="n">test</span><span class="p">(</span>
+            <span class="n">reader</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span>
+                <span class="n">paddle</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">cifar</span><span class="o">.</span><span class="n">test10</span><span class="p">(),</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">128</span><span class="p">),</span>
+            <span class="n">feeding</span><span class="o">=</span><span class="n">feeding</span><span class="p">)</span>
+        <span class="n">cost_ploter</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">test_title</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">cost</span><span class="p">)</span>
+</pre></div>
+<p><code>event_handler</code> is used to plot some text data when training.</p>
+<div class="highlight"><pre><span></span><span class="c1"># event handler to track training and testing process</span>
+<span class="k">def</span> <span class="nf">event_handler</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">paddle</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">EndIteration</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">batch_id</span> <span class="o">%</span> <span class="mi">100</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">Pass </span><span class="si">%d</span><span class="s2">, Batch </span><span class="si">%d</span><span class="s2">, Cost </span><span class="si">%f</span><span class="s2">, </span><span class="si">%s</span><span class="s2">"</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="n">event</span><span class="o">.</span><span class="n">pass_id</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">batch_id</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">cost</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">metrics</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">'.'</span><span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">paddle</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">EndPass</span><span class="p">):</span>
+        <span class="c1"># save parameters</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">'params_pass_</span><span class="si">%d</span><span class="s1">.tar'</span> <span class="o">%</span> <span class="n">event</span><span class="o">.</span><span class="n">pass_id</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">trainer</span><span class="o">.</span><span class="n">save_parameter_to_tar</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="n">trainer</span><span class="o">.</span><span class="n">test</span><span class="p">(</span>
+            <span class="n">reader</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span>
+                <span class="n">paddle</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">cifar</span><span class="o">.</span><span class="n">test10</span><span class="p">(),</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">128</span><span class="p">),</span>
+            <span class="n">feeding</span><span class="o">=</span><span class="n">feeding</span><span class="p">)</span>
+        <span class="k">print</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">Test with Pass </span><span class="si">%d</span><span class="s2">, </span><span class="si">%s</span><span class="s2">"</span> <span class="o">%</span> <span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">pass_id</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">metrics</span><span class="p">)</span>
+</pre></div>
+<p>Finally, we can invoke <code>trainer.train</code> to start training:</p>
+<div class="highlight"><pre><span></span><span class="n">trainer</span><span class="o">.</span><span class="n">train</span><span class="p">(</span>
+    <span class="n">reader</span><span class="o">=</span><span class="n">reader</span><span class="p">,</span>
+    <span class="n">num_passes</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
+    <span class="n">event_handler</span><span class="o">=</span><span class="n">event_handler_plot</span><span class="p">,</span>
+    <span class="n">feeding</span><span class="o">=</span><span class="n">feeding</span><span class="p">)</span>
+</pre></div>
+<p>Here is an example log after training for one pass. The average error rates are 0.6875 on the training set and 0.8852 on the validation set.</p>
+<div class="highlight"><pre><span></span>Pass 0, Batch 0, Cost 2.473182, {'classification_error_evaluator': 0.9140625}
+...................................................................................................
+Pass 0, Batch 100, Cost 1.913076, {'classification_error_evaluator': 0.78125}
+...................................................................................................
+Pass 0, Batch 200, Cost 1.783041, {'classification_error_evaluator': 0.7421875}
+...................................................................................................
+Pass 0, Batch 300, Cost 1.668833, {'classification_error_evaluator': 0.6875}
+..........................................................................................
+Test with Pass 0, {'classification_error_evaluator': 0.885200023651123}
+</pre></div>
+<p>Figure 12 shows the curve of training error rate, which indicates it converges at Pass 200 with error rate 8.54%.
+</p><p align="center">
+<img src="image/plot_en.png" width="400"/><br/>
+Figure 12. The error rate of VGG model on CIFAR10
+</p>
+<h2>Application</h2>
+<p>After training is completed, users can use the trained model to classify images. The following code shows how to infer through <code>paddle.infer</code> interface. You can uncomment some lines from below to change the model name.</p>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="k">def</span> <span class="nf">load_image</span><span class="p">(</span><span class="nb">file</span><span class="p">):</span>
+    <span class="n">im</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="nb">file</span><span class="p">)</span>
+    <span class="n">im</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">resize</span><span class="p">((</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span> <span class="n">Image</span><span class="o">.</span><span class="n">ANTIALIAS</span><span class="p">)</span>
+    <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">im</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+    <span class="c1"># The storage order of the loaded image is W(widht),</span>
+    <span class="c1"># H(height), C(channel). PaddlePaddle requires</span>
+    <span class="c1"># the CHW order, so transpose them.</span>
+    <span class="n">im</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">transpose</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span> <span class="c1"># CHW</span>
+    <span class="c1"># In the training phase, the channel order of CIFAR</span>
+    <span class="c1"># image is B(Blue), G(green), R(Red). But PIL open</span>
+    <span class="c1"># image in RGB mode. It must swap the channel order.</span>
+    <span class="n">im</span> <span class="o">=</span> <span class="n">im</span><span class="p">[(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),:,:]</span> <span class="c1"># BGR</span>
+    <span class="n">im</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+    <span class="n">im</span> <span class="o">=</span> <span class="n">im</span> <span class="o">/</span> <span class="mf">255.0</span>
+    <span class="k">return</span> <span class="n">im</span>
+<span class="n">test_data</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">cur_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+<span class="n">test_data</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">load_image</span><span class="p">(</span><span class="n">cur_dir</span> <span class="o">+</span> <span class="s1">'/image/dog.png'</span><span class="p">),))</span>
+
+<span class="c1"># users can remove the comments and change the model name</span>
+<span class="c1"># with open('params_pass_50.tar', 'r') as f:</span>
+<span class="c1">#    parameters = paddle.parameters.Parameters.from_tar(f)</span>
+
+<span class="n">probs</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">infer</span><span class="p">(</span>
+    <span class="n">output_layer</span><span class="o">=</span><span class="n">out</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span> <span class="nb">input</span><span class="o">=</span><span class="n">test_data</span><span class="p">)</span>
+<span class="n">lab</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="o">-</span><span class="n">probs</span><span class="p">)</span> <span class="c1"># probs and lab are the results of one batch data</span>
+<span class="k">print</span> <span class="s2">"Label of image/dog.png is: </span><span class="si">%d</span><span class="s2">"</span> <span class="o">%</span> <span class="n">lab</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+<h2>Conclusion</h2>
+<p>Traditional image classification methods involve multiple stages of processing, which has to utilize complex frameworks. Contrarily, CNN models can be trained end-to-end with a significant increase in classification accuracy. In this chapter, we introduced three models -- VGG, GoogleNet, ResNet and provided PaddlePaddle config files for training VGG and ResNet on CIFAR10. We also explained how to perform prediction and feature extraction using the PaddlePaddle API. For other datasets such as ImageNet, the procedure for config and training are the same and you are welcome to give it a try.</p>
+<h2>References</h2>
+<p>[1] D. G. Lowe, <a href="http://www.cs.ubc.ca/~lowe/papers/ijcv04.pdf">Distinctive image features from scale-invariant keypoints</a>. IJCV, 60(2):91-110, 2004.</p>
+<p>[2] N. Dalal, B. Triggs, <a href="http://vision.stanford.edu/teaching/cs231b_spring1213/papers/CVPR05_DalalTriggs.pdf">Histograms of Oriented Gradients for Human Detection</a>, Proc. IEEE Conf. Computer Vision and Pattern Recognition, 2005.</p>
+<p>[3] Ahonen, T., Hadid, A., and Pietikinen, M. (2006). <a href="http://ieeexplore.ieee.org/document/1717463/">Face description with local binary patterns: Application to face recognition</a>. PAMI, 28.</p>
+<p>[4] J. Sivic, A. Zisserman, <a href="http://www.robots.ox.ac.uk/~vgg/publications/papers/sivic03.pdf">Video Google: A Text Retrieval Approach to Object Matching in Videos</a>, Proc. Ninth Int'l Conf. Computer Vision, pp. 1470-1478, 2003.</p>
+<p>[5] B. Olshausen, D. Field, <a href="http://redwood.psych.cornell.edu/papers/olshausen_field_1997.pdf">Sparse Coding with an Overcomplete Basis Set: A Strategy Employed by V1?</a>, Vision Research, vol. 37, pp. 3311-3325, 1997.</p>
+<p>[6] Wang, J., Yang, J., Yu, K., Lv, F., Huang, T., and Gong, Y. (2010). <a href="http://ieeexplore.ieee.org/abstract/document/5540018/">Locality-constrained Linear Coding for image classification</a>. In CVPR.</p>
+<p>[7] Perronnin, F., Sánchez, J., &amp; Mensink, T. (2010). <a href="http://dl.acm.org/citation.cfm?id=1888101">Improving the fisher kernel for large-scale image classification</a>. In ECCV (4).</p>
+<p>[8] Lin, Y., Lv, F., Cao, L., Zhu, S., Yang, M., Cour, T., Yu, K., and Huang, T. (2011). <a href="http://ieeexplore.ieee.org/document/5995477/">Large-scale image clas- sification: Fast feature extraction and SVM training</a>. In CVPR.</p>
+<p>[9] Krizhevsky, A., Sutskever, I., and Hinton, G. (2012). <a href="http://www.cs.toronto.edu/~kriz/imagenet_classification_with_deep_convolutional.pdf">ImageNet classification with deep convolutional neu- ral networks</a>. In NIPS.</p>
+<p>[10] G.E. Hinton, N. Srivastava, A. Krizhevsky, I. Sutskever, and R.R. Salakhutdinov. <a href="https://arxiv.org/abs/1207.0580">Improving neural networks by preventing co-adaptation of feature detectors</a>. arXiv preprint arXiv:1207.0580, 2012.</p>
+<p>[11] K. Chatfield, K. Simonyan, A. Vedaldi, A. Zisserman. <a href="https://arxiv.org/abs/1405.3531">Return of the Devil in the Details: Delving Deep into Convolutional Nets</a>. BMVC, 2014。</p>
+<p>[12] Szegedy, C., Liu, W., Jia, Y., Sermanet, P., Reed, S., Anguelov, D., Erhan, D., Vanhoucke, V., Rabinovich, A., <a href="https://arxiv.org/abs/1409.4842">Going deeper with convolutions</a>. In: CVPR. (2015)</p>
+<p>[13] Lin, M., Chen, Q., and Yan, S. <a href="https://arxiv.org/abs/1312.4400">Network in network</a>. In Proc. ICLR, 2014.</p>
+<p>[14] S. Ioffe and C. Szegedy. <a href="https://arxiv.org/abs/1502.03167">Batch normalization: Accelerating deep network training by reducing internal covariate shift</a>. In ICML, 2015.</p>
+<p>[15] K. He, X. Zhang, S. Ren, J. Sun. <a href="https://arxiv.org/abs/1512.03385">Deep Residual Learning for Image Recognition</a>. CVPR 2016.</p>
+<p>[16] Szegedy, C., Vanhoucke, V., Ioffe, S., Shlens, J., Wojna, Z. <a href="https://arxiv.org/abs/1512.00567">Rethinking the incep-tion architecture for computer vision</a>. In: CVPR. (2016).</p>
+<p>[17] Szegedy, C., Ioffe, S., Vanhoucke, V. <a href="https://arxiv.org/abs/1602.07261">Inception-v4, inception-resnet and the impact of residual connections on learning</a>. arXiv:1602.07261 (2016).</p>
+<p>[18] Everingham, M., Eslami, S. M. A., Van Gool, L., Williams, C. K. I., Winn, J. and Zisserman, A. <a href="(http://link.springer.com/article/10.1007/s11263-014-0733-5)">The Pascal Visual Object Classes Challenge: A Retrospective</a>. International Journal of Computer Vision, 111(1), 98-136, 2015.</p>
+<p>[19] He, K., Zhang, X., Ren, S., and Sun, J. <a href="https://arxiv.org/abs/1502.01852">Delving Deep into Rectifiers: Surpassing Human-Level Performance on ImageNet Classification</a>. ArXiv e-prints, February 2015.</p>
+<p>[20] http://deeplearning.net/tutorial/lenet.html</p>
+<p>[21] https://www.cs.toronto.edu/~kriz/cifar.html</p>
+<p>[22] http://cs231n.github.io/classification/</p>
+<p><br/>
+This tutorial is contributed by <a href="http://book.paddlepaddle.org" property="cc:attributionName" rel="cc:attributionURL" xmlns:cc="http://creativecommons.org/ns#">PaddlePaddle</a>, and licensed under a <a href="http://creativecommons.org/licenses/by-sa/4.0/" rel="license">Creative Commons Attribution-ShareAlike 4.0 International License</a>.</p>
+{% endverbatim %}

@@ -1,0 +1,85 @@
+{% verbatim %}
+<html><body><h2>Pruning</h2>
+<h3>Principle:</h3>
+<p>The trained model has a large number of parameters redundancy, and these redundant parameter's value are very small, so we can cut them off.</p>
+<p>For every layer chosen to be pruned, we <strong>add a 0-1 value mask</strong> which is of the same size as the layer's parameter and decide which of the parameters participate in the forward process。</p>
+<p>Let's assume that the size of parameters in a layer is <code>M</code> and current sparsity ratio  is <code>current_spr</code>, we first order the parameters according to the absolute value in that layer, then choose the smallest <code>current_spr * M</code> numbers out and set the corresponding mask's value to zero.</p>
+<p>Paddle uses an <strong>automatic, gradual pruning</strong> approach. We use <code>interval_pass</code>, <code>sparsity_upper_bound</code> and <code>end_pass</code>to control the process of this.
+The parameters are pruned every <code>interval_pass</code> pass (<strong>a pass represents a epoch</strong>) as the network is fine-tuned to gradually increase the sparsity while allowing the network recover from any pruning-induced loss in accuracy. The network will reach <code>sparsity_upper_bound</code> sparsity finally, and the whole process will undergo <code>end_pass/inter_pass</code> times pruning.</p>
+<p>As shown below, we use a <strong>log function for sparsity changes</strong>. We cut our network more aggressively in the initial stage for there exists a lot of redundant parameters and gradually reduced the number of the parameters being cutted for there are  less redundant parameters in late stage and it's helpful for our network recover from pruning-induced loss in accuracy. </p>
+<p><img alt="" src="../image/model.png"/></p>
+<h3>Usage:</h3>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">paddle.v2.attr</span> <span class="kn">import</span>  <span class="n">Hook</span>
+<span class="kn">from</span> <span class="nn">paddle.v2.attr</span> <span class="kn">import</span>  <span class="n">ParamAttr</span>
+
+<span class="c1"># The interval_pass value defalut is 3, end_pass value default is 60 </span>
+<span class="n">pa</span> <span class="o">=</span> <span class="n">ParamAttr</span><span class="p">(</span><span class="n">update_hooks</span> <span class="o">=</span> <span class="n">Hook</span><span class="p">(</span><span class="s1">'dynamic_pruning'</span><span class="p">,</span> <span class="n">sparsity_upper_bound</span><span class="o">=</span><span class="mf">0.75</span><span class="p">,</span> <span class="n">interval_pass</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">end_pass</span><span class="o">=</span><span class="mi">3</span><span class="p">))</span>
+
+<span class="c1"># for conv layer </span>
+<span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">img_conv</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="nb">input</span><span class="p">,</span>
+                      <span class="n">filter_size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+                      <span class="n">num_channels</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
+                      <span class="n">num_filters</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span>
+                      <span class="n">param_attr</span><span class="o">=</span><span class="n">pa</span><span class="p">,</span>
+                      <span class="n">act</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">activation</span><span class="o">.</span><span class="n">Relu</span><span class="p">())</span>
+
+
+<span class="c1"># for fully connected layer</span>
+<span class="n">out</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">fc</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="nb">input</span><span class="p">,</span>
+                      <span class="n">size</span><span class="o">=</span><span class="mi">102</span><span class="p">,</span>
+                      <span class="n">act</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">activation</span><span class="o">.</span><span class="n">Softmax</span><span class="p">(),</span>
+                      <span class="n">param_attr</span> <span class="o">=</span> <span class="n">pa</span><span class="p">)</span>
+</pre></div>
+<h3>Demo (Mobilenet pruning on flowers102 dataset):</h3>
+<p>Mobilenet is based on depthwise separable convolution that consists a <code>depthwise convolution</code> followed by a 1*1 convolution called <code>pointwise convolution</code>. About 99% parameters are from <code>pointwise convolution</code> and last <code>fully-connected layer</code>, so we only prune those two type layers in Mobilenet.</p>
+<p><strong>1</strong>. Download the Mobilenet model pre-trained on flower102</p>
+<table>
+<thead>
+<tr>
+<th>Model</th>
+<th>Dataset</th>
+<th>Accuracy</th>
+<th>Download</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Mobilenet</td>
+<td>flowers102</td>
+<td>97.16%</td>
+<td><a href="https://pan.baidu.com/s/1geHkrw3">Download from BaiduCloud</a></td>
+</tr>
+</tbody>
+</table>
+<p><strong>2</strong>. Run the demo</p>
+<div class="highlight"><pre><span></span>python ./demo/train.py
+</pre></div>
+<p><strong>3</strong>. Result </p>
+<p>we evaluated the result in accuracy and modle size.</p>
+<table>
+<thead>
+<tr>
+<th>--</th>
+<th>mobilenet</th>
+<th>mobilenet pruning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>accuracy</td>
+<td>0.9716</td>
+<td>0.970</td>
+</tr>
+<tr>
+<td>model size</td>
+<td>12M</td>
+<td>4.3M</td>
+</tr>
+<tr>
+<td>Download</td>
+<td><a href="https://pan.baidu.com/s/1geHkrw3">Download from BaiduCloud</a></td>
+<td><a href="https://pan.baidu.com/s/1ge8wOp1">Download from BaiduCloud</a></td>
+</tr>
+</tbody>
+</table></body></html>
+{% endverbatim %}

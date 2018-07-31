@@ -1,0 +1,69 @@
+<div class="document" itemscope="itemscope" itemtype="http://schema.org/Article" role="main">
+<div itemprop="articleBody">
+<div class="section" id="standard-markdown-format-for-operators">
+<span id="standard-markdown-format-for-operators"></span><h1>Standard Markdown Format for Operators<a class="headerlink" href="#standard-markdown-format-for-operators" title="永久链接至标题">¶</a></h1>
+<p>The following should be the standard format for documentation for all the operators that will get rendered in the <code class="docutils literal"><span class="pre">html</span></code>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Operator</span> <span class="n">Name</span> <span class="p">(</span><span class="n">In</span> <span class="n">PaddlePaddle</span><span class="p">)</span>
+
+<span class="n">Operator</span> <span class="n">Name</span> <span class="p">(</span><span class="n">Standard</span><span class="p">)</span>
+
+<span class="n">Operator</span> <span class="n">description</span><span class="o">.</span>
+
+<span class="n">LaTeX</span> <span class="n">equation</span> <span class="n">of</span> <span class="n">how</span> <span class="n">the</span> <span class="n">operator</span> <span class="n">performs</span> <span class="n">an</span> <span class="n">update</span><span class="o">.</span>
+
+<span class="n">The</span> <span class="n">signature</span> <span class="n">of</span> <span class="n">the</span> <span class="n">operator</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>Each section mentioned above has been covered in further detail in the rest of the document.</p>
+<div class="section" id="paddlepaddle-operator-name">
+<span id="paddlepaddle-operator-name"></span><h2>PaddlePaddle Operator Name<a class="headerlink" href="#paddlepaddle-operator-name" title="永久链接至标题">¶</a></h2>
+<p>This should be in all small letters, in case of multiple words, we separate them with an underscore. For example:
+<code class="docutils literal"><span class="pre">array</span> <span class="pre">to</span> <span class="pre">lod</span> <span class="pre">tensor</span></code> should be written as <code class="docutils literal"><span class="pre">array_to_lod_tensor</span></code>.</p>
+<p>This naming convention should be standard across all PaddlePaddle operators.</p>
+</div>
+<div class="section" id="standard-operator-name">
+<span id="standard-operator-name"></span><h2>Standard Operator Name<a class="headerlink" href="#standard-operator-name" title="永久链接至标题">¶</a></h2>
+<p>This is the standard name of the operator as used in the community. The general standard is usually:</p>
+<ul class="simple">
+<li>Standard abbreviations like <code class="docutils literal"><span class="pre">SGD</span></code> are written in all capital letters.</li>
+<li>Operator names that have multiple words inside a single word use <code class="docutils literal"><span class="pre">camelCase</span></code> (capitalize word boundaries inside of a word).</li>
+<li>Keep numbers inside a word as is, with no boundary delimiters.</li>
+<li>Follow the name of the operator with the keyword: <code class="docutils literal"><span class="pre">Activation</span> <span class="pre">Operator.</span></code></li>
+</ul>
+</div>
+<div class="section" id="operator-description">
+<span id="operator-description"></span><h2>Operator description<a class="headerlink" href="#operator-description" title="永久链接至标题">¶</a></h2>
+<p>This section should contain the description of what the operator does, including the operation performed, the literature from where it comes and was introduced first, and other important details. The relevant paper/article including the hyperlink should be cited in this section.</p>
+</div>
+<div class="section" id="latex-equation">
+<span id="latex-equation"></span><h2>LaTeX equation<a class="headerlink" href="#latex-equation" title="永久链接至标题">¶</a></h2>
+<p>This section should contain an overall equation of the update or operation that the operator performs. The variables used in the equation should follow the naming convention of operators as described <a class="reference external" href="https://github.com/PaddlePaddle/Paddle/blob/develop/paddle/operators/name_convention.md">here</a>. Two words in the same word should be separated by an underscore (<code class="docutils literal"><span class="pre">_</span></code>).</p>
+</div>
+<div class="section" id="the-signature">
+<span id="the-signature"></span><h2>The signature<a class="headerlink" href="#the-signature" title="永久链接至标题">¶</a></h2>
+<p>This section describes the signature of the operator. A list of Inputs and Outputs, each of which have a small description of what the variable represents and the type of variable. The variable names follow the <code class="docutils literal"><span class="pre">CamelCase</span></code> naming convention. The proposed format for this is:
+<code class="docutils literal"><span class="pre">Section</span> <span class="pre">:</span> <span class="pre">VariableName</span> <span class="pre">:</span> <span class="pre">(VariableType)</span> <span class="pre">VariableDescription</span> <span class="pre">...</span> <span class="pre">...</span></code></p>
+<p>The following example for an <code class="docutils literal"><span class="pre">sgd</span></code> operator covers the above mentioned sections as they would ideally look like in the <code class="docutils literal"><span class="pre">html</span></code>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sgd</span>
+
+<span class="n">SGD</span> <span class="n">operator</span>
+
+<span class="n">This</span> <span class="n">operator</span> <span class="n">implements</span> <span class="n">one</span> <span class="n">step</span> <span class="n">of</span> <span class="n">the</span> <span class="n">stochastic</span> <span class="n">gradient</span> <span class="n">descent</span> <span class="n">algorithm</span><span class="o">.</span>
+
+<span class="n">param_out</span> <span class="o">=</span> <span class="n">param_learning_rate</span> <span class="o">*</span> <span class="n">grad</span>
+
+<span class="n">Inputs</span><span class="p">:</span>
+<span class="n">Param</span> <span class="p">:</span> <span class="p">(</span><span class="n">Tensor</span><span class="p">)</span> <span class="n">Input</span> <span class="n">parameter</span>
+<span class="n">LearningRate</span> <span class="p">:</span> <span class="p">(</span><span class="n">Tensor</span><span class="p">)</span> <span class="n">Learning</span> <span class="n">rate</span> <span class="n">of</span> <span class="n">SGD</span>
+<span class="n">Grad</span> <span class="p">:</span> <span class="p">(</span><span class="n">Tensor</span><span class="p">)</span> <span class="n">Input</span> <span class="n">gradient</span>
+
+<span class="n">Outputs</span><span class="p">:</span>
+<span class="n">ParamOut</span> <span class="p">:</span> <span class="p">(</span><span class="n">Tensor</span><span class="p">)</span> <span class="n">Output</span> <span class="n">parameter</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="articleComments">
+</div>
+</div>

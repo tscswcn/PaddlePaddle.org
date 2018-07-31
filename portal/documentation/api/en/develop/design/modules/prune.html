@@ -1,0 +1,66 @@
+<div class="document" itemscope="itemscope" itemtype="http://schema.org/Article" role="main">
+<div itemprop="articleBody">
+<div class="section" id="prune">
+<span id="prune"></span><h1>Prune<a class="headerlink" href="#prune" title="永久链接至标题">¶</a></h1>
+<div class="section" id="motivation">
+<span id="motivation"></span><h2>Motivation<a class="headerlink" href="#motivation" title="永久链接至标题">¶</a></h2>
+<p>We want to support running inference, training and checkpointing in one <code class="docutils literal"><span class="pre">ProgramDesc</span></code>. We implement
+<code class="docutils literal"><span class="pre">void</span> <span class="pre">Prune(const</span> <span class="pre">ProgramDesc*</span> <span class="pre">input,</span> <span class="pre">ProgramDesc*</span> <span class="pre">output)</span></code> function, which takes a <code class="docutils literal"><span class="pre">ProgramDesc</span></code>
+and generate a pruned <code class="docutils literal"><span class="pre">ProgramDesc</span></code>.</p>
+</div>
+<div class="section" id="challenge">
+<span id="challenge"></span><h2>Challenge<a class="headerlink" href="#challenge" title="永久链接至标题">¶</a></h2>
+<p>Pruning need to support both variables and operators being evaluation targets. Consider the following
+different situations.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1"># Case 1: run foward pass.</span>
+<span class="n">cost_np</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">cost</span><span class="p">)</span>
+<span class="c1"># Case 2: run backward passing.</span>
+<span class="n">opts_np</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="p">[</span><span class="n">cost</span><span class="p">,</span> <span class="n">opt</span><span class="p">])</span>
+<span class="c1"># Case 3: run checkpointing</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">checkpoint</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="solution">
+<span id="solution"></span><h2>Solution<a class="headerlink" href="#solution" title="永久链接至标题">¶</a></h2>
+<p>To support evaluation of operators, we add <code class="docutils literal"><span class="pre">is_target</span></code> field in the <code class="docutils literal"><span class="pre">OpDesc</span></code>.</p>
+<div class="highlight-c++"><div class="highlight"><pre><span></span><span class="n">message</span> <span class="n">OpDesc</span> <span class="p">{</span>
+  <span class="n">required</span> <span class="n">string</span> <span class="n">type</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+  <span class="n">repeated</span> <span class="n">Var</span> <span class="n">inputs</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+  <span class="n">repeated</span> <span class="n">Var</span> <span class="n">outputs</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+  <span class="n">repeated</span> <span class="n">Attr</span> <span class="n">attrs</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
+  <span class="n">optional</span> <span class="kt">bool</span> <span class="n">is_target</span> <span class="o">=</span> <span class="mi">5</span> <span class="p">[</span> <span class="k">default</span> <span class="o">=</span> <span class="nb">false</span> <span class="p">];</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<p>To support evaluation of variables, we add <a class="reference external" href="https://github.com/PaddlePaddle/Paddle/pull/4599">fetch_op</a>.
+For each variable in the <code class="docutils literal"><span class="pre">target</span></code>, we insert a <code class="docutils literal"><span class="pre">fetch_op</span></code> into the <code class="docutils literal"><span class="pre">ProgramDesc</span></code> with <code class="docutils literal"><span class="pre">variable</span></code> being
+<code class="docutils literal"><span class="pre">fetch_op</span></code>‘s input. Then we also set <code class="docutils literal"><span class="pre">fetch_op</span></code> is a target.</p>
+<div class="section" id="algorithm">
+<span id="algorithm"></span><h3>Algorithm<a class="headerlink" href="#algorithm" title="永久链接至标题">¶</a></h3>
+<p>If an operator needs to be run, it must fall into one of the following cases:</p>
+<ol class="simple">
+<li>It is the target.</li>
+<li>It is depended by some other ops, meaning its output is some other op’s input.</li>
+</ol>
+<p>The first case can be checked by <code class="docutils literal"><span class="pre">op_desc.is_traget()</span></code> . The second case can be implement as</p>
+<div class="highlight-c++"><div class="highlight"><pre><span></span><span class="kt">bool</span> <span class="nf">HasDependentVar</span><span class="p">(</span><span class="k">const</span> <span class="n">OpDesc</span><span class="o">&amp;</span> <span class="n">op_desc</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">set</span><span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;&amp;</span> <span class="n">dependent_vars</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">for</span> <span class="p">(</span><span class="k">auto</span><span class="o">&amp;</span> <span class="nl">var</span> <span class="p">:</span> <span class="n">op_desc</span><span class="p">.</span><span class="n">outputs</span><span class="p">())</span> <span class="p">{</span>
+    <span class="k">for</span> <span class="p">(</span><span class="k">auto</span><span class="o">&amp;</span> <span class="nl">argu</span> <span class="p">:</span> <span class="n">var</span><span class="p">.</span><span class="n">arguments</span><span class="p">())</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="n">dependent_vars</span><span class="p">.</span><span class="n">count</span><span class="p">(</span><span class="n">argu</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Then the whole algorithm can be implemented as the following <a class="reference external" href="https://github.com/tonyyang-svail/Paddle/blob/prune_impl/paddle/framework/prune.cc">code</a>.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="articleComments">
+</div>
+</div>
