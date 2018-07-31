@@ -66,13 +66,14 @@ def change_lang(request):
         response = redirect('/about_en.html')
     elif path == '/about_en.html':
         response = redirect('/about_cn.html')
+    elif path in ['/documentation/models', '/documentation/mobile']:
+        # There is no information on lang and version. The only way is to redirect to the documentation home
+        response = redirect('/documentation/%s' % lang)
     elif not path in ['/', '/en', '/zh']:
+        # If not for homepage, its regular documentations.
         response = _find_matching_equivalent_page_for(path, request, lang)
     else:
-        if lang == 'zh':
-            response = redirect('/zh')
-        else:
-            response = redirect('/en')
+        response = redirect('/%s' % lang)
 
     return response
 
@@ -359,14 +360,20 @@ def content_home_zh(request, content_id):
 def content_home_en(request, content_id):
     return content_home(request, None, 'en')
 
-def content_home(request, content_id, lang):
+def content_home(request, content_id, lang=None):
     is_raw = request.GET.get('raw', None) == '1'
+
+    if lang == None:
+        lang = portal_helper.get_preferred_language(request)
+
     content_id = urlparse(request.path).path[15:]
 
     if hasattr(request, 'urlconf') and request.urlconf == 'visualDL.urls':
         content_id = 'visualdl'
-    else:
+    elif content_id in ['en', 'zh']:
+        # If content_id is en or zh, it means we are dealing with regular documentations
         content_id = 'docs'
+    # else content_id stays the same, it could be models or mobile
 
     return _redirect_first_link_in_contents(
         request, content_id,
