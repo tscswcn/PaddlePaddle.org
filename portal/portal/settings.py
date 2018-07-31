@@ -109,7 +109,8 @@ VERSIONS = [
     { 'name': '0.12.0', 'api': 'Fluid' },
     { 'name': '0.13.0', 'api': 'Fluid' },
     { 'name': '0.14.0', 'api': 'Fluid' },
-    { 'name': 'develop', 'api': 'Fluid' }
+    # Per request, remove the develop branch
+    # { 'name': 'develop', 'api': 'Fluid' }
 ]
 
 if DEBUG:
