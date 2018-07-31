@@ -62,7 +62,11 @@ def change_lang(request):
 
     path = urlparse(request.META.get('HTTP_REFERER')).path
 
-    if not path in ['/', '/en', '/zh']:
+    if path == '/about_cn.html':
+        response = redirect('/about_en.html')
+    elif path == '/about_en.html':
+        response = redirect('/about_cn.html')
+    elif not path in ['/', '/en', '/zh']:
         response = _find_matching_equivalent_page_for(path, request, lang)
     else:
         if lang == 'zh':
@@ -341,10 +345,12 @@ def zh_home_root(request):
 
 
 def about_en(request):
+    portal_helper.set_preferred_language(request, None, 'en')
     return render(request, 'about_en.html')
 
 
 def about_cn(request):
+    portal_helper.set_preferred_language(request, None, 'zh')
     return render(request, 'about_cn.html')
 
 def content_home_zh(request, content_id):
