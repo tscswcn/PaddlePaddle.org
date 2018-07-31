@@ -359,13 +359,17 @@ def content_home_zh(request, content_id):
 def content_home_en(request, content_id):
     return content_home(request, None, 'en')
 
-def content_home(request, content_id, lang):
+def content_home(request, content_id, lang=None):
     is_raw = request.GET.get('raw', None) == '1'
+
+    if lang == None:
+        lang = portal_helper.get_preferred_language(request)
+
     content_id = urlparse(request.path).path[15:]
 
     if hasattr(request, 'urlconf') and request.urlconf == 'visualDL.urls':
         content_id = 'visualdl'
-    else:
+    elif content_id in ['en', 'zh']:
         content_id = 'docs'
 
     return _redirect_first_link_in_contents(
