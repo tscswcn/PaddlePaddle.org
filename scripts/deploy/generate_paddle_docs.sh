@@ -1,8 +1,13 @@
 #!/bin/bash
 set -e
 
-ls $PADDLE_ROOT
-pwd
-ls $PADDLE_ROOT/build/
+PADDLE_ROOT = "$( cd "$( dirname "${BASH_SOURCE[0]}")/../../" && pwd )"
 
-export PYTHONPATH=$PADDLE_ROOT/build/python
+echo $PADDLE_ROOT
+
+ls $PADDLE_ROOT
+
+echo $TRAVIS_BUILD_DIR
+
+cd ../../
+export PYTHONPATH=`pwd`/Paddle/build/python
