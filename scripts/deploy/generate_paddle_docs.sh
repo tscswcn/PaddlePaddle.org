@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-PADDLE_ROOT = "$( cd "$( dirname "${BASH_SOURCE[0]}")/../../" && pwd )"
+PADDLE_ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}")/../../" && pwd )"
 
 echo $PADDLE_ROOT
 
