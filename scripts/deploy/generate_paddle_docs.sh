@@ -11,3 +11,5 @@ echo $TRAVIS_BUILD_DIR
 
 cd ../../
 export PYTHONPATH=`pwd`/Paddle/build/python
+
+echo "Set PYTHONPATH to $PYTHONPATH"
