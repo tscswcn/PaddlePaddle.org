@@ -19,7 +19,13 @@ echo "Pull PaddlePaddle.org app"
 curl -LOk https://github.com/PaddlePaddle/PaddlePaddle.org/archive/$PPO_BRANCH.zip
 unzip $PPO_BRANCH.zip
 cd PaddlePaddle.org-$PPO_BRANCH/portal
+
+if ! [ -x "$(which sudo)" ]; then
+pip install --ignore-installed -r requirements.txt
+else
 sudo pip install --ignore-installed -r requirements.txt
+fi
+
 
 mkdir documentation
 
