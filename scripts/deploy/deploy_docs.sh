@@ -48,7 +48,7 @@ ssh-add content_mgr.pem
 export STAGE_DEPLOY_IP=13.229.163.131
 
 # To avoid waiting for "Are you sure you want to continue connecting" input
-ssh-keyscan @STAGE_DEPLOY_IP >> ~/.ssh/known_hosts
+ssh-keyscan $STAGE_DEPLOY_IP >> ~/.ssh/known_hosts
 rsync -r documentation/ content_mgr@$STAGE_DEPLOY_IP:/var/pages/documentation
 rsync -r menus/ content_mgr@$STAGE_DEPLOY_IP:/var/pages/menus
 
