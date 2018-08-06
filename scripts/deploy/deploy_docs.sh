@@ -53,7 +53,7 @@ mkdir ~/.ssh
 fi
 ssh-keyscan $STAGE_DEPLOY_IP >> ~/.ssh/known_hosts
 rsync -r documentation/ content_mgr@$STAGE_DEPLOY_IP:/var/pages/documentation
-if [ -d /var/pages/menus]; then
+if [ -d /var/pages/menus ]; then
 rsync -r /var/pages/menus/ content_mgr@$STAGE_DEPLOY_IP:/var/pages/menus
 else
 rsync -r menus/ content_mgr@$STAGE_DEPLOY_IP:/var/pages/menus
