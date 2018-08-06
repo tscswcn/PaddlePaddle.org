@@ -25,7 +25,11 @@ cd PaddlePaddle.org-$PPO_BRANCH/
 
 cd portal/
 
+if ! [ -x "$(which sudo)" ]; then
+pip install --ignore-installed -r requirements.txt
+else
 sudo pip install --ignore-installed -r requirements.txt
+fi
 
 python manage.py deploy_documentation --source=$SOURCE_DIR --dest_gen_docs_dir=$GENERATED_DOCS_DIR --doc_version=$GITHUB_BRANCH
 
@@ -39,6 +43,12 @@ chmod 400 content_mgr.pem
 ssh-add content_mgr.pem
 
 export STAGE_DEPLOY_IP=13.229.163.131
+
+# To avoid waiting for "Are you sure you want to continue connecting" input
+if [ ! -d ~/.ssh ] ; then
+mkdir ~/.ssh
+fi
+ssh-keyscan $STAGE_DEPLOY_IP >> ~/.ssh/known_hosts
 
 rsync -r $DEPLOY_DOCS_DIR/content content_mgr@$STAGE_DEPLOY_IP:/var/content/.ppo_workspace
 
