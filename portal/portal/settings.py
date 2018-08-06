@@ -114,7 +114,7 @@ VERSIONS = [
 ]
 
 if DEBUG:
-    VERSIONS += { 'name': 'develop_doc', 'api': 'Fluid' }
+    VERSIONS.append({ 'name': 'develop_doc', 'api': 'Fluid' })
 
 if DEBUG:
     ALLOWED_HOSTS = ['localhost', '127.0.0.1']
