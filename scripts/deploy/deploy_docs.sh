@@ -4,17 +4,9 @@ set -e
 DEC_PASSWD=$1
 GITHUB_BRANCH=$2
 SOURCE_DIR=$3
+PPO_BRANCH=$4
 
-echo "Deploy docs: DEC_PASSWD:($1) GITHUB_BRANCH:($2) SOURCE_DIR:($3)"
-
-# Pull PaddlePaddle.org app and run the deploy_documentation command
-# If the Paddle branch is develop_doc, change to use the develop code for testing
-if [ $GITHUB_BRANCH == "develop_doc" ]; then
-PPO_BRANCH=develop
-else
-PPO_BRANCH=master
-fi
-
+echo "Deploy docs: DEC_PASSWD:($1) GITHUB_BRANCH:($2) SOURCE_DIR:($3) PPO_BRANCH:($4)"
 echo "Pull PaddlePaddle.org app"
 curl -LOk https://github.com/PaddlePaddle/PaddlePaddle.org/archive/$PPO_BRANCH.zip
 unzip $PPO_BRANCH.zip
@@ -25,7 +17,6 @@ pip install --ignore-installed -r requirements.txt
 else
 sudo pip install --ignore-installed -r requirements.txt
 fi
-
 
 mkdir documentation
 
@@ -53,11 +44,8 @@ mkdir ~/.ssh
 fi
 ssh-keyscan $STAGE_DEPLOY_IP >> ~/.ssh/known_hosts
 rsync -r documentation/ content_mgr@$STAGE_DEPLOY_IP:/var/pages/documentation
-if [ -d /var/pages/menus ]; then
 rsync -r /var/pages/menus/ content_mgr@$STAGE_DEPLOY_IP:/var/pages/menus
-else
-rsync -r menus/ content_mgr@$STAGE_DEPLOY_IP:/var/pages/menus
-fi
+
 chmod 644 content_mgr.pem
 rm -rf documentation
-rm -rf menus
+rm -rf /var/pages/menus
