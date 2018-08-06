@@ -32,7 +32,7 @@ class Content:
     OTHER = 'other'
 
 CONTENT_ID_TO_FOLDER_MAP = {
-    Content.DOCUMENTATION: 'Paddle',
+    Content.DOCUMENTATION: 'paddle',
     Content.MODELS: 'models',
     Content.BOOK: 'book',
     Content.MOBILE: 'Mobile',
