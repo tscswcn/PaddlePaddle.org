@@ -4,9 +4,9 @@ set -e
 DEC_PASSWD=$1
 GITHUB_BRANCH=$2
 SOURCE_DIR=$3
-PPO_BRANCH=$4
+PPO_BRANCH=$5
 
-echo "Deploy docs: DEC_PASSWD:($1) GITHUB_BRANCH:($2) SOURCE_DIR:($3) PPO_BRANCH:($4)"
+echo "Deploy docs: DEC_PASSWD:($1) GITHUB_BRANCH:($2) SOURCE_DIR:($3) PPO_BRANCH:($5)"
 echo "Pull PaddlePaddle.org app"
 curl -LOk https://github.com/PaddlePaddle/PaddlePaddle.org/archive/$PPO_BRANCH.zip
 unzip $PPO_BRANCH.zip
