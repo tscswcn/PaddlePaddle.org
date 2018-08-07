@@ -1,11 +1,15 @@
 {% load app_tags %}
 
 <button class="selected-version dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    {{ CURRENT_DOCS_VERSION }}
+    {% for version in versions %}
+    {% if version.name == CURRENT_DOCS_VERSION %}
+    {{ CURRENT_DOCS_VERSION }} ({{ version.api }})
+    {% endif %}
+    {% endfor %}
 </button>
 
 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
     {% for version in versions %}
-    <a class="dropdown-item" href="{% url 'set_version' %}?preferred_version={{ version.name }}">{% if version.name != 'develop' %}v{% endif %}{{ version.name }}<span class="version-api"> ({{ version.api }})</span></a>
+    <a class="dropdown-item" href="{% url 'set_version' %}?preferred_version={{ version.name }}">{% if 'develop' not in version.name %}v{% endif %}{{ version.name }}<span class="version-api"> ({{ version.api }})</span></a>
     {% endfor %}
 </div>
