@@ -495,8 +495,12 @@ def strip_sphinx_documentation(source_dir, generated_dir, lang_destination_dir, 
                         image_subpath = None
 
                         parent_paths = subpath.split('/')
+                        parent_paths.remove('')
+
                         image_subpath = ''
-                        for i in range(len(parent_paths)):
+
+                        # -1 because we nest it 1 further levels? No idea.
+                        for i in range(len(parent_paths) - 1):
                             image_subpath = image_subpath + '../'
 
                         # hardcode the sphinx '_images' dir
