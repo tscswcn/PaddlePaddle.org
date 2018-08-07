@@ -495,7 +495,8 @@ def strip_sphinx_documentation(source_dir, generated_dir, lang_destination_dir, 
                         image_subpath = None
 
                         parent_paths = subpath.split('/')
-                        parent_paths.remove('')
+                        if '' in parent_paths:
+                            parent_paths.remove('')
 
                         image_subpath = ''
 
