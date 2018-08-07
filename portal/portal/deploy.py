@@ -36,8 +36,6 @@ def transform(source_dir, destination_dir, content_id, version, lang=None):
             # If this is called from the CI, often with no language,
             # generate API docs too.
             if settings.ENV in ['production', 'staging']:
-                build_apis(source_dir, destination_dir)
-
                 documentation(
                     os.path.join(source_dir, 'api'),
                     destination_dir, 'api', version, lang
@@ -731,33 +729,6 @@ def reserve_formulas(markdown_body, formula_map, only_reserve_double_dollar=Fals
         markdown_body = markdown_body.replace(m[i], place_holder % i)
 
     return markdown_body
-
-
-def build_apis(source_dir, destination_dir):
-    """
-    Given a Paddle doc directory, invoke a script to generate docs using Sphinx
-    and after parsing the code base based on given config, into an output dir.
-    """
-    # Remove old generated docs directory
-    # if os.path.exists(destination_dir) and os.path.isdir(destination_dir):
-    #     shutil.rmtree(destination_dir)
-    if os.path.exists(os.path.dirname(source_dir)):
-        script_path = os.path.join(
-            settings.BASE_DIR, '../scripts/deploy/generate_paddle_docs.sh')
-
-        if os.path.exists(os.path.dirname(script_path)):
-            source_dir = os.path.dirname(source_dir.rstrip('/'))
-
-            while os.path.basename(source_dir).lower() != 'paddle':
-                source_dir = os.path.dirname(source_dir)
-
-            call([script_path, source_dir, destination_dir])
-
-            return destination_dir
-        else:
-            raise Exception('Cannot find script located at %s.' % script_path)
-    else:
-        raise Exception('Cannot generate documentation, directory %s does not exists.' % source_dir)
 
 
 def _get_new_generated_dir(content_id):
