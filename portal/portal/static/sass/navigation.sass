@@ -59,33 +59,15 @@ body
         margin-top: $primary-nav-height
 
         .version-switcher
-            float: right
-            position: fixed
-            bottom: 0px
-            right: 0px
-            // This is a bad number, but just corrects for another high number for the right bar.
-            z-index: 2000
+            border-bottom: 1px solid #ccc
+            overflow: hidden
+            padding-bottom: 18px
 
+            .version-label
+                float: left
 
             .version-row
-                button
-                    display: inline
-                    border-width: 0px
-                    cursor: pointer
-
-                button.selected-version
-                    background-color: #9977ef
-                    color: #fff
-                    padding: 6px 12px
-                    border-radius: 2px
-                    margin-right: 1em
-                    opacity: 0.75
-
-                    &::after
-                        vertical-align: .1em
-
-                    &:hover
-                        opacity: 1
+                float: right
 
                 .dropdown-menu
                     padding: 0px
@@ -96,6 +78,38 @@ body
 
                     .version-api
                         color: #afafaf
+
+        // BELOW IS THE FIXED VERSION WHICH IS BEING DEPRECATED FOR NOW.
+        // .version-switcher
+        //     float: right
+        //     position: fixed
+        //     bottom: 0px
+        //     right: 0px
+        //     // This is a bad number, but just corrects for another high number for the right bar.
+        //     z-index: 2000
+
+
+            // .version-row
+            //     button
+            //         display: inline
+            //         border-width: 0px
+            //         cursor: pointer
+            //
+            //     button.selected-version
+            //         background-color: #9977ef
+            //         color: #fff
+            //         padding: 6px 12px
+            //         border-radius: 2px
+            //         margin-right: 1em
+            //         opacity: 0.75
+            //
+            //         &::after
+            //             vertical-align: .1em
+            //
+            //         &:hover
+            //             opacity: 1
+            //
+
 
 
     &.invert

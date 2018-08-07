@@ -7,6 +7,13 @@
     </div>
     {% endif %}
 
+    <ul class="version-switcher">
+        <li>
+            <div class="version-label">Version:</div>
+            <div class="version-row">{% version_links %}</div>
+        </li>
+    </ul>
+
     {% for chapter in side_nav_content.sections %}
     <ol class="content-links chapter">
         {% translation_assignment chapter.title as chapter_title %}
