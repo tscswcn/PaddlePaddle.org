@@ -18,7 +18,7 @@
         <link href="/static/stylesheets/reset.css" media="screen, projection" rel="stylesheet" type="text/css" />
         <link href="/static/stylesheets/fontawesome-all.min.css" media="screen, projection" rel="stylesheet" type="text/css" />
         <link href="/static/stylesheets/bootstrap.min.css" media="screen, projection" rel="stylesheet" type="text/css" />
-        <link href="/static/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css" />
+        <link href="/static/stylesheets/screen.css?{% server_start_time %}" media="screen, projection" rel="stylesheet" type="text/css" />
         {% endblock %}
         {% if settings.ENV != 'production' and settings.ENV != 'staging' %}
             <link href="/static/stylesheets/spinner.css" media="screen, projection" rel="stylesheet" type="text/css" />
