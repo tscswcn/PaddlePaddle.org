@@ -377,28 +377,27 @@
       margin-top: 12px
       margin-bottom: 12px
       min-height: 600px
-      height: 600px
 
       code
         font-size: 12px
         color: black
-        opacity: 0
-        visibility: hidden
         -webkit-transition: opacity 600ms, visibility 600ms
         transition: opacity 600ms, visibility 600ms
-
 
       .left-bar
         background-color: green
 
+      .step-code
+        display: none
+
       .show
         opacity: 0.5
-        visibility: visible
+        display: unset
         opacity: 1
 
       .in-focus
         opacity: 1
-        visibility: visible
+        display: unset
 
       p
         float: left
