@@ -261,8 +261,8 @@ msgid ""
 "visualizes the performance and data flowing through your neural network "
 "training."
 msgstr ""
-"VisualDL 是一个开源的跨框架Web可视化工具，可以将神经网络训练表现和流通数据丰"
-"富的图视化。"
+"VisualDL 是一款开源的、支持多个深度学习框架的数据可视化工具库；可以将神经网络"
+"的各种训练结果以及网络的结构以可视化的形式呈现。"
 
 #: visualDL/templates/visualdl/index.html:23
 msgid "Getting Started"
