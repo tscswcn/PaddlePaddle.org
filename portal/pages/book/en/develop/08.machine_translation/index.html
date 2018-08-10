@@ -1,0 +1,482 @@
+{% verbatim %}
+<h1>Machine Translation</h1>
+<p>The source code of this tutorial is live at <a href="https://github.com/PaddlePaddle/book/tree/develop/08.machine_translation">book/machine_translation</a>. Please refer to the <a href="https://github.com/PaddlePaddle/book#running-the-book">book running tutorial</a> for getting started with Paddle.</p>
+<h2>Background</h2>
+<p>Machine translation (MT) leverages computers to translate from one language to another. The language to be translated is referred to as the source language, while the language to be translated into is referred to as the target language. Thus, Machine translation is the process of translating from the source language to the target language. It is one of the most important research topics in the field of natural language processing.</p>
+<p>Early machine translation systems are mainly rule-based i.e. they rely on a language expert to specify the translation rules between the two languages. It is quite difficult to cover all the rules used in one language. So it is quite a challenge for language experts to specify all possible rules in two or more different languages. Hence, a major challenge in conventional machine translation has been the difficulty in obtaining a complete rule set [<a href="#references">1</a>].</p>
+<p>To address the aforementioned problems, statistical machine translation techniques have been developed. These techniques learn the translation rules from a large corpus, instead of being designed by a language expert. While these techniques overcome the bottleneck of knowledge acquisition, there are still quite a lot of challenges, for example:</p>
+<ol>
+<li>
+<p>Human designed features cannot cover all possible linguistic variations;</p>
+</li>
+<li>
+<p>It is difficult to use global features;</p>
+</li>
+<li>
+<p>The techniques heavily rely on pre-processing techniques like word alignment, word segmentation and tokenization, rule-extraction and syntactic parsing etc. The error introduced in any of these steps could accumulate and impact translation quality.</p>
+</li>
+</ol>
+<p>The recent development of deep learning provides new solutions to these challenges. The two main categories for deep learning based machine translation techniques are:</p>
+<ol>
+<li>
+<p>Techniques based on the statistical machine translation system but with some key components improved with neural networks, e.g., language model, reordering model (please refer to the left part of Figure 1);</p>
+</li>
+<li>
+<p>Techniques mapping from source language to target language directly using a neural network, or end-to-end neural machine translation (NMT).</p>
+</li>
+</ol>
+<p align="center">
+<img src="image/nmt_en.png" width="400"/><br/>
+Figure 1. Neural Network based Machine Translation
+</p>
+<p>This tutorial will mainly introduce an NMT model and how to use PaddlePaddle to train it.</p>
+<h2>Illustrative Results</h2>
+<p>Let's consider an example of Chinese-to-English translation. The model is given the following segmented sentence in Chinese
+</p><div class="highlight"><pre><span></span>这些 是 希望 的 曙光 和 解脱 的 迹象 .
+</pre></div>
+After training and with a beam-search size of 3, the generated translations are as follows:
+<div class="highlight"><pre><span></span>0 -5.36816   These are signs of hope and relief . &lt;e&gt;
+1 -6.23177   These are the light of hope and relief . &lt;e&gt;
+2 -7.7914  These are the light of hope and the relief of hope . &lt;e&gt;
+</pre></div>
+- The first column corresponds to the id of the generated sentence; the second column corresponds to the score of the generated sentence (in descending order), where a larger value indicates better quality; the last column corresponds to the generated sentence.
+- There are two special tokens: <code>&lt;e&gt;</code> denotes the end of a sentence while <code>&lt;unk&gt;</code> denotes unknown word, i.e., a word not in the training dictionary.
+<h2>Overview of the Model</h2>
+<p>This section will introduce Gated Recurrent Unit (GRU), Bi-directional Recurrent Neural Network, the Encoder-Decoder framework used in NMT, attention mechanism, as well as the beam search algorithm.</p>
+<h3>Gated Recurrent Unit (GRU)</h3>
+<p>We already introduced RNN and LSTM in the <a href="https://github.com/PaddlePaddle/book/blob/develop/understand_sentiment/README.md">Sentiment Analysis</a> chapter.
+Compared to a simple RNN, the LSTM added memory cell, input gate, forget gate and output gate. These gates combined with the memory cell greatly improve the ability to handle long-term dependencies.</p>
+<p>GRU[<a href="#references">2</a>] proposed by Cho et al is a simplified LSTM and an extension of a simple RNN. It is shown in the figure below.
+A GRU unit has only two gates:
+- reset gate: when this gate is closed, the history information is discarded, i.e., the irrelevant historical information has no effect on the future output.
+- update gate: it combines the input gate and the forget gate and is used to control the impact of historical information on the hidden output. The historical information is passed over when the update gate is close to 1.</p>
+<p align="center">
+<img src="image/gru_en.png" width="700"/><br/>
+Figure 2. A GRU Gate
+</p>
+<p>Generally speaking, sequences with short distance dependencies will have an active reset gate while sequences with long distance dependency will have an active update date.
+In addition, Chung et al.[<a href="#references">3</a>] have empirically shown that although GRU has less parameters, it has similar performance to LSTM on several different tasks.</p>
+<h3>Bi-directional Recurrent Neural Network</h3>
+<p>We already introduced an instance of bi-directional RNN in the <a href="https://github.com/PaddlePaddle/book/blob/develop/label_semantic_roles/README.md">Semantic Role Labeling</a> chapter. Here we present another bi-directional RNN model with a different architecture proposed by Bengio et al. in [<a href="#references">2</a>,<a href="#references">4</a>]. This model takes a sequence as input and outputs a fixed dimensional feature vector at each step, encoding the context information at the corresponding time step.</p>
+<p>Specifically, this bi-directional RNN processes the input sequence in the original and reverse order respectively, and then concatenates the output feature vectors at each time step as the final output. Thus the output node at each time step contains information from the past and future as context. The figure below shows an unrolled bi-directional RNN. This network contains a forward RNN and backward RNN with six weight matrices: weight matrices from input to forward hidden layer and backward hidden (<span class="markdown-equation" id="equation-0">$W_1, W_3$</span>), weight matrices from hidden to itself (<span class="markdown-equation" id="equation-1">$W_2, W_5$</span>), matrices from forward hidden and backward hidden to output layer (<span class="markdown-equation" id="equation-2">$W_4, W_6$</span>). Note that there are no connections between forward hidden and backward hidden layers.</p>
+<p align="center">
+<img src="image/bi_rnn_en.png" width="450"/><br/>
+Figure 3. Temporally unrolled bi-directional RNN
+</p>
+<h3>Encoder-Decoder Framework</h3>
+<p>The Encoder-Decoder[<a href="#references">2</a>] framework aims to solve the mapping of a sequence to another sequence, for sequences with arbitrary lengths. The source sequence is encoded into a vector via an encoder, which is then decoded to a target sequence via a decoder by maximizing the predictive probability. Both the encoder and the decoder are typically implemented via RNN.</p>
+<p align="center">
+<img src="image/encoder_decoder_en.png" width="700"/><br/>
+Figure 4. Encoder-Decoder Framework
+</p>
+<h4>Encoder</h4>
+<p>There are three steps for encoding a sentence:</p>
+<ol>
+<li>
+<p>One-hot vector representation of a word: Each word <span class="markdown-equation" id="equation-3">$x_i$</span> in the source sentence <span class="markdown-equation" id="equation-4">$x=\left \{ x_1,x_2,...,x_T \right \}$</span> is represented as a vector <span class="markdown-equation" id="equation-5">$w_i\epsilon \left \{ 0,1 \right \}^{\left | V \right |},i=1,2,...,T$</span>   where <span class="markdown-equation" id="equation-6">$w_i$</span> has the same dimensionality as the size of the dictionary, i.e., <span class="markdown-equation" id="equation-7">$\left | V \right |$</span>, and has an element of one at the location corresponding to the location of the word in the dictionary and zero elsewhere.</p>
+</li>
+<li>
+<p>Word embedding as a representation in the low-dimensional semantic space: There are two problems with one-hot vector representation</p>
+</li>
+<li>
+<p>The dimensionality of the vector is typically large, leading to the curse of dimensionality;</p>
+</li>
+<li>
+<p>It is hard to capture the relationships between words, i.e., semantic similarities. Therefore, it is useful to project the one-hot vector into a low-dimensional semantic space as a dense vector with fixed dimensions, i.e., <span class="markdown-equation" id="equation-8">$s_i=Cw_i$</span> for the <span class="markdown-equation" id="equation-9">$i$</span>-th word, with <span class="markdown-equation" id="equation-10">$C\epsilon R^{K\times \left | V \right |}$</span> as the projection matrix and <span class="markdown-equation" id="equation-11">$K$</span> is the dimensionality of the word embedding vector.</p>
+</li>
+<li>
+<p>Encoding of the source sequence via RNN: This can be described mathematically as:</p>
+<p><span class="markdown-equation" id="equation-12">$$h_i=\varnothing _\theta \left ( h_{i-1}, s_i \right )$$</span></p>
+<p>where
+<span class="markdown-equation" id="equation-13">$h_0$</span> is a zero vector,
+<span class="markdown-equation" id="equation-14">$\varnothing _\theta$</span> is a non-linear activation function, and
+<span class="markdown-equation" id="equation-15">$\mathbf{h}=\left \{ h_1,..., h_T \right \}$</span>
+is the sequential encoding of the first <span class="markdown-equation" id="equation-16">$T$</span> words from the source sequence. The vector representation of the whole sentence can be represented as the encoding vector at the last time step <span class="markdown-equation" id="equation-16">$T$</span> from <span class="markdown-equation" id="equation-18">$\mathbf{h}$</span>, or by temporal pooling over <span class="markdown-equation" id="equation-18">$\mathbf{h}$</span>.</p>
+</li>
+</ol>
+<p>Bi-directional RNN can also be used in step (3) for more a complicated sentence encoding. This can be implemented using a bi-directional GRU. Forward GRU encodes the source sequence in its original order <span class="markdown-equation" id="equation-20">$(x_1,x_2,...,x_T)$</span>, and generates a sequence of hidden states <span class="markdown-equation" id="equation-21">$(\overrightarrow{h_1},\overrightarrow{h_2},...,\overrightarrow{h_T})$</span>. The backward GRU encodes the source sequence in reverse order, i.e., <span class="markdown-equation" id="equation-22">$(x_T,x_T-1,...,x_1)$</span> and generates <span class="markdown-equation" id="equation-23">$(\overleftarrow{h_1},\overleftarrow{h_2},...,\overleftarrow{h_T})$</span>. Then for each word <span class="markdown-equation" id="equation-3">$x_i$</span>, its complete hidden state is the concatenation of the corresponding hidden states from the two GRUs, i.e., <span class="markdown-equation" id="equation-25">$h_i=\left [ \overrightarrow{h_i^T},\overleftarrow{h_i^T} \right ]^{T}$</span>.</p>
+<p align="center">
+<img src="image/encoder_attention_en.png" width="500"/><br/>
+Figure 5. Encoder using bi-directional GRU
+</p>
+<h4>Decoder</h4>
+<p>The goal of the decoder is to maximize the probability of the next correct word in the target language. The main idea is as follows:</p>
+<ol>
+<li>At each time step <span class="markdown-equation" id="equation-9">$i$</span>, given the encoding vector (or context vector) <span class="markdown-equation" id="equation-27">$c$</span> of the source sentence, the <span class="markdown-equation" id="equation-9">$i$</span>-th word <span class="markdown-equation" id="equation-29">$u_i$</span> from the ground-truth target language and the RNN hidden state <span class="markdown-equation" id="equation-30">$z_i$</span>, the next hidden state <span class="markdown-equation" id="equation-31">$z_{i+1}$</span> is computed as:</li>
+</ol>
+<p><span class="markdown-equation" id="equation-32">$$z_{i+1}=\phi _{\theta '}\left ( c,u_i,z_i \right )$$</span>
+   where <span class="markdown-equation" id="equation-33">$\phi _{\theta '}$</span> is a non-linear activation function and <span class="markdown-equation" id="equation-34">$c=q\mathbf{h}$</span> is the context vector of the source sentence. Without using <a href="#Attention Mechanism">attention</a>, if the output of the <a href="#Encoder">encoder</a> is the encoding vector at the last time step of the source sentence, then <span class="markdown-equation" id="equation-27">$c$</span> can be defined as <span class="markdown-equation" id="equation-36">$c=h_T$</span>. <span class="markdown-equation" id="equation-29">$u_i$</span> denotes the <span class="markdown-equation" id="equation-9">$i$</span>-th word from the target language sentence and <span class="markdown-equation" id="equation-39">$u_0$</span> denotes the beginning of the target language sentence (i.e., <code>&lt;s&gt;</code>), indicating the beginning of decoding. <span class="markdown-equation" id="equation-30">$z_i$</span> is the RNN hidden state at time step <span class="markdown-equation" id="equation-9">$i$</span> and <span class="markdown-equation" id="equation-42">$z_0$</span> is an all zero vector.</p>
+<ol>
+<li>Calculate the probability <span class="markdown-equation" id="equation-43">$p_{i+1}$</span> for the <span class="markdown-equation" id="equation-44">$i+1$</span>-th word in the target language sequence by normalizing <span class="markdown-equation" id="equation-31">$z_{i+1}$</span> using <code>softmax</code> as follows</li>
+</ol>
+<p><span class="markdown-equation" id="equation-46">$$p\left ( u_{i+1}|u_{&lt;i+1},\mathbf{x} \right )=softmax(W_sz_{i+1}+b_z)$$</span></p>
+<p>where <span class="markdown-equation" id="equation-47">$W_sz_{i+1}+b_z$</span> scores each possible words and is then normalized via softmax to produce the probability <span class="markdown-equation" id="equation-43">$p_{i+1}$</span> for the <span class="markdown-equation" id="equation-44">$i+1$</span>-th word.</p>
+<ol>
+<li>Compute the cost accoding to <span class="markdown-equation" id="equation-43">$p_{i+1}$</span> and <span class="markdown-equation" id="equation-51">$u_{i+1}$</span>.</li>
+<li>Repeat Steps 1-3, until all the words in the target language sentence have been processed.</li>
+</ol>
+<p>The generation process of machine translation is to translate the source sentence into a sentence in the target language according to a pre-trained model. There are some differences between the decoding step in generation and training. Please refer to <a href="#Beam Search Algorithm">Beam Search Algorithm</a> for details.</p>
+<h3>Attention Mechanism</h3>
+<p>There are a few problems with the fixed dimensional vector representation from the encoding stage:
+  * It is very challenging to encode both the semantic and syntactic information a sentence with a fixed dimensional vector regardless of the length of the sentence.
+  * Intuitively, when translating a sentence, we typically pay more attention to the parts in the source sentence more relevant to the current translation. Moreover, the focus changes along the process of the translation. With a fixed dimensional vector, all the information from the source sentence is treated equally in terms of attention. This is not reasonable. Therefore, Bahdanau et al. [<a href="#references">4</a>] introduced attention mechanism, which can decode based on different fragments of the context sequence in order to address the difficulty of feature learning for long sentences. Decoder with attention will be explained in the following.</p>
+<p>Different from the simple decoder, <span class="markdown-equation" id="equation-30">$z_i$</span> is computed as:</p>
+<p><span class="markdown-equation" id="equation-53">$$z_{i+1}=\phi _{\theta '}\left ( c_i,u_i,z_i \right )$$</span></p>
+<p>It is observed that for each word <span class="markdown-equation" id="equation-29">$u_i$</span> in the target language sentence, there is a corresponding context vector <span class="markdown-equation" id="equation-55">$c_i$</span> as the encoding of the source sentence, which is computed as:</p>
+<p><span class="markdown-equation" id="equation-56">$$c_i=\sum _{j=1}^{T}a_{ij}h_j, a_i=\left[ a_{i1},a_{i2},...,a_{iT}\right ]$$</span></p>
+<p>It is noted that the attention mechanism is achieved by a weighted average over the RNN hidden states <span class="markdown-equation" id="equation-57">$h_j$</span>. The weight <span class="markdown-equation" id="equation-58">$a_{ij}$</span> denotes the strength of attention of the <span class="markdown-equation" id="equation-9">$i$</span>-th word in the target language sentence to the <span class="markdown-equation" id="equation-60">$j$</span>-th word in the source sentence and is calculated as</p>
+<p>begin{align}
+a_{ij}&amp;=frac{exp(e_{ij})}{sum_{k=1}^{T}exp(e_{ik})}\\
+e_{ij}&amp;=align(z_i,h_j)\\
+end{align}</p>
+<p>where <span class="markdown-equation" id="equation-61">$align$</span> is an alignment model that measures the fitness between the <span class="markdown-equation" id="equation-9">$i$</span>-th word in the target language sentence and the <span class="markdown-equation" id="equation-60">$j$</span>-th word in the source sentence. More concretely, the fitness is computed with the <span class="markdown-equation" id="equation-9">$i$</span>-th hidden state <span class="markdown-equation" id="equation-30">$z_i$</span> of the decoder RNN and the <span class="markdown-equation" id="equation-60">$j$</span>-th context vector <span class="markdown-equation" id="equation-57">$h_j$</span> of the source sentence. Hard alignment is used in the conventional alignment model, which means each word in the target language explicitly corresponds to one or more words from the target language sentence. In an attention model, soft alignment is used, where any word in source sentence is related to any word in the target language sentence, where the strength of the relation is a real number computed via the model, thus can be incorporated into the NMT framework and can be trained via back-propagation.</p>
+<p align="center">
+<img src="image/decoder_attention_en.png" width="500"/><br/>
+Figure 6. Decoder with Attention Mechanism
+</p>
+<h3>Beam Search Algorithm</h3>
+<p><a href="http://en.wikipedia.org/wiki/Beam_search">Beam Search</a> is a heuristic search algorithm that explores a graph by expanding the most promising node in a limited set. It is typically used when the solution space is huge  (e.g., for machine translation, speech recognition), and there is not enough memory for all the possible solutions. For example, if we want to translate “<code>&lt;s&gt;你好&lt;e&gt;</code>” into English, even if there are only three words in the dictionary (<code>&lt;s&gt;</code>, <code>&lt;e&gt;</code>, <code>hello</code>), it is still possible to generate an infinite number of sentences, where the word <code>hello</code> can appear different number of times. Beam search could be used to find a good translation among them.</p>
+<p>Beam search builds a search tree using breadth first search and sorts the nodes according to a heuristic cost (sum of the log probability of the generated words) at each level of the tree. Only a fixed number of nodes according to the pre-specified beam size (or beam width) are considered. Thus, only nodes with highest scores are expanded in the next level. This reduces the space and time requirements significantly. However, a globally optimal solution is not guaranteed.</p>
+<p>The goal is to maximize the probability of the generated sequence when using beam search in decoding, The procedure is as follows:</p>
+<ol>
+<li>At each time step <span class="markdown-equation" id="equation-9">$i$</span>, compute the hidden state <span class="markdown-equation" id="equation-31">$z_{i+1}$</span> of the next time step according to the context vector <span class="markdown-equation" id="equation-27">$c$</span> of the source sentence, the <span class="markdown-equation" id="equation-9">$i$</span>-th word <span class="markdown-equation" id="equation-29">$u_i$</span> generated for the target language sentence and the RNN hidden state <span class="markdown-equation" id="equation-30">$z_i$</span>.</li>
+<li>Normalize <span class="markdown-equation" id="equation-31">$z_{i+1}$</span> using <code>softmax</code> to get the probability <span class="markdown-equation" id="equation-43">$p_{i+1}$</span> for the <span class="markdown-equation" id="equation-44">$i+1$</span>-th word for the target language sentence.</li>
+<li>Sample the word <span class="markdown-equation" id="equation-51">$u_{i+1}$</span> according to <span class="markdown-equation" id="equation-43">$p_{i+1}$</span>.</li>
+<li>Repeat Steps 1-3, until end-of-sentence token <code>&lt;e&gt;</code> is generated or the maximum length of the sentence is reached.</li>
+</ol>
+<p>Note: <span class="markdown-equation" id="equation-31">$z_{i+1}$</span> and <span class="markdown-equation" id="equation-43">$p_{i+1}$</span> are computed the same way as in <a href="#Decoder">Decoder</a>. In generation mode, each step is greedy in so there is no guarantee of a global optimum.</p>
+<h2>BLEU Score</h2>
+<p>Bilingual Evaluation understudy (BLEU) is a metric widely used for automatic machine translation proposed by IBM Watson Research Center in 2002[<a href="#References">5</a>]. The closer the translation produced by a machine is to the translation produced by a human expert, the better the performance of the translation system.</p>
+<p>To measure the closeness between machine translation and human translation, sentence precision is used. It compares the number of matched n-grams. More matches will lead to higher BLEU scores.</p>
+<h2>Data Preparation</h2>
+<p>This tutorial uses a dataset from <a href="http://www-lium.univ-lemans.fr/~schwenk/cslm_joint_paper/">WMT-14</a>, where <a href="http://www-lium.univ-lemans.fr/~schwenk/cslm_joint_paper/data/bitexts.tgz">bitexts (after selection)</a> is used as the training set, and <a href="http://www-lium.univ-lemans.fr/~schwenk/cslm_joint_paper/data/dev+test.tgz">dev+test data</a> is used as test and generation set.</p>
+<h3>Data Preprocessing</h3>
+<p>There are two steps for pre-processing:
+- Merge the source and target parallel corpus files into one file
+  - Merge <code>XXX.src</code> and <code>XXX.trg</code> file pair as <code>XXX</code>
+  - The <span class="markdown-equation" id="equation-9">$i$</span>-th row in <code>XXX</code> is the concatenation of the <span class="markdown-equation" id="equation-9">$i$</span>-th row from <code>XXX.src</code> with the <span class="markdown-equation" id="equation-9">$i$</span>-th row from <code>XXX.trg</code>, separated with 't'.</p>
+<ul>
+<li>Create source dictionary and target dictionary, each containing <strong>DICTSIZE</strong> number of words, including the most frequent (DICTSIZE - 3) fo word from the corpus and 3 special token <code>&lt;s&gt;</code> (begin of sequence), <code>&lt;e&gt;</code> (end of sequence)  and <code>&lt;unk&gt;</code> (unknown words that are not in the vocabulary).</li>
+</ul>
+<h3>A Subset of Dataset</h3>
+<p>Because the full dataset is very big, to reduce the time for downloading the full dataset. PadddlePaddle package <code>paddle.dataset.wmt14</code> provides a preprocessed <code>subset of dataset</code>(http://paddlepaddle.bj.bcebos.com/demo/wmt_shrinked_data/wmt14.tgz).</p>
+<p>This subset has 193319 instances of training data and 6003 instances of test data. Dictionary size is 30000. Because of the limitation of size of the subset, the effectiveness of trained model from this subset is not guaranteed.</p>
+<h2>Training Instructions</h2>
+<h3>Initialize PaddlePaddle</h3>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">paddle.v2</span> <span class="kn">as</span> <span class="nn">paddle</span>
+
+<span class="c1"># train with a single CPU</span>
+<span class="n">paddle</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="n">use_gpu</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">trainer_count</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="c1"># False: training, True: generating</span>
+<span class="n">is_generating</span> <span class="o">=</span> <span class="bp">False</span>
+</pre></div>
+<h3>Model Configuration</h3>
+<ol>
+<li>Define some global variables</li>
+</ol>
+<div class="highlight"><pre><span></span><span class="n">dict_size</span> <span class="o">=</span> <span class="mi">30000</span> <span class="c1"># dict dim</span>
+<span class="n">source_dict_dim</span> <span class="o">=</span> <span class="n">dict_size</span> <span class="c1"># source language dictionary size</span>
+<span class="n">target_dict_dim</span> <span class="o">=</span> <span class="n">dict_size</span> <span class="c1"># destination language dictionary size</span>
+<span class="n">word_vector_dim</span> <span class="o">=</span> <span class="mi">512</span> <span class="c1"># word embedding dimension</span>
+<span class="n">encoder_size</span> <span class="o">=</span> <span class="mi">512</span> <span class="c1"># hidden layer size of GRU in encoder</span>
+<span class="n">decoder_size</span> <span class="o">=</span> <span class="mi">512</span> <span class="c1"># hidden layer size of GRU in decoder</span>
+<span class="n">beam_size</span> <span class="o">=</span> <span class="mi">3</span> <span class="c1"># expand width in beam search</span>
+<span class="n">max_length</span> <span class="o">=</span> <span class="mi">250</span> <span class="c1"># a stop condition of sequence generation</span>
+</pre></div>
+<ol>
+<li>Implement Encoder as follows:</li>
+<li>Input is a sequence of words represented by an integer word index sequence. So we define data layer of data type <code>integer_value_sequence</code>. The value range of each element in the sequence is <code>[0, source_dict_dim)</code></li>
+</ol>
+<div class="highlight"><pre><span></span><span class="n">src_word_id</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">data</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s1">'source_language_word'</span><span class="p">,</span>
+    <span class="nb">type</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">data_type</span><span class="o">.</span><span class="n">integer_value_sequence</span><span class="p">(</span><span class="n">source_dict_dim</span><span class="p">))</span>
+</pre></div>
+<ul>
+<li>Map the one-hot vector (represented by word index) into a word vector <span class="markdown-equation" id="equation-84">$\mathbf{s}$</span> in a low-dimensional semantic space</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="n">src_embedding</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">embedding</span><span class="p">(</span>
+    <span class="nb">input</span><span class="o">=</span><span class="n">src_word_id</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">word_vector_dim</span><span class="p">)</span>
+</pre></div>
+<ul>
+<li>Use bi-direcitonal GRU to encode the source language sequence, and concatenate the encoding outputs from the two GRUs to get <span class="markdown-equation" id="equation-18">$\mathbf{h}$</span></li>
+</ul>
+<div class="highlight"><pre><span></span><span class="n">src_forward</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">networks</span><span class="o">.</span><span class="n">simple_gru</span><span class="p">(</span>
+    <span class="nb">input</span><span class="o">=</span><span class="n">src_embedding</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">encoder_size</span><span class="p">)</span>
+<span class="n">src_backward</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">networks</span><span class="o">.</span><span class="n">simple_gru</span><span class="p">(</span>
+    <span class="nb">input</span><span class="o">=</span><span class="n">src_embedding</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">encoder_size</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">encoded_vector</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="p">[</span><span class="n">src_forward</span><span class="p">,</span> <span class="n">src_backward</span><span class="p">])</span>
+</pre></div>
+<ol>
+<li>
+<p>Implement Attention-based Decoder as follows:</p>
+</li>
+<li>
+<p>Get a projection of the encoding (c.f. 2.3) of the source language sequence by passing it into a feed forward neural network</p>
+</li>
+</ol>
+<div class="highlight"><pre><span></span><span class="n">encoded_proj</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">fc</span><span class="p">(</span>
+      <span class="n">act</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">activation</span><span class="o">.</span><span class="n">Linear</span><span class="p">(),</span>
+      <span class="n">size</span><span class="o">=</span><span class="n">decoder_size</span><span class="p">,</span>
+      <span class="n">bias_attr</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+      <span class="nb">input</span><span class="o">=</span><span class="n">encoded_vector</span><span class="p">)</span>
+</pre></div>
+<ul>
+<li>Use a non-linear transformation of the last hidden state of the backward GRU on the source language sentence as the initial state of the decoder RNN <span class="markdown-equation" id="equation-86">$c_0=h_T$</span></li>
+</ul>
+<div class="highlight"><pre><span></span><span class="n">backward_first</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">first_seq</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">src_backward</span><span class="p">)</span>
+<span class="n">decoder_boot</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">fc</span><span class="p">(</span>
+      <span class="n">size</span><span class="o">=</span><span class="n">decoder_size</span><span class="p">,</span>
+      <span class="n">act</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">activation</span><span class="o">.</span><span class="n">Tanh</span><span class="p">(),</span>
+      <span class="n">bias_attr</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+      <span class="nb">input</span><span class="o">=</span><span class="n">backward_first</span><span class="p">)</span>
+</pre></div>
+<ul>
+<li>
+<p>Define the computation in each time step for the decoder RNN, i.e., according to the current context vector <span class="markdown-equation" id="equation-55">$c_i$</span>, hidden state for the decoder <span class="markdown-equation" id="equation-30">$z_i$</span> and the <span class="markdown-equation" id="equation-9">$i$</span>-th word <span class="markdown-equation" id="equation-29">$u_i$</span> in the target language to predict the probability <span class="markdown-equation" id="equation-43">$p_{i+1}$</span> for the <span class="markdown-equation" id="equation-44">$i+1$</span>-th word.</p>
+<ul>
+<li>decoder_mem records the hidden state <span class="markdown-equation" id="equation-30">$z_i$</span> from the previous time step, with an initial state as decoder_boot.</li>
+<li>context is computed via <code>simple_attention</code> as <span class="markdown-equation" id="equation-94">$c_i=\sum {j=1}^{T}a_{ij}h_j$</span>, where enc_vec is the projection of <span class="markdown-equation" id="equation-57">$h_j$</span> and enc_proj is the projection of <span class="markdown-equation" id="equation-57">$h_j$</span> (c.f. 3.1). <span class="markdown-equation" id="equation-58">$a_{ij}$</span> is calculated within <code>simple_attention</code>.</li>
+<li>decoder_inputs fuse <span class="markdown-equation" id="equation-55">$c_i$</span> with the representation of the current_word (i.e., <span class="markdown-equation" id="equation-29">$u_i$</span>).</li>
+<li>gru_step uses <code>gru_step_layer</code> function to compute <span class="markdown-equation" id="equation-100">$z_{i+1}=\phi _{\theta '}\left ( c_i,u_i,z_i \right )$</span>.</li>
+<li>Softmax normalization is used in the end to computed the probability of words, i.e., <span class="markdown-equation" id="equation-101">$p\left ( u_i|u_{&lt;i},\mathbf{x} \right )=softmax(W_sz_i+b_z)$</span>. The output is returned.</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">gru_decoder_with_attention</span><span class="p">(</span><span class="n">enc_vec</span><span class="p">,</span> <span class="n">enc_proj</span><span class="p">,</span> <span class="n">current_word</span><span class="p">):</span>
+     <span class="n">decoder_mem</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">memory</span><span class="p">(</span>
+         <span class="n">name</span><span class="o">=</span><span class="s1">'gru_decoder'</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">decoder_size</span><span class="p">,</span> <span class="n">boot_layer</span><span class="o">=</span><span class="n">decoder_boot</span><span class="p">)</span>
+
+     <span class="n">context</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">networks</span><span class="o">.</span><span class="n">simple_attention</span><span class="p">(</span>
+         <span class="n">encoded_sequence</span><span class="o">=</span><span class="n">enc_vec</span><span class="p">,</span>
+         <span class="n">encoded_proj</span><span class="o">=</span><span class="n">enc_proj</span><span class="p">,</span>
+         <span class="n">decoder_state</span><span class="o">=</span><span class="n">decoder_mem</span><span class="p">)</span>
+
+     <span class="n">decoder_inputs</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">fc</span><span class="p">(</span>
+         <span class="n">act</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">activation</span><span class="o">.</span><span class="n">Linear</span><span class="p">(),</span>
+         <span class="n">size</span><span class="o">=</span><span class="n">decoder_size</span> <span class="o">*</span> <span class="mi">3</span><span class="p">,</span>
+         <span class="n">bias_attr</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+         <span class="nb">input</span><span class="o">=</span><span class="p">[</span><span class="n">context</span><span class="p">,</span> <span class="n">current_word</span><span class="p">],</span>
+         <span class="n">layer_attr</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">attr</span><span class="o">.</span><span class="n">ExtraLayerAttribute</span><span class="p">(</span>
+         <span class="n">error_clipping_threshold</span><span class="o">=</span><span class="mf">100.0</span><span class="p">))</span>
+
+     <span class="n">gru_step</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">gru_step</span><span class="p">(</span>
+         <span class="n">name</span><span class="o">=</span><span class="s1">'gru_decoder'</span><span class="p">,</span>
+         <span class="nb">input</span><span class="o">=</span><span class="n">decoder_inputs</span><span class="p">,</span>
+         <span class="n">output_mem</span><span class="o">=</span><span class="n">decoder_mem</span><span class="p">,</span>
+         <span class="n">size</span><span class="o">=</span><span class="n">decoder_size</span><span class="p">)</span>
+
+     <span class="n">out</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">fc</span><span class="p">(</span>
+         <span class="n">size</span><span class="o">=</span><span class="n">target_dict_dim</span><span class="p">,</span>
+         <span class="n">bias_attr</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+         <span class="n">act</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">activation</span><span class="o">.</span><span class="n">Softmax</span><span class="p">(),</span>
+         <span class="nb">input</span><span class="o">=</span><span class="n">gru_step</span><span class="p">)</span>
+     <span class="k">return</span> <span class="n">out</span>
+</pre></div>
+<ol>
+<li>
+<p>Define the name for the decoder and the first two input for <code>gru_decoder_with_attention</code>. Note that <code>StaticInput</code> is used for the two inputs. Please refer to <a href="https://github.com/PaddlePaddle/Paddle/blob/develop/doc/howto/deep_model/rnn/recurrent_group_cn.md#输入">StaticInput Document</a> for more details.</p>
+<div class="highlight"><pre><span></span><span class="n">decoder_group_name</span> <span class="o">=</span> <span class="s2">"decoder_group"</span>
+<span class="n">group_input1</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">StaticInput</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">encoded_vector</span><span class="p">)</span>
+<span class="n">group_input2</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">StaticInput</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">encoded_proj</span><span class="p">)</span>
+<span class="n">group_inputs</span> <span class="o">=</span> <span class="p">[</span><span class="n">group_input1</span><span class="p">,</span> <span class="n">group_input2</span><span class="p">]</span>
+</pre></div>
+</li>
+<li>
+<p>Training mode:</p>
+</li>
+<li>
+<p>Word embedding from the target language trg_embedding is passed to <code>gru_decoder_with_attention</code> as current_word.</p>
+</li>
+<li><code>recurrent_group</code> calls <code>gru_decoder_with_attention</code> in a recurrent way</li>
+<li>The sequence of next words from the target language is used as label (lbl)</li>
+<li>Multi-class cross-entropy (<code>classification_cost</code>) is used to calculate the cost</li>
+</ol>
+<div class="highlight"><pre><span></span><span class="k">if</span> <span class="ow">not</span> <span class="n">is_generating</span><span class="p">:</span>
+    <span class="n">trg_embedding</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">embedding</span><span class="p">(</span>
+        <span class="nb">input</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">data</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s1">'target_language_word'</span><span class="p">,</span>
+            <span class="nb">type</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">data_type</span><span class="o">.</span><span class="n">integer_value_sequence</span><span class="p">(</span><span class="n">target_dict_dim</span><span class="p">)),</span>
+        <span class="n">size</span><span class="o">=</span><span class="n">word_vector_dim</span><span class="p">,</span>
+        <span class="n">param_attr</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">attr</span><span class="o">.</span><span class="n">ParamAttr</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">'_target_language_embedding'</span><span class="p">))</span>
+    <span class="n">group_inputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">trg_embedding</span><span class="p">)</span>
+
+    <span class="c1"># For decoder equipped with attention mechanism, in training,</span>
+    <span class="c1"># target embeding (the groudtruth) is the data input,</span>
+    <span class="c1"># while encoded source sequence is accessed to as an unbounded memory.</span>
+    <span class="c1"># Here, the StaticInput defines a read-only memory</span>
+    <span class="c1"># for the recurrent_group.</span>
+    <span class="n">decoder</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">recurrent_group</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="n">decoder_group_name</span><span class="p">,</span>
+        <span class="n">step</span><span class="o">=</span><span class="n">gru_decoder_with_attention</span><span class="p">,</span>
+        <span class="nb">input</span><span class="o">=</span><span class="n">group_inputs</span><span class="p">)</span>
+
+    <span class="n">lbl</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">data</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">'target_language_next_word'</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">data_type</span><span class="o">.</span><span class="n">integer_value_sequence</span><span class="p">(</span><span class="n">target_dict_dim</span><span class="p">))</span>
+    <span class="n">cost</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">classification_cost</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">decoder</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">lbl</span><span class="p">)</span>
+</pre></div>
+<ol>
+<li>
+<p>Generating mode:</p>
+</li>
+<li>
+<p>The decoder predicts a next target word based on the the last generated target word. Embedding of the last generated word is automatically gotten by GeneratedInputs.</p>
+</li>
+<li><code>beam_search</code> calls <code>gru_decoder_with_attention</code> in a recurrent way, to predict sequence id.</li>
+</ol>
+<div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">is_generating</span><span class="p">:</span>
+    <span class="c1"># In generation, the decoder predicts a next target word based on</span>
+    <span class="c1"># the encoded source sequence and the previous generated target word.</span>
+
+    <span class="c1"># The encoded source sequence (encoder's output) must be specified by</span>
+    <span class="c1"># StaticInput, which is a read-only memory.</span>
+    <span class="c1"># Embedding of the previous generated word is automatically retrieved</span>
+    <span class="c1"># by GeneratedInputs initialized by a start mark &lt;s&gt;.</span>
+
+    <span class="n">trg_embedding</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">GeneratedInput</span><span class="p">(</span>
+        <span class="n">size</span><span class="o">=</span><span class="n">target_dict_dim</span><span class="p">,</span>
+        <span class="n">embedding_name</span><span class="o">=</span><span class="s1">'_target_language_embedding'</span><span class="p">,</span>
+        <span class="n">embedding_size</span><span class="o">=</span><span class="n">word_vector_dim</span><span class="p">)</span>
+    <span class="n">group_inputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">trg_embedding</span><span class="p">)</span>
+
+    <span class="n">beam_gen</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">beam_search</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="n">decoder_group_name</span><span class="p">,</span>
+        <span class="n">step</span><span class="o">=</span><span class="n">gru_decoder_with_attention</span><span class="p">,</span>
+        <span class="nb">input</span><span class="o">=</span><span class="n">group_inputs</span><span class="p">,</span>
+        <span class="n">bos_id</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">eos_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">beam_size</span><span class="o">=</span><span class="n">beam_size</span><span class="p">,</span>
+        <span class="n">max_length</span><span class="o">=</span><span class="n">max_length</span><span class="p">)</span>
+</pre></div>
+<p>Note: Our configuration is based on Bahdanau et al. [<a href="#references">4</a>] but with a few simplifications. Please refer to <a href="https://github.com/PaddlePaddle/Paddle/issues/1133">issue #1133</a> for more details.</p>
+<h2>Model Training</h2>
+<ol>
+<li>
+<p>Create Parameters</p>
+<p>Create every parameter that <code>cost</code> layer needs. And we can get parameter names. If the parameter name is not specified during model configuration, it will be generated.</p>
+<div class="highlight"><pre><span></span><span class="k">if</span> <span class="ow">not</span> <span class="n">is_generating</span><span class="p">:</span>
+    <span class="n">parameters</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">cost</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">parameters</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">print</span> <span class="n">param</span>
+</pre></div>
+</li>
+<li>
+<p>Define DataSet</p>
+<p>Create <a href="https://github.com/PaddlePaddle/Paddle/tree/develop/doc/design/reader#python-data-reader-design-doc"><strong>data reader</strong></a> for WMT-14 dataset.</p>
+<p></p><div class="highlight"><pre><span></span><span class="k">if</span> <span class="ow">not</span> <span class="n">is_generating</span><span class="p">:</span>
+    <span class="n">wmt14_reader</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span>
+        <span class="n">paddle</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span>
+            <span class="n">paddle</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">wmt14</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">dict_size</span><span class="o">=</span><span class="n">dict_size</span><span class="p">),</span> <span class="n">buf_size</span><span class="o">=</span><span class="mi">8192</span><span class="p">),</span>
+        <span class="n">batch_size</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+</pre></div>
+3. Create trainer
+<p>We need to tell trainer what to optimize, and how to optimize. Here trainer will optimize <code>cost</code> layer using stochastic gradient descent (SDG).</p>
+<div class="highlight"><pre><span></span><span class="k">if</span> <span class="ow">not</span> <span class="n">is_generating</span><span class="p">:</span>
+    <span class="n">optimizer</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span>
+        <span class="n">learning_rate</span><span class="o">=</span><span class="mf">5e-5</span><span class="p">,</span>
+        <span class="n">regularization</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">L2Regularization</span><span class="p">(</span><span class="n">rate</span><span class="o">=</span><span class="mf">8e-4</span><span class="p">))</span>
+    <span class="n">trainer</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="n">cost</span><span class="p">,</span>
+                                 <span class="n">parameters</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span>
+                                 <span class="n">update_equation</span><span class="o">=</span><span class="n">optimizer</span><span class="p">)</span>
+</pre></div>
+</li>
+<li>
+<p>Define event handler</p>
+<p>The event handler is a callback function invoked by trainer when an event happens. Here we will print log in event handler.</p>
+<div class="highlight"><pre><span></span><span class="k">if</span> <span class="ow">not</span> <span class="n">is_generating</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">event_handler</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">paddle</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">EndIteration</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">batch_id</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">print</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">Pass </span><span class="si">%d</span><span class="s2">, Batch </span><span class="si">%d</span><span class="s2">, Cost </span><span class="si">%f</span><span class="s2">, </span><span class="si">%s</span><span class="s2">"</span> <span class="o">%</span> <span class="p">(</span>
+                    <span class="n">event</span><span class="o">.</span><span class="n">pass_id</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">batch_id</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">cost</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">metrics</span><span class="p">)</span>
+</pre></div>
+</li>
+<li>
+<p>Start training</p>
+<div class="highlight"><pre><span></span><span class="k">if</span> <span class="ow">not</span> <span class="n">is_generating</span><span class="p">:</span>
+    <span class="n">trainer</span><span class="o">.</span><span class="n">train</span><span class="p">(</span>
+            <span class="n">reader</span><span class="o">=</span><span class="n">wmt14_reader</span><span class="p">,</span> <span class="n">event_handler</span><span class="o">=</span><span class="n">event_handler</span><span class="p">,</span> <span class="n">num_passes</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</li>
+</ol>
+<p>The training log is as follows:
+  </p><div class="highlight"><pre><span></span>Pass 0, Batch 0, Cost 247.408008, {'classification_error_evaluator': 1.0}
+Pass 0, Batch 10, Cost 212.058789, {'classification_error_evaluator': 0.8737863898277283}
+...
+</pre></div>
+<h2>Model Usage</h2>
+<ol>
+<li>
+<p>Download Pre-trained Model</p>
+<p>As the training of an NMT model is very time consuming, we provide a pre-trained model. The model is trained with a cluster of 50 physical nodes (each node has two 6-core CPU) over 5 days. The provided model has the <a href="#BLEU Score">BLEU Score</a> of 26.92, and the size of 205M.</p>
+<p></p><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">is_generating</span><span class="p">:</span>
+    <span class="n">parameters</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">wmt14</span><span class="o">.</span><span class="n">model</span><span class="p">()</span>
+</pre></div>
+2. Define DataSet
+<p>Get the first 3 samples of wmt14 generating set as the source language sequences.</p>
+</li>
+</ol>
+<div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">is_generating</span><span class="p">:</span>
+     <span class="n">gen_creator</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">wmt14</span><span class="o">.</span><span class="n">gen</span><span class="p">(</span><span class="n">dict_size</span><span class="p">)</span>
+     <span class="n">gen_data</span> <span class="o">=</span> <span class="p">[]</span>
+     <span class="n">gen_num</span> <span class="o">=</span> <span class="mi">3</span>
+     <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">gen_creator</span><span class="p">():</span>
+         <span class="n">gen_data</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">))</span>
+         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">gen_data</span><span class="p">)</span> <span class="o">==</span> <span class="n">gen_num</span><span class="p">:</span>
+             <span class="k">break</span>
+</pre></div>
+<ol>
+<li>
+<p>Create infer</p>
+<p>Use inference interface <code>paddle.infer</code> return the prediction probability (see field <code>prob</code>) and labels (see field <code>id</code>) of each generated sequence.</p>
+</li>
+</ol>
+<p></p><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">is_generating</span><span class="p">:</span>
+     <span class="n">beam_result</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">infer</span><span class="p">(</span>
+         <span class="n">output_layer</span><span class="o">=</span><span class="n">beam_gen</span><span class="p">,</span>
+         <span class="n">parameters</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span>
+         <span class="nb">input</span><span class="o">=</span><span class="n">gen_data</span><span class="p">,</span>
+         <span class="n">field</span><span class="o">=</span><span class="p">[</span><span class="s1">'prob'</span><span class="p">,</span> <span class="s1">'id'</span><span class="p">])</span>
+</pre></div>
+4. Print generated translation
+<pre><code>Print sequence and its `beam_size` generated translation results based on the dictionary.
+</code></pre>
+<div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">is_generating</span><span class="p">:</span>
+    <span class="c1"># load the dictionary</span>
+    <span class="n">src_dict</span><span class="p">,</span> <span class="n">trg_dict</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">wmt14</span><span class="o">.</span><span class="n">get_dict</span><span class="p">(</span><span class="n">dict_size</span><span class="p">)</span>
+
+    <span class="n">gen_sen_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">beam_result</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">gen_sen_idx</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">gen_data</span><span class="p">)</span> <span class="o">*</span> <span class="n">beam_size</span>
+
+    <span class="c1"># -1 is the delimiter of generated sequences.</span>
+    <span class="c1"># the first element of each generated sequence its length.</span>
+    <span class="n">start_pos</span><span class="p">,</span> <span class="n">end_pos</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">sample</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">gen_data</span><span class="p">):</span>
+        <span class="k">print</span><span class="p">(</span><span class="s2">" "</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">src_dict</span><span class="p">[</span><span class="n">w</span><span class="p">]</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">sample</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]]))</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">beam_size</span><span class="p">):</span>
+            <span class="n">end_pos</span> <span class="o">=</span> <span class="n">gen_sen_idx</span><span class="p">[</span><span class="n">i</span> <span class="o">*</span> <span class="n">beam_size</span> <span class="o">+</span> <span class="n">j</span><span class="p">]</span>
+            <span class="k">print</span><span class="p">(</span><span class="s2">"</span><span class="si">%.4f</span><span class="se">\t</span><span class="si">%s</span><span class="s2">"</span> <span class="o">%</span> <span class="p">(</span><span class="n">beam_result</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">],</span> <span class="s2">" "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                  <span class="n">trg_dict</span><span class="p">[</span><span class="n">w</span><span class="p">]</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">beam_result</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">start_pos</span><span class="p">:</span><span class="n">end_pos</span><span class="p">])))</span>
+            <span class="n">start_pos</span> <span class="o">=</span> <span class="n">end_pos</span> <span class="o">+</span> <span class="mi">2</span>
+        <span class="k">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+</pre></div>
+<p>The generating log is as follows:
+  </p><div class="highlight"><pre><span></span>Les &lt;unk&gt; se &lt;unk&gt; au sujet de la largeur des sièges alors que de grosses commandes sont en jeu
+-19.0196        The &lt;unk&gt; will be rotated about the width of the seats , while large orders are at stake . &lt;e&gt;
+-19.1131        The &lt;unk&gt; will be rotated about the width of the seats , while large commands are at stake . &lt;e&gt;
+-19.5129        The &lt;unk&gt; will be rotated about the width of the seats , while large commands are at play . &lt;e&gt;
+</pre></div>
+<h2>Summary</h2>
+<p>End-to-end neural machine translation is a recently developed way to perform machine translations. In this chapter, we introduced the typical "Encoder-Decoder" framework and "attention" mechanism. Since NMT is a typical Sequence-to-Sequence (Seq2Seq) learning problem, tasks such as query rewriting, abstraction generation, and single-turn dialogues can all be solved with the model presented in this chapter.</p>
+<h2>References</h2>
+<ol>
+<li>Koehn P. <a href="https://books.google.com.hk/books?id=4v_Cx1wIMLkC&amp;printsec=frontcover&amp;hl=zh-CN&amp;source=gbs_ge_summary_r&amp;cad=0#v=onepage&amp;q&amp;f=false">Statistical machine translation</a>[M]. Cambridge University Press, 2009.</li>
+<li>Cho K, Van Merriënboer B, Gulcehre C, et al. <a href="http://www.aclweb.org/anthology/D/D14/D14-1179.pdf">Learning phrase representations using RNN encoder-decoder for statistical machine translation</a>[C]//Proceedings of the 2014 Conference on Empirical Methods in Natural Language Processing (EMNLP), 2014: 1724-1734.</li>
+<li>Chung J, Gulcehre C, Cho K H, et al. <a href="https://arxiv.org/abs/1412.3555">Empirical evaluation of gated recurrent neural networks on sequence modeling</a>[J]. arXiv preprint arXiv:1412.3555, 2014.</li>
+<li>Bahdanau D, Cho K, Bengio Y. <a href="https://arxiv.org/abs/1409.0473">Neural machine translation by jointly learning to align and translate</a>[C]//Proceedings of ICLR 2015, 2015.</li>
+<li>Papineni K, Roukos S, Ward T, et al. <a href="http://dl.acm.org/citation.cfm?id=1073135">BLEU: a method for automatic evaluation of machine translation</a>[C]//Proceedings of the 40th annual meeting on association for computational linguistics. Association for Computational Linguistics, 2002: 311-318.</li>
+</ol>
+<p><br/>
+This tutorial is contributed by <a href="http://book.paddlepaddle.org" property="cc:attributionName" rel="cc:attributionURL" xmlns:cc="http://creativecommons.org/ns#">PaddlePaddle</a>, and licensed under a <a href="http://creativecommons.org/licenses/by-sa/4.0/" rel="license">Creative Commons Attribution-ShareAlike 4.0 International License</a>.</p>
+{% endverbatim %}

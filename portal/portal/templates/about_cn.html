@@ -1,8 +1,10 @@
 {% extends "_base_nav.html" %}
 
+{% load app_tags %}
+
 {% block content %}
 
-<link href="/static/stylesheets/content.css" media="screen, projection" rel="stylesheet" type="text/css" />
+<link href="/static/stylesheets/content.css?{% server_start_time %}" media="screen, projection" rel="stylesheet" type="text/css" />
 
 <div id="content" class="container doc-content">
     <h1 id="">关于我们</h1>

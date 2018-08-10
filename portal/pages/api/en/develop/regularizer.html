@@ -1,0 +1,73 @@
+<div class="document" itemscope="itemscope" itemtype="http://schema.org/Article" role="main">
+<div itemprop="articleBody">
+<div class="section" id="regularizer">
+<h1>regularizer<a class="headerlink" href="#regularizer" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="append-regularization-ops">
+<h2>append_regularization_ops<a class="headerlink" href="#append-regularization-ops" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt>
+<code class="descclassname">paddle.fluid.regularizer.</code><code class="descname">append_regularization_ops</code><span class="sig-paren">(</span><em>parameters_and_grads</em>, <em>regularization=None</em><span class="sig-paren">)</span></dt>
+<dd><p>Create and add backward regularization Operators</p>
+<p>Creates and adds backward regularization operators in the BlockDesc.
+This will add gradients of the regularizer function to the gradients
+of the parameters and return these modified gradients. This is the
+same as implementing weight decay in optimizers for regularization.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name"/>
+<col class="field-body"/>
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>parameters_and_grads</strong> – A list of (parameters, gradients) pairs
+that need to be regularized.</li>
+<li><strong>regularization</strong> – A global regularizer. If the parameter is not
+set. It will be applied with regularizer.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">list of (parameters, gradients) pair with the regularized gradient</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><code class="xref py py-exc docutils literal"><span class="pre">Exception</span></code> – Unknown regularization type</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+</div>
+<div class="section" id="l1decay">
+<h2>L1Decay<a class="headerlink" href="#l1decay" title="Permalink to this headline">¶</a></h2>
+<dl class="attribute">
+<dt>
+<code class="descclassname">paddle.fluid.regularizer.</code><code class="descname">L1Decay</code></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal"><span class="pre">L1DecayRegularizer</span></code></p>
+</dd></dl>
+</div>
+<div class="section" id="l2decay">
+<h2>L2Decay<a class="headerlink" href="#l2decay" title="Permalink to this headline">¶</a></h2>
+<dl class="attribute">
+<dt>
+<code class="descclassname">paddle.fluid.regularizer.</code><code class="descname">L2Decay</code></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal"><span class="pre">L2DecayRegularizer</span></code></p>
+</dd></dl>
+</div>
+<div class="section" id="l1decayregularizer">
+<h2>L1DecayRegularizer<a class="headerlink" href="#l1decayregularizer" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="descclassname">paddle.fluid.regularizer.</code><code class="descname">L1DecayRegularizer</code><span class="sig-paren">(</span><em>regularization_coeff=0.0</em><span class="sig-paren">)</span></dt>
+<dd><p>Implements the L1 Weight Decay Regularization</p>
+</dd></dl>
+</div>
+<div class="section" id="l2decayregularizer">
+<h2>L2DecayRegularizer<a class="headerlink" href="#l2decayregularizer" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="descclassname">paddle.fluid.regularizer.</code><code class="descname">L2DecayRegularizer</code><span class="sig-paren">(</span><em>regularization_coeff=0.0</em><span class="sig-paren">)</span></dt>
+<dd><p>Implements the L2 Weight Decay Regularization</p>
+</dd></dl>
+</div>
+</div>
+</div>
+<div class="articleComments">
+</div>
+</div>

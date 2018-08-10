@@ -1,0 +1,288 @@
+{% verbatim %}
+<h1>Sentiment Analysis</h1>
+<p>The source codes of this section is located at <a href="https://github.com/PaddlePaddle/book/tree/develop/06.understand_sentiment">book/understand_sentiment</a>. First-time users may refer to PaddlePaddle for <a href="https://github.com/PaddlePaddle/book/blob/develop/README.md#running-the-book">Installation guide</a>.</p>
+<h2>Background</h2>
+<p>In natural language processing, sentiment analysis refers to determining the emotion expressed in a piece of text. The text can be a sentence, a paragraph, or a document. Emotion categorization can be binary -- positive/negative or happy/sad -- or in three classes -- positive/neutral/negative. Sentiment analysis is applicable in a wide range of services, such as e-commerce sites like Amazon and Taobao, hospitality services like Airbnb and hotels.com, and movie rating sites like Rotten Tomatoes and IMDB. It can be used to gauge from the reviews how the customers feel about the product. Table 1 illustrates an example of sentiment analysis in movie reviews:</p>
+<table>
+<thead>
+<tr>
+<th>Movie Review</th>
+<th>Category</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Best movie of Xiaogang Feng in recent years!</td>
+<td>Positive</td>
+</tr>
+<tr>
+<td>Pretty bad. Feels like a tv-series from a local TV-channel</td>
+<td>Negative</td>
+</tr>
+<tr>
+<td>Politically correct version of Taken ... and boring as Heck</td>
+<td>Negative</td>
+</tr>
+<tr>
+<td>delightful, mesmerizing, and completely unexpected. The plot is nicely designed.</td>
+<td>Positive</td>
+</tr>
+</tbody>
+</table>
+<p align="center">Table 1 Sentiment Analysis in Movie Reviews</p>
+<p>In natural language processing, sentiment analysis can be categorized as a <strong>Text Classification problem</strong>, i.e., to categorize a piece of text to a specific class. It involves two related tasks: text representation and classification. Before the emergence of deep learning techniques, the mainstream methods for text representation include BOW (<em>bag of words</em>) and topic modeling, while the latter contains SVM (<em>support vector machine</em>) and LR (<em>logistic regression</em>).</p>
+<p>The BOW model does not capture all the information in a piece of text, as it ignores syntax and grammar and just treats the text as a set of words. For example, “this movie is extremely bad“ and “boring, dull, and empty work” describe very similar semantic meaning, yet their BOW representations have very little similarity. Furthermore, “the movie is bad“ and “the movie is not bad“ have high similarity with BOW features, but they express completely opposite semantics.</p>
+<p>This chapter introduces a deep learning model that handles these issues in BOW. Our model embeds texts into a low-dimensional space and takes word order into consideration. It is an end-to-end framework and it has large performance improvement over traditional methods [<a href="#references">1</a>].</p>
+<h2>Model Overview</h2>
+<p>The model we used in this chapter uses <strong>Convolutional Neural Networks</strong> (<strong>CNNs</strong>) and <strong>Recurrent Neural Networks</strong> (<strong>RNNs</strong>) with some specific extensions.</p>
+<h3>Revisit to the Convolutional Neural Networks for Texts (CNN)</h3>
+<p>The convolutional neural network for texts is introduced in chapter <a href="https://github.com/PaddlePaddle/book/tree/develop/05.recommender_system">recommender_system</a>, here is a brief overview.</p>
+<p>CNN mainly contains convolution and pooling operation, with versatile combinations in various applications. We firstly apply the convolution operation: we apply the kernel in each window, extracting features. Convolving by the kernel at every window produces a feature map. Next, we apply <em>max pooling</em> over time to represent the whole sentence, which is the maximum element across the feature map. In real applications, we will apply multiple CNN kernels on the sentences. It can be implemented efficiently by concatenating the kernels together as a matrix. Also, we can use CNN kernels with different kernel size. Finally, concatenating the resulting features produces a fixed-length representation, which can be combined with a softmax to form the model for the sentiment analysis problem.</p>
+<p>For short texts, the aforementioned CNN model can achieve very high accuracy [<a href="#references">1</a>]. If we want to extract more abstract representations, we may apply a deeper CNN model [<a href="#references">2</a>,<a href="#references">3</a>].</p>
+<h3>Recurrent Neural Network (RNN)</h3>
+<p>RNN is an effective model for sequential data. In terms of computability, the RNN is Turing-complete [<a href="#references">4</a>]. Since NLP is a classical problem of sequential data, the RNN, especially its variant LSTM[<a href="#references">5</a>]), achieves state-of-the-art performance on various NLP tasks, such as language modeling, syntax parsing, POS-tagging, image captioning, dialog, machine translation, and so forth.</p>
+<p align="center">
+<img align="center" src="image/rnn.png" width="60%"/><br/>
+Figure 1. An illustration of an unfolded RNN in time.
+</p>
+<p>As shown in Figure 1, we unfold an RNN: at the <span class="markdown-equation" id="equation-0">$t$</span>-th time step, the network takes two inputs: the <span class="markdown-equation" id="equation-0">$t$</span>-th input vector <span class="markdown-equation" id="equation-2">$\vec{x_t}$</span> and the latent state from the last time-step <span class="markdown-equation" id="equation-3">$\vec{h_{t-1}}$</span>. From those, it computes the latent state of the current step <span class="markdown-equation" id="equation-4">$\vec{h_t}$</span>. This process is repeated until all inputs are consumed. Denoting the RNN as function <span class="markdown-equation" id="equation-5">$f$</span>, it can be formulated as follows:</p>
+<p><span class="markdown-equation" id="equation-6">$$\vec{h_t}=f(\vec{x_t},\vec{h_{t-1}})=\sigma(W_{xh}\vec{x_t}+W_{hh}\vec{h_{h-1}}+\vec{b_h})$$</span></p>
+<p>where <span class="markdown-equation" id="equation-7">$W_{xh}$</span> is the weight matrix to feed into the latent layer; <span class="markdown-equation" id="equation-8">$W_{hh}$</span> is the latent-to-latent matrix; <span class="markdown-equation" id="equation-9">$b_h$</span> is the latent bias and <span class="markdown-equation" id="equation-10">$\sigma$</span> refers to the <span class="markdown-equation" id="equation-11">$sigmoid$</span> function.</p>
+<p>In NLP, words are often represented as one-hot vectors and then mapped to an embedding. The embedded feature goes through an RNN as input <span class="markdown-equation" id="equation-12">$x_t$</span> at every time step. Moreover, we can add other layers on top of RNN, such as a deep or stacked RNN. Finally, the last latent state may be used as a feature for sentence classification.</p>
+<h3>Long-Short Term Memory (LSTM)</h3>
+<p>Training an RNN on long sequential data sometimes leads to the gradient vanishing or exploding[<a href="#references">6</a>]. To solve this problem Hochreiter S, Schmidhuber J. (1997) proposed <strong>Long Short Term Memory</strong> (LSTM)[<a href="#references">5</a>]).</p>
+<p>Compared to the structure of a simple RNN, an LSTM includes memory cell <span class="markdown-equation" id="equation-13">$c$</span>, input gate <span class="markdown-equation" id="equation-14">$i$</span>, forget gate <span class="markdown-equation" id="equation-5">$f$</span> and output gate <span class="markdown-equation" id="equation-16">$o$</span>. These gates and memory cells dramatically improve the ability for the network to handle long sequences. We can formulate the <strong>LSTM-RNN</strong>, denoted as a function <span class="markdown-equation" id="equation-17">$F$</span>, as follows：</p>
+<p><span class="markdown-equation" id="equation-18">$$ h_t=F(x_t,h_{t-1})$$</span></p>
+<p><span class="markdown-equation" id="equation-17">$F$</span> contains following formulations[<a href="#references">7</a>]：
+begin{align}
+i_t &amp; = sigma(W_{xi}x_t+W_{hi}h_{h-1}+W_{ci}c_{t-1}+b_i)\\
+f_t &amp; = sigma(W_{xf}x_t+W_{hf}h_{h-1}+W_{cf}c_{t-1}+b_f)\\
+c_t &amp; = f_todot c_{t-1}+i_todot tanh(W_{xc}x_t+W_{hc}h_{h-1}+b_c)\\
+o_t &amp; = sigma(W_{xo}x_t+W_{ho}h_{h-1}+W_{co}c_{t}+b_o)\\
+h_t &amp; = o_todot tanh(c_t)\\
+end{align}</p>
+<p>In the equation，<span class="markdown-equation" id="equation-20">$i_t, f_t, c_t, o_t$</span> stand for input gate, forget gate, memory cell and output gate, respectively. <span class="markdown-equation" id="equation-21">$W$</span> and <span class="markdown-equation" id="equation-22">$b$</span> are model parameters, <span class="markdown-equation" id="equation-23">$\tanh$</span> is a hyperbolic tangent, and <span class="markdown-equation" id="equation-24">$\odot$</span> denotes an element-wise product operation. The input gate controls the magnitude of the new input into the memory cell <span class="markdown-equation" id="equation-13">$c$</span>; the forget gate controls the memory propagated from the last time step; the output gate controls the magnitutde of the output. The three gates are computed similarly with different parameters, and they influence memory cell <span class="markdown-equation" id="equation-13">$c$</span> separately, as shown in Figure 2:</p>
+<p align="center">
+<img align="center" src="image/lstm_en.png" width="65%"/><br/>
+Figure 2. LSTM at time step <span class="markdown-equation" id="equation-0">$t$</span> [7].
+</p>
+<p>LSTM enhances the ability of considering long-term reliance, with the help of memory cell and gate. Similar structures are also proposed in Gated Recurrent Unit (GRU)[<a href="Reference">8</a>] with a simpler design. <strong>The structures are still similar to RNN, though with some modifications (As shown in Figure 2), i.e., latent status depends on input as well as the latent status of the last time step, and the process goes on recurrently until all inputs are consumed:</strong></p>
+<p><span class="markdown-equation" id="equation-28">$$ h_t=Recrurent(x_t,h_{t-1})$$</span>
+where <span class="markdown-equation" id="equation-29">$Recrurent$</span> is a simple RNN, GRU or LSTM.</p>
+<h3>Stacked Bidirectional LSTM</h3>
+<p>For vanilla LSTM, <span class="markdown-equation" id="equation-30">$h_t$</span> contains input information from previous time-step <span class="markdown-equation" id="equation-31">$1..t-1$</span> context. We can also apply an RNN with reverse-direction to take successive context <span class="markdown-equation" id="equation-32">$t+1…n$</span> into consideration. Combining constructing deep RNN (deeper RNN can contain more abstract and higher level semantic), we can design structures with deep stacked bidirectional LSTM to model sequential data[<a href="#references">9</a>].</p>
+<p>As shown in Figure 3 (3-layer RNN), odd/even layers are forward/reverse LSTM. Higher layers of LSTM take lower-layers LSTM as input, and the top-layer LSTM produces a fixed length vector by max-pooling (this representation considers contexts from previous and successive words for higher-level abstractions). Finally, we concatenate the output to a softmax layer for classification.</p>
+<p align="center">
+<img src="image/stacked_lstm_en.png" width="450"/><br/>
+Figure 3. Stacked Bidirectional LSTM for NLP modeling.
+</p>
+<h2>Dataset</h2>
+<p>We use <a href="http://ai.stanford.edu/%7Eamaas/data/sentiment/">IMDB</a> dataset for sentiment analysis in this tutorial, which consists of 50,000 movie reviews split evenly into a 25k train set and a 25k test set. In the labeled train/test sets, a negative review has a score &lt;= 4 out of 10, and a positive review has a score &gt;= 7 out of 10.</p>
+<p><code>paddle.datasets</code> package encapsulates multiple public datasets, including <code>cifar</code>, <code>imdb</code>, <code>mnist</code>, <code>moivelens</code>, and <code>wmt14</code>, etc. There's no need for us to manually download and preprocess IMDB.</p>
+<p>After issuing a command <code>python train.py</code>, training will start immediately. The details will be unpacked by the following sessions to see how it works.</p>
+<h2>Model Structure</h2>
+<h3>Initialize PaddlePaddle</h3>
+<p>We must import and initialize PaddlePaddle (enable/disable GPU, set the number of trainers, etc).</p>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">paddle.v2</span> <span class="kn">as</span> <span class="nn">paddle</span>
+
+<span class="c1"># PaddlePaddle init</span>
+<span class="n">paddle</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="n">use_gpu</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">trainer_count</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+<p>As alluded to in section <a href="#model-overview">Model Overview</a>, here we provide the implementations of both Text CNN and Stacked-bidirectional LSTM models.</p>
+<h3>Text Convolution Neural Network (Text CNN)</h3>
+<p>We create a neural network <code>convolution_net</code> as the following snippet code.</p>
+<p>Note: <code>paddle.networks.sequence_conv_pool</code> includes both convolution and pooling layer operations.</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">convolution_net</span><span class="p">(</span><span class="n">input_dim</span><span class="p">,</span> <span class="n">class_dim</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">emb_dim</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">hid_dim</span><span class="o">=</span><span class="mi">128</span><span class="p">):</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="s2">"word"</span><span class="p">,</span>
+                             <span class="n">paddle</span><span class="o">.</span><span class="n">data_type</span><span class="o">.</span><span class="n">integer_value_sequence</span><span class="p">(</span><span class="n">input_dim</span><span class="p">))</span>
+    <span class="n">emb</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">embedding</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">emb_dim</span><span class="p">)</span>
+    <span class="n">conv_3</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">networks</span><span class="o">.</span><span class="n">sequence_conv_pool</span><span class="p">(</span>
+        <span class="nb">input</span><span class="o">=</span><span class="n">emb</span><span class="p">,</span> <span class="n">context_len</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">hidden_size</span><span class="o">=</span><span class="n">hid_dim</span><span class="p">)</span>
+    <span class="n">conv_4</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">networks</span><span class="o">.</span><span class="n">sequence_conv_pool</span><span class="p">(</span>
+        <span class="nb">input</span><span class="o">=</span><span class="n">emb</span><span class="p">,</span> <span class="n">context_len</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">hidden_size</span><span class="o">=</span><span class="n">hid_dim</span><span class="p">)</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">fc</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="p">[</span><span class="n">conv_3</span><span class="p">,</span> <span class="n">conv_4</span><span class="p">],</span>
+                             <span class="n">size</span><span class="o">=</span><span class="n">class_dim</span><span class="p">,</span>
+                             <span class="n">act</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">activation</span><span class="o">.</span><span class="n">Softmax</span><span class="p">())</span>
+    <span class="n">lbl</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="s2">"label"</span><span class="p">,</span> <span class="n">paddle</span><span class="o">.</span><span class="n">data_type</span><span class="o">.</span><span class="n">integer_value</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+    <span class="n">cost</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">classification_cost</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">output</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">lbl</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">cost</span><span class="p">,</span> <span class="n">output</span>
+</pre></div>
+<ol>
+<li>
+<p>Define input data and its dimension</p>
+<p>Parameter <code>input_dim</code> denotes the dictionary size, and <code>class_dim</code> is the number of categories. In <code>convolution_net</code>, the input to the network is defined in <code>paddle.layer.data</code>.</p>
+</li>
+<li>
+<p>Define Classifier</p>
+<p>The above Text CNN network extracts high-level features and maps them to a vector of the same size as the categories. <code>paddle.activation.Softmax</code> function or classifier is then used for calculating the probability of the sentence belonging to each category.</p>
+</li>
+<li>
+<p>Define Loss Function</p>
+<p>In the context of supervised learning, labels of the training set are defined in <code>paddle.layer.data</code>, too. During training, cross-entropy is used as loss function in <code>paddle.layer.classification_cost</code> and as the output of the network; During testing, the outputs are the probabilities calculated in the classifier.</p>
+</li>
+</ol>
+<h4>Stacked bidirectional LSTM</h4>
+<p>We create a neural network <code>stacked_lstm_net</code> as below.</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">stacked_lstm_net</span><span class="p">(</span><span class="n">input_dim</span><span class="p">,</span>
+                     <span class="n">class_dim</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                     <span class="n">emb_dim</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span>
+                     <span class="n">hid_dim</span><span class="o">=</span><span class="mi">512</span><span class="p">,</span>
+                     <span class="n">stacked_num</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+    <span class="sd">"""</span>
+<span class="sd">    A Wrapper for sentiment classification task.</span>
+<span class="sd">    This network uses a bi-directional recurrent network,</span>
+<span class="sd">    consisting of three LSTM layers. This configuration is</span>
+<span class="sd">    motivated from the following paper, but uses few layers.</span>
+<span class="sd">        http://www.aclweb.org/anthology/P15-1109</span>
+<span class="sd">    input_dim: here is word dictionary dimension.</span>
+<span class="sd">    class_dim: number of categories.</span>
+<span class="sd">    emb_dim: dimension of word embedding.</span>
+<span class="sd">    hid_dim: dimension of hidden layer.</span>
+<span class="sd">    stacked_num: number of stacked lstm-hidden layer.</span>
+<span class="sd">    """</span>
+    <span class="k">assert</span> <span class="n">stacked_num</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">1</span>
+
+    <span class="n">fc_para_attr</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">attr</span><span class="o">.</span><span class="n">Param</span><span class="p">(</span><span class="n">learning_rate</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">)</span>
+    <span class="n">lstm_para_attr</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">attr</span><span class="o">.</span><span class="n">Param</span><span class="p">(</span><span class="n">initial_std</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">learning_rate</span><span class="o">=</span><span class="mf">1.</span><span class="p">)</span>
+    <span class="n">para_attr</span> <span class="o">=</span> <span class="p">[</span><span class="n">fc_para_attr</span><span class="p">,</span> <span class="n">lstm_para_attr</span><span class="p">]</span>
+    <span class="n">bias_attr</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">attr</span><span class="o">.</span><span class="n">Param</span><span class="p">(</span><span class="n">initial_std</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">l2_rate</span><span class="o">=</span><span class="mf">0.</span><span class="p">)</span>
+    <span class="n">relu</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">activation</span><span class="o">.</span><span class="n">Relu</span><span class="p">()</span>
+    <span class="n">linear</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">activation</span><span class="o">.</span><span class="n">Linear</span><span class="p">()</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="s2">"word"</span><span class="p">,</span>
+                             <span class="n">paddle</span><span class="o">.</span><span class="n">data_type</span><span class="o">.</span><span class="n">integer_value_sequence</span><span class="p">(</span><span class="n">input_dim</span><span class="p">))</span>
+    <span class="n">emb</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">embedding</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">emb_dim</span><span class="p">)</span>
+
+    <span class="n">fc1</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">fc</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">emb</span><span class="p">,</span>
+                          <span class="n">size</span><span class="o">=</span><span class="n">hid_dim</span><span class="p">,</span>
+                          <span class="n">act</span><span class="o">=</span><span class="n">linear</span><span class="p">,</span>
+                          <span class="n">bias_attr</span><span class="o">=</span><span class="n">bias_attr</span><span class="p">)</span>
+    <span class="n">lstm1</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">lstmemory</span><span class="p">(</span>
+        <span class="nb">input</span><span class="o">=</span><span class="n">fc1</span><span class="p">,</span> <span class="n">act</span><span class="o">=</span><span class="n">relu</span><span class="p">,</span> <span class="n">bias_attr</span><span class="o">=</span><span class="n">bias_attr</span><span class="p">)</span>
+
+    <span class="n">inputs</span> <span class="o">=</span> <span class="p">[</span><span class="n">fc1</span><span class="p">,</span> <span class="n">lstm1</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">stacked_num</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">fc</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">fc</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">inputs</span><span class="p">,</span>
+                             <span class="n">size</span><span class="o">=</span><span class="n">hid_dim</span><span class="p">,</span>
+                             <span class="n">act</span><span class="o">=</span><span class="n">linear</span><span class="p">,</span>
+                             <span class="n">param_attr</span><span class="o">=</span><span class="n">para_attr</span><span class="p">,</span>
+                             <span class="n">bias_attr</span><span class="o">=</span><span class="n">bias_attr</span><span class="p">)</span>
+        <span class="n">lstm</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">lstmemory</span><span class="p">(</span>
+            <span class="nb">input</span><span class="o">=</span><span class="n">fc</span><span class="p">,</span>
+            <span class="n">reverse</span><span class="o">=</span><span class="p">(</span><span class="n">i</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="n">act</span><span class="o">=</span><span class="n">relu</span><span class="p">,</span>
+            <span class="n">bias_attr</span><span class="o">=</span><span class="n">bias_attr</span><span class="p">)</span>
+        <span class="n">inputs</span> <span class="o">=</span> <span class="p">[</span><span class="n">fc</span><span class="p">,</span> <span class="n">lstm</span><span class="p">]</span>
+
+    <span class="n">fc_last</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">pooling</span><span class="p">(</span>
+        <span class="nb">input</span><span class="o">=</span><span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pooling_type</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">pooling</span><span class="o">.</span><span class="n">Max</span><span class="p">())</span>
+    <span class="n">lstm_last</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">pooling</span><span class="p">(</span>
+        <span class="nb">input</span><span class="o">=</span><span class="n">inputs</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">pooling_type</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">pooling</span><span class="o">.</span><span class="n">Max</span><span class="p">())</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">fc</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="p">[</span><span class="n">fc_last</span><span class="p">,</span> <span class="n">lstm_last</span><span class="p">],</span>
+                             <span class="n">size</span><span class="o">=</span><span class="n">class_dim</span><span class="p">,</span>
+                             <span class="n">act</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">activation</span><span class="o">.</span><span class="n">Softmax</span><span class="p">(),</span>
+                             <span class="n">bias_attr</span><span class="o">=</span><span class="n">bias_attr</span><span class="p">,</span>
+                             <span class="n">param_attr</span><span class="o">=</span><span class="n">para_attr</span><span class="p">)</span>
+
+    <span class="n">lbl</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="s2">"label"</span><span class="p">,</span> <span class="n">paddle</span><span class="o">.</span><span class="n">data_type</span><span class="o">.</span><span class="n">integer_value</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+    <span class="n">cost</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">classification_cost</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">output</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">lbl</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">cost</span><span class="p">,</span> <span class="n">output</span>
+</pre></div>
+<ol>
+<li>
+<p>Define input data and its dimension</p>
+<p>Parameter <code>input_dim</code> denotes the dictionary size, and <code>class_dim</code> is the number of categories. In <code>stacked_lstm_net</code>, the input to the network is defined in <code>paddle.layer.data</code>.</p>
+</li>
+<li>
+<p>Define Classifier</p>
+<p>The above stacked bidirectional LSTM network extracts high-level features and maps them to a vector of the same size as the categories. <code>paddle.activation.Softmax</code> function or classifier is then used for calculating the probability of the sentence belonging to each category.</p>
+</li>
+<li>
+<p>Define Loss Function</p>
+<p>In the context of supervised learning, labels of the training set are defined in <code>paddle.layer.data</code>, too. During training, cross-entropy is used as loss function in <code>paddle.layer.classification_cost</code> and as the output of the network; During testing, the outputs are the probabilities calculated in the classifier.</p>
+</li>
+</ol>
+<p>To reiterate, we can either invoke <code>convolution_net</code> or <code>stacked_lstm_net</code>.</p>
+<div class="highlight"><pre><span></span><span class="n">word_dict</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">imdb</span><span class="o">.</span><span class="n">word_dict</span><span class="p">()</span>
+<span class="n">dict_dim</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">word_dict</span><span class="p">)</span>
+<span class="n">class_dim</span> <span class="o">=</span> <span class="mi">2</span>
+
+<span class="c1"># option 1</span>
+<span class="p">[</span><span class="n">cost</span><span class="p">,</span> <span class="n">output</span><span class="p">]</span> <span class="o">=</span> <span class="n">convolution_net</span><span class="p">(</span><span class="n">dict_dim</span><span class="p">,</span> <span class="n">class_dim</span><span class="o">=</span><span class="n">class_dim</span><span class="p">)</span>
+<span class="c1"># option 2</span>
+<span class="c1"># [cost, output] = stacked_lstm_net(dict_dim, class_dim=class_dim, stacked_num=3)</span>
+</pre></div>
+<h2>Model Training</h2>
+<h3>Define Parameters</h3>
+<p>First, we create the model parameters according to the previous model configuration <code>cost</code>.</p>
+<div class="highlight"><pre><span></span><span class="c1"># create parameters</span>
+<span class="n">parameters</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">cost</span><span class="p">)</span>
+</pre></div>
+<h3>Create Trainer</h3>
+<p>Before jumping into creating a training module, algorithm setting is also necessary.
+Here we specified <code>Adam</code> optimization algorithm via <code>paddle.optimizer</code>.</p>
+<div class="highlight"><pre><span></span><span class="c1"># create optimizer</span>
+<span class="n">adam_optimizer</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span>
+    <span class="n">learning_rate</span><span class="o">=</span><span class="mf">2e-3</span><span class="p">,</span>
+    <span class="n">regularization</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">L2Regularization</span><span class="p">(</span><span class="n">rate</span><span class="o">=</span><span class="mf">8e-4</span><span class="p">),</span>
+    <span class="n">model_average</span><span class="o">=</span><span class="n">paddle</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">ModelAverage</span><span class="p">(</span><span class="n">average_window</span><span class="o">=</span><span class="mf">0.5</span><span class="p">))</span>
+
+<span class="c1"># create trainer</span>
+<span class="n">trainer</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="n">cost</span><span class="p">,</span>
+                                <span class="n">parameters</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span>
+                                <span class="n">update_equation</span><span class="o">=</span><span class="n">adam_optimizer</span><span class="p">)</span>
+</pre></div>
+<h3>Training</h3>
+<p><code>paddle.dataset.imdb.train()</code> will yield records during each pass, after shuffling, a batch input is generated for training.</p>
+<div class="highlight"><pre><span></span><span class="n">train_reader</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span>
+    <span class="n">paddle</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span>
+        <span class="k">lambda</span><span class="p">:</span> <span class="n">paddle</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">imdb</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">word_dict</span><span class="p">),</span> <span class="n">buf_size</span><span class="o">=</span><span class="mi">1000</span><span class="p">),</span>
+    <span class="n">batch_size</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+
+<span class="n">test_reader</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span>
+    <span class="k">lambda</span><span class="p">:</span> <span class="n">paddle</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">imdb</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">word_dict</span><span class="p">),</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+</pre></div>
+<p><code>feeding</code> is devoted to specifying the correspondence between each yield record and <code>paddle.layer.data</code>. For instance, the first column of data generated by <code>paddle.dataset.imdb.train()</code> corresponds to <code>word</code> feature.</p>
+<div class="highlight"><pre><span></span><span class="n">feeding</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'word'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">'label'</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+</pre></div>
+<p>Callback function <code>event_handler</code> will be invoked to track training progress when a pre-defined event happens.</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">event_handler</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">paddle</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">EndIteration</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">batch_id</span> <span class="o">%</span> <span class="mi">100</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">Pass </span><span class="si">%d</span><span class="s2">, Batch </span><span class="si">%d</span><span class="s2">, Cost </span><span class="si">%f</span><span class="s2">, </span><span class="si">%s</span><span class="s2">"</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="n">event</span><span class="o">.</span><span class="n">pass_id</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">batch_id</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">cost</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">metrics</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">'.'</span><span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">paddle</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">EndPass</span><span class="p">):</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">'./params_pass_</span><span class="si">%d</span><span class="s1">.tar'</span> <span class="o">%</span> <span class="n">event</span><span class="o">.</span><span class="n">pass_id</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">trainer</span><span class="o">.</span><span class="n">save_parameter_to_tar</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="n">trainer</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">reader</span><span class="o">=</span><span class="n">test_reader</span><span class="p">,</span> <span class="n">feeding</span><span class="o">=</span><span class="n">feeding</span><span class="p">)</span>
+        <span class="k">print</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">Test with Pass </span><span class="si">%d</span><span class="s2">, </span><span class="si">%s</span><span class="s2">"</span> <span class="o">%</span> <span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">pass_id</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">metrics</span><span class="p">)</span>
+</pre></div>
+<p>Finally, we can invoke <code>trainer.train</code> to start training:</p>
+<div class="highlight"><pre><span></span><span class="n">trainer</span><span class="o">.</span><span class="n">train</span><span class="p">(</span>
+    <span class="n">reader</span><span class="o">=</span><span class="n">train_reader</span><span class="p">,</span>
+    <span class="n">event_handler</span><span class="o">=</span><span class="n">event_handler</span><span class="p">,</span>
+    <span class="n">feeding</span><span class="o">=</span><span class="n">feeding</span><span class="p">,</span>
+    <span class="n">num_passes</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</pre></div>
+<h2>Conclusion</h2>
+<p>In this chapter, we use sentiment analysis as an example to introduce applying deep learning models on end-to-end short text classification, as well as how to use PaddlePaddle to implement the model. Meanwhile, we briefly introduce two models for text processing: CNN and RNN. In following chapters, we will see how these models can be applied in other tasks.</p>
+<h2>References</h2>
+<ol>
+<li>Kim Y. <a href="http://arxiv.org/pdf/1408.5882">Convolutional neural networks for sentence classification</a>[J]. arXiv preprint arXiv:1408.5882, 2014.</li>
+<li>Kalchbrenner N, Grefenstette E, Blunsom P. <a href="http://arxiv.org/pdf/1404.2188.pdf?utm_medium=App.net&amp;utm_source=PourOver">A convolutional neural network for modeling sentences</a>[J]. arXiv preprint arXiv:1404.2188, 2014.</li>
+<li>Yann N. Dauphin, et al. <a href="https://arxiv.org/pdf/1612.08083v1.pdf">Language Modeling with Gated Convolutional Networks</a>[J] arXiv preprint arXiv:1612.08083, 2016.</li>
+<li>Siegelmann H T, Sontag E D. <a href="http://research.cs.queensu.ca/home/akl/cisc879/papers/SELECTED_PAPERS_FROM_VARIOUS_SOURCES/05070215382317071.pdf">On the computational power of neural nets</a>[C]//Proceedings of the fifth annual workshop on Computational learning theory. ACM, 1992: 440-449.</li>
+<li>Hochreiter S, Schmidhuber J. <a href="http://web.eecs.utk.edu/~itamar/courses/ECE-692/Bobby_paper1.pdf">Long short-term memory</a>[J]. Neural computation, 1997, 9(8): 1735-1780.</li>
+<li>Bengio Y, Simard P, Frasconi P. <a href="http://www-dsi.ing.unifi.it/~paolo/ps/tnn-94-gradient.pdf">Learning long-term dependencies with gradient descent is difficult</a>[J]. IEEE transactions on neural networks, 1994, 5(2): 157-166.</li>
+<li>Graves A. <a href="http://arxiv.org/pdf/1308.0850">Generating sequences with recurrent neural networks</a>[J]. arXiv preprint arXiv:1308.0850, 2013.</li>
+<li>Cho K, Van Merriënboer B, Gulcehre C, et al. <a href="http://arxiv.org/pdf/1406.1078">Learning phrase representations using RNN encoder-decoder for statistical machine translation</a>[J]. arXiv preprint arXiv:1406.1078, 2014.</li>
+<li>Zhou J, Xu W. <a href="http://www.aclweb.org/anthology/P/P15/P15-1109.pdf">End-to-end learning of semantic role labeling using recurrent neural networks</a>[C]//Proceedings of the Annual Meeting of the Association for Computational Linguistics. 2015.</li>
+</ol>
+<p><br/>
+This tutorial is contributed by <a href="http://book.paddlepaddle.org" property="cc:attributionName" rel="cc:attributionURL" xmlns:cc="http://creativecommons.org/ns#">PaddlePaddle</a>, and licensed under a <a href="http://creativecommons.org/licenses/by-sa/4.0/" rel="license">Creative Commons Attribution-ShareAlike 4.0 International License</a>.</p>
+{% endverbatim %}

@@ -1,0 +1,26 @@
+{% verbatim %}
+<html><body><h1>Merge Batch Normarlization to fc or conv layer based on PaddlePaddle</h1>
+<p>When the training process is finished, we can merge the batch normalization with the convolution or fully connected layer. Doing so will give us a forward acceleration.</p>
+<p>For more details about batch normalization，see <a href="https://arxiv.org/abs/1502.03167">here</a></p>
+<h2>Demo</h2>
+<p>We demonstrate a demo of <a href="https://arxiv.org/abs/1704.04861">Mobilenet</a>.</p>
+<h3>Preparation for Merge</h3>
+<ol>
+<li>the source model config with batch normalization. see <code>./demo/mobilenet_with_bn.py</code></li>
+<li>the source model with batch normalization. see <code>./demo/models/mobilenet_flowers102.tar.gz</code></li>
+<li>the dest model config without batch normalization see <code>./demo/mobilenet_without_bn.py</code></li>
+</ol>
+<h3>Merge Batch norm</h3>
+<ol>
+<li>modify the <code>SOURCE_MODEL_NAME</code> and <code>DEST_MODEL_NAME</code> in <code>do_merge.sh</code></li>
+<li>Run <code>sh do_merge.sh</code></li>
+</ol>
+<h3>Verify Correctness</h3>
+<ol>
+<li>Separate modify the source and dest model in <code>./demo/verify.py</code> and Run <code>python ./demo/verify.py</code></li>
+</ol>
+<h3>NOTE:</h3>
+<ol>
+<li>Merge batch normalization speeds up the forward process by around 30%.</li>
+</ol></body></html>
+{% endverbatim %}

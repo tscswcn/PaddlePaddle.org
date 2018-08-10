@@ -1,0 +1,66 @@
+<div class="document" itemscope="itemscope" itemtype="http://schema.org/Article" role="main">
+<div itemprop="articleBody">
+<div class="section" id="executor">
+<h1>executor<a class="headerlink" href="#executor" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id1">
+<h2>Executor<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="descclassname">paddle.fluid.executor.</code><code class="descname">Executor</code><span class="sig-paren">(</span><em>place</em><span class="sig-paren">)</span></dt>
+<dd><dl class="method">
+<dt>
+<code class="descname">run</code><span class="sig-paren">(</span><em>program=None</em>, <em>feed=None</em>, <em>fetch_list=None</em>, <em>feed_var_name='feed'</em>, <em>fetch_var_name='fetch'</em>, <em>scope=None</em>, <em>return_numpy=True</em>, <em>use_program_cache=False</em><span class="sig-paren">)</span></dt>
+<dd><p>Run program by this Executor. Feed data by feed map, fetch result by fetch_list.</p>
+<p>Python executor takes a program, add feed operators and fetch operators to this program according
+to feed map and fetch_list. Feed map provides input data for the program. fetch_list provides
+the variables(or names) that user want to get after program run. Note: the executor will run all
+operators in the program but not only the operators dependent by the fetch_list</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name"/>
+<col class="field-body"/>
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>program</strong> – the program that need to run, if not provied, then default_main_program will be used.</li>
+<li><strong>feed</strong> – feed variable map, e.g. {“image”: ImageData, “label”: LableData}</li>
+<li><strong>fetch_list</strong> – a list of variable or variable names that user want to get, run will return them according</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>to this list.
+:param feed_var_name: the name for the input variable of feed Operator.
+:param fetch_var_name: the name for the output variable of feed Operator.
+:param scope: the scope used to run this program, you can switch it to different scope. default is global_scope
+:param return_numpy: if convert the fetched tensor to numpy
+:param use_program_cache: set use_program_cache to true if program not changed compare to the last step.
+:return: result according to fetch_list.</p>
+</dd></dl>
+</dd></dl>
+</div>
+<div class="section" id="global-scope">
+<h2>global_scope<a class="headerlink" href="#global-scope" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt>
+<code class="descclassname">paddle.fluid.executor.</code><code class="descname">global_scope</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+</div>
+<div class="section" id="scope-guard">
+<h2>scope_guard<a class="headerlink" href="#scope-guard" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt>
+<code class="descclassname">paddle.fluid.executor.</code><code class="descname">scope_guard</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwds</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+</div>
+<div class="section" id="switch-scope">
+<h2>switch_scope<a class="headerlink" href="#switch-scope" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt>
+<code class="descclassname">paddle.fluid.executor.</code><code class="descname">switch_scope</code><span class="sig-paren">(</span><em>scope</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+</div>
+</div>
+</div>
+<div class="articleComments">
+</div>
+</div>

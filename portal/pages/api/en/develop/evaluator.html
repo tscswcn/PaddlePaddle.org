@@ -1,0 +1,126 @@
+<div class="document" itemscope="itemscope" itemtype="http://schema.org/Article" role="main">
+<div itemprop="articleBody">
+<div class="section" id="evaluator">
+<h1>evaluator<a class="headerlink" href="#evaluator" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="chunkevaluator">
+<h2>ChunkEvaluator<a class="headerlink" href="#chunkevaluator" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="descclassname">paddle.fluid.evaluator.</code><code class="descname">ChunkEvaluator</code><span class="sig-paren">(</span><em>input</em>, <em>label</em>, <em>chunk_scheme</em>, <em>num_chunk_types</em>, <em>excluded_chunk_types=None</em><span class="sig-paren">)</span></dt>
+<dd><p>Accumulate counter numbers output by chunk_eval from mini-batches and
+compute the precision recall and F1-score using the accumulated counter
+numbers.</p>
+</dd></dl>
+</div>
+<div class="section" id="editdistance">
+<h2>EditDistance<a class="headerlink" href="#editdistance" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="descclassname">paddle.fluid.evaluator.</code><code class="descname">EditDistance</code><span class="sig-paren">(</span><em>input</em>, <em>label</em>, <em>ignored_tokens=None</em>, <em>**kwargs</em><span class="sig-paren">)</span></dt>
+<dd><p>Accumulate edit distance sum and sequence number from mini-batches and
+compute the average edit_distance and instance error of all batches.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name"/>
+<col class="field-body"/>
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>input</strong> – the sequences predicted by network.</li>
+<li><strong>label</strong> – the target sequences which must has same sequence count</li>
+<li><strong>input.</strong> (<em>with</em>) – </li>
+<li><strong>ignored_tokens</strong> (<em>list of int</em>) – Tokens that should be removed before</li>
+<li><strong>edit distance.</strong> (<em>calculating</em>) – </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Example</p>
+<p>exe = fluid.executor(place)
+distance_evaluator = fluid.Evaluator.EditDistance(input, label)
+for epoch in PASS_NUM:</p>
+<blockquote>
+<div><p>distance_evaluator.reset(exe)
+for data in batches:</p>
+<blockquote>
+<div>loss = exe.run(fetch_list=[cost])</div></blockquote>
+<p>distance, instance_error = distance_evaluator.eval(exe)</p>
+</div></blockquote>
+<p>In the above example:
+‘distance’ is the average of the edit distance in a pass.
+‘instance_error’ is the instance error rate in a pass.</p>
+</dd></dl>
+</div>
+<div class="section" id="detectionmap">
+<h2>DetectionMAP<a class="headerlink" href="#detectionmap" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="descclassname">paddle.fluid.evaluator.</code><code class="descname">DetectionMAP</code><span class="sig-paren">(</span><em>input</em>, <em>gt_label</em>, <em>gt_box</em>, <em>gt_difficult</em>, <em>class_num</em>, <em>background_label=0</em>, <em>overlap_threshold=0.5</em>, <em>evaluate_difficult=True</em>, <em>ap_version='integral'</em><span class="sig-paren">)</span></dt>
+<dd><p>Calculate the detection mean average precision (mAP).</p>
+<p>TODO (Dang Qingqing): update the following doc.
+The general steps are as follows:
+1. calculate the true positive and false positive according to the input</p>
+<blockquote>
+<div>of detection and labels.</div></blockquote>
+<ol class="arabic simple" start="2">
+<li>calculate mAP value, support two versions: ‘11 point’ and ‘integral’.</li>
+</ol>
+<dl class="docutils">
+<dt>Please get more information from the following articles:</dt>
+<dd><a class="reference external" href="https://sanchom.wordpress.com/tag/average-precision/">https://sanchom.wordpress.com/tag/average-precision/</a>
+<a class="reference external" href="https://arxiv.org/abs/1512.02325">https://arxiv.org/abs/1512.02325</a></dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name"/>
+<col class="field-body"/>
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>input</strong> (<em>Variable</em>) – The detection results, which is a LoDTensor with shape
+[M, 6]. The layout is [label, confidence, xmin, ymin, xmax, ymax].</li>
+<li><strong>gt_label</strong> (<em>Variable</em>) – The ground truth label index, which is a LoDTensor
+with shape [N, 1].</li>
+<li><strong>gt_difficult</strong> (<em>Variable</em>) – Whether this ground truth is a difficult
+bounding box (bbox), which is a LoDTensor [N, 1].</li>
+<li><strong>gt_box</strong> (<em>Variable</em>) – The ground truth bounding box (bbox), which is a
+LoDTensor with shape [N, 6]. The layout is [xmin, ymin, xmax, ymax].</li>
+<li><strong>class_num</strong> (<em>int</em>) – The class number.</li>
+<li><strong>background_label</strong> (<em>int</em>) – The index of background label, the background
+label will be ignored. If set to -1, then all categories will be
+considered, 0 by defalut.</li>
+<li><strong>overlap_threshold</strong> (<em>float</em>) – The threshold for deciding true/false
+positive, 0.5 by defalut.</li>
+<li><strong>evaluate_difficult</strong> (<em>bool</em>) – Whether to consider difficult ground truth
+for evaluation, True by defalut.</li>
+<li><strong>ap_version</strong> (<em>string</em>) – The average precision calculation ways, it must be
+‘integral’ or ‘11point’. Please check
+<a class="reference external" href="https://sanchom.wordpress.com/tag/average-precision/">https://sanchom.wordpress.com/tag/average-precision/</a> for details.
+- 11point: the 11-point interpolated average precision.
+- integral: the natural integral of the precision-recall curve.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Example</p>
+<p>exe = fluid.executor(place)
+map_evaluator = fluid.Evaluator.DetectionMAP(input,</p>
+<blockquote>
+<div>gt_label, gt_difficult, gt_box)</div></blockquote>
+<p>cur_map, accum_map = map_evaluator.get_map_var()
+fetch = [cost, cur_map, accum_map]
+for epoch in PASS_NUM:</p>
+<blockquote>
+<div><p>map_evaluator.reset(exe)
+for data in batches:</p>
+<blockquote>
+<div>loss, cur_map_v, accum_map_v = exe.run(fetch_list=fetch)</div></blockquote>
+</div></blockquote>
+<p>In the above example:</p>
+<p>‘cur_map_v’ is the mAP of current mini-batch.
+‘accum_map_v’ is the accumulative mAP of one pass.</p>
+</dd></dl>
+</div>
+</div>
+</div>
+<div class="articleComments">
+</div>
+</div>
