@@ -742,7 +742,7 @@ def _get_new_generated_dir(content_id, lang=None):
 
     if not os.path.exists(generated_dir):
         try:
-            os.mkdir(generated_dir)
+            os.makedirs(generated_dir)
         except:
             generated_dir = tempfile.mkdtemp()
 
