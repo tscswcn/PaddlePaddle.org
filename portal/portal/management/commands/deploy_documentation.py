@@ -41,7 +41,6 @@ class Command(BaseCommand):
 
         copyfile(menu_file_path, menu_path)
 
-
     # A command must define handle()
     def handle(self, *args, **options):
         # Determine version.
