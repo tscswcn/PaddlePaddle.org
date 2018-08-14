@@ -34,7 +34,7 @@ if [ "$LANGUAGE" == "en" ]; then
     make -j $processors visualdl_docs_en
     cp -r $DOCS_LOCATION/build/docs/en/html $DESTINATION_DIR/.
 
-elif if [ "$LANGUAGE" == "zh" ]; then
+elif [ "$LANGUAGE" == "zh" ]; then
     make -j $processors visualdl_docs_cn
     cp -r $DOCS_LOCATION/build/docs/cn/html $DESTINATION_DIR/.
 

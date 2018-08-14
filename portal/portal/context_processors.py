@@ -37,5 +37,6 @@ def base_context(request):
         'CURRENT_DOCS_VERSION': version,
         'settings': settings,
         'url_helper': url_helper,
-        'lang': lang
+        'lang': lang,
+        'content_id': content_id
     }

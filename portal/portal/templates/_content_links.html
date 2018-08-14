@@ -7,12 +7,14 @@
     </div>
     {% endif %}
 
+    {% if content_id != 'visualdl' %}
     <ul class="version-switcher">
         <li>
             <div class="version-label">Version:</div>
             <div class="version-row">{% version_links %}</div>
         </li>
     </ul>
+    {% endif %}
 
     {% for chapter in side_nav_content.sections %}
     <ol class="content-links chapter">
