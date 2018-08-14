@@ -66,6 +66,9 @@ def change_lang(request):
         response = redirect('/about_en.html')
     elif path == '/about_en.html':
         response = redirect('/about_cn.html')
+    elif path.endswith('404.html'):
+        portal_helper.set_preferred_language(request, None, lang)
+        response = redirect('/404.html')
     elif path in ['/documentation/models', '/documentation/mobile']:
         # There is no information on lang and version. The only way is to redirect to the documentation home
         response = redirect('/documentation/%s' % lang)
@@ -354,11 +357,18 @@ def about_cn(request):
     portal_helper.set_preferred_language(request, None, 'zh')
     return render(request, 'about_cn.html')
 
+
+def not_found(request):
+    return render(request, '404.html')
+
+
 def content_home_zh(request, content_id):
     return content_home(request, None, 'zh')
 
+
 def content_home_en(request, content_id):
     return content_home(request, None, 'en')
+
 
 def content_home(request, content_id, lang=None):
     is_raw = request.GET.get('raw', None) == '1'
@@ -402,3 +412,19 @@ def content_sub_path(request, path=None):
             'static_content': static_content
         })
         return response
+
+
+def old_content_link(request, version=None, lang=None, path=None):
+    """
+    This function handles the URL from the previous version.
+    If the version is available, it will redirect to the latest RUL format and
+    let the current system to load the content.
+
+    If the versoin is not available, it redirect the user to 404 page
+    """
+    allowed_version = settings.VERSIONS
+    if version not in map(lambda x: x["name"], allowed_version):
+        return redirect('/404.html')
+    else:
+        latest_path = '/documentation/docs/%s/%s/%s' % (lang, version, path)
+        return redirect(latest_path)

@@ -57,6 +57,7 @@ urlpatterns = [
     # -------------------
     url(r'^about_en.html', views.about_en, name='about_en'),
     url(r'^about_cn.html', views.about_cn, name='about_cn'),
+    url(r'^404.html', views.not_found, name='not_found'),
 
     # ---------------
     # ACTION URLS
@@ -73,9 +74,11 @@ urlpatterns = [
     # NOTE: This was the old way, with every content site having its own home.
     url(r'^documentation/zh/?((?!/).)*$', views.content_home_zh, name='documentationz'),
     url(r'^documentation/en/?((?!/).)*$', views.content_home_en, name='documentatione'),
-
     url(r'^documentation/?((?!/).)*$', views.content_home, name='documentation'),
     # url(r'^documentation$', views.content_home, name='documentation'),
+    # Old content url format.
+    url(r'^docs/(?P<version>(?!/).*)/documentation/(?P<lang>zh|en)/(?P<path>.*)$', views.old_content_link,
+        name='old_content_link'),
 
     # HAS TO BE KEPT IN THE END, because it picks everything.
     url(r'^(?P<path>.*)$', views.content_sub_path, name='content'),
