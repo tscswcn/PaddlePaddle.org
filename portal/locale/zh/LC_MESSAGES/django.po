@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-07-31 01:06+0000\n"
+"POT-Creation-Date: 2018-08-14 20:49+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -52,26 +52,40 @@ msgstr "启动paddlepaddle.org文档查看器"
 msgid "Downloading latest documentation, this could take several minutes..."
 msgstr ""
 
-#: portal/settings.py:188
+#: portal/settings.py:191
 msgid "English"
 msgstr ""
 
-#: portal/settings.py:189
+#: portal/settings.py:192
 msgid "Chinese"
 msgstr ""
+
+#: portal/templates/404.html:11
+msgid "Sorry. Page not found."
+msgstr "对不起。找不到页面。"
+
+#: portal/templates/404.html:12
+msgid ""
+"We can't find the page you are looking for. Maybe it was moved to a new "
+"location."
+msgstr "我们找不到你要找的网页。也许它被移到了一个新的位置"
+
+#: portal/templates/404.html:13
+msgid "Please try"
+msgstr "请尝试"
+
+#: portal/templates/404.html:13 portal/templates/_nav_bar.html:22
+#: visualDL/templates/visualdl/_nav_bar.html:17
+msgid "Documentation"
+msgstr "使用文档"
 
 #: portal/templates/_base.html:11
 msgid "PaddlePaddle - Train and deploy deep learning at scale"
 msgstr ""
 
-#: portal/templates/_nav_bar.html:22
+#: portal/templates/_nav_bar.html:26
 msgid "About"
 msgstr "关于我们"
-
-#: portal/templates/_nav_bar.html:26
-#: visualDL/templates/visualdl/_nav_bar.html:17
-msgid "Documentation"
-msgstr "使用文档"
 
 #: portal/templates/_nav_bar.html:31
 msgid "Community"
