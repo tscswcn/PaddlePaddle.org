@@ -91,7 +91,8 @@ def _find_menu_in_repo(path, filename):
     for root, dirnames, filenames in os.walk(path):
         for filename in fnmatch.filter(map(
             lambda x: root + '/' + x, filenames), '*' + filename):
-            return filename
+            if 'node_modules' not in filename:
+                return filename
 
     return None
 
