@@ -7,11 +7,12 @@ SOURCE_DIR=$3
 PPO_BRANCH=$5
 
 echo "Deploy docs: DEC_PASSWD:($1) GITHUB_BRANCH:($2) SOURCE_DIR:($3) PPO_BRANCH:($5)"
-echo "Pull PaddlePaddle.org app"
+echo "1. Pull PaddlePaddle.org app."
 curl -LOk https://github.com/PaddlePaddle/PaddlePaddle.org/archive/$PPO_BRANCH.zip
-unzip $PPO_BRANCH.zip
+unzip -q $PPO_BRANCH.zip
 cd PaddlePaddle.org-$PPO_BRANCH/portal
 
+echo "2. Install needed pip packages."
 if ! [ -x "$(which sudo)" ]; then
 pip install --ignore-installed -r requirements.txt
 else
@@ -24,10 +25,10 @@ mkdir documentation
 # is a local development build.
 export ENV=production
 
-echo "executing deploy_documentation"
+echo "3. Executing deploy_documentation."
 python manage.py deploy_documentation --source_dir=$SOURCE_DIR --destination_dir=documentation $GITHUB_BRANCH
 
-echo "Documentation generation completed"
+echo "4. Documentation generation completed."
 # Display what documentation will be sync to the server
 ls documentation
 
@@ -38,6 +39,7 @@ chmod 400 content_mgr.pem
 ssh-add content_mgr.pem
 export STAGE_DEPLOY_IP=13.229.163.131
 
+echo "5. Prepare to rsync documentation."
 # To avoid waiting for "Are you sure you want to continue connecting" input
 if [ ! -d ~/.ssh ] ; then
 mkdir ~/.ssh
@@ -46,6 +48,8 @@ ssh-keyscan $STAGE_DEPLOY_IP >> ~/.ssh/known_hosts
 rsync -r documentation/ content_mgr@$STAGE_DEPLOY_IP:/var/pages/documentation
 rsync -r /var/pages/menus/ content_mgr@$STAGE_DEPLOY_IP:/var/pages/menus
 
+echo "6. Documentation deployed. Clean up."
 chmod 644 content_mgr.pem
 rm -rf documentation
 rm -rf /var/pages/menus
+
