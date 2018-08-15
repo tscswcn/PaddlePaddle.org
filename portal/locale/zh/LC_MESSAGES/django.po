@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-14 20:49+0000\n"
+"POT-Creation-Date: 2018-08-15 18:04+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -61,20 +61,16 @@ msgid "Chinese"
 msgstr ""
 
 #: portal/templates/404.html:11
-msgid "Sorry. Page not found."
-msgstr "对不起。找不到页面。"
+msgid "Sorry. Page not found"
+msgstr "对不起，页面找不到"
 
 #: portal/templates/404.html:12
 msgid ""
-"We can't find the page you are looking for. Maybe it was moved to a new "
-"location."
-msgstr "我们找不到你要找的网页。也许它被移到了一个新的位置"
+"You may have enter an incorrect address, or the web page has been deleted or "
+"moved. Please return back to"
+msgstr "您可能输错了网址，或该网页已经删除或移动，请您返回"
 
-#: portal/templates/404.html:13
-msgid "Please try"
-msgstr "请尝试"
-
-#: portal/templates/404.html:13 portal/templates/_nav_bar.html:22
+#: portal/templates/404.html:12 portal/templates/_nav_bar.html:22
 #: visualDL/templates/visualdl/_nav_bar.html:17
 msgid "Documentation"
 msgstr "使用文档"
@@ -320,97 +316,3 @@ msgid ""
 "Run the web-app with one command and instantly visualize the results. Train "
 "again, and refresh results."
 msgstr "运行Web应用程序，即可立即可视化结果。再次训练，并刷新结果。"
-
-#~ msgid "Import PaddlePaddle"
-#~ msgstr "引入PaddlePaddle"
-
-#~ msgid "Load dataset and train"
-#~ msgstr "导入数据集并开始训练"
-
-#~ msgid "Works with:"
-#~ msgstr "适用於"
-
-#~ msgid "COMING SOON"
-#~ msgstr "敬请期待"
-
-#~ msgid "Tested on CentOS 6+, Ubuntu 14.04+"
-#~ msgstr "在CentOS 6+和Ubuntu 14.04+上测试通过"
-
-#~ msgid "Quick Start"
-#~ msgstr "快速入门"
-
-#~ msgid "Install and make predictions in 5 minutes"
-#~ msgstr "五分钟快速上手"
-
-#~ msgid ""
-#~ "Tested on CentOS 7, Ubuntu 16.04, and MacOS 10.12, with Python 2.7.x "
-#~ "installed"
-#~ msgstr "在 CentOS 7，Ubuntu 16.04， MacOS 10.12，Python 2.7.x 环境下测试过"
-
-#~ msgid "Download "
-#~ msgstr "下载"
-
-#~ msgid "the trained housing prices model"
-#~ msgstr "房价模型"
-
-#~ msgid " and then install PaddlePaddle on your computer:"
-#~ msgstr "和在电脑上安装PaddlePaddle"
-
-#~ msgid ""
-#~ "Download, and then <a href=\"https://docs.docker.com/engine/installation/"
-#~ "\" target=\"_blank\">install Docker</a> on your computer."
-#~ msgstr ""
-#~ "在您的电脑上<a href=\"https://docs.docker.com/engine/installation/\" "
-#~ "target=\"_blank\">安装Docker。</a>"
-
-#~ msgid ""
-#~ "After installing Docker, create a new file called <em>housing.py</em> in "
-#~ "a new and empty directory:"
-#~ msgstr "安装好后，在一个新的目录下创建一个<em>housing.py</em> "
-
-#~ msgid "Instructions on installing pip"
-#~ msgstr "pip 安装教学"
-
-#~ msgid "Now, create a new file called "
-#~ msgstr "创建一个 "
-
-#~ msgid ", and paste this Python code"
-#~ msgstr " 并粘贴此Python代码"
-
-#~ msgid ""
-#~ "(make sure to set the right path based on the location of <em>fit_a_line."
-#~ "tar</em> on your computer):"
-#~ msgstr "(请确保<em>fit_a_line.tar</em> 是在正确的路径上)"
-
-#~ msgid "Now download "
-#~ msgstr "下载"
-
-#~ msgid ""
-#~ "the trained housing prices model</a> into the <code>~/workspace</code> "
-#~ "directory, and paste this Python code in <em>housing.py</em> using your "
-#~ "favorite editor"
-#~ msgstr ""
-#~ "房价模型</a> 且放在<code>~/workspace</code> 目录下，使用您喜欢的编辑器粘贴"
-#~ "此Python代码到<em>housing.py</em>"
-
-#~ msgid "Run "
-#~ msgstr "执行"
-
-#~ msgid ""
-#~ " and <strong>voila</strong>! It should print out a list of predictions "
-#~ "for the test housing data."
-#~ msgstr " <strong>瞧</strong>！ 它应该打印出预测住房数据的清单。"
-
-#~ msgid "Now run this code in a new PaddlePaddle Docker container:"
-#~ msgstr "在一个新的paddlepaddle Docker容器运行这个代码："
-
-#~ msgid ""
-#~ "<strong>Voila</strong>! It should print out a list of predictions for the "
-#~ "test housing data."
-#~ msgstr "<strong>瞧</strong>！ 它应该打印出预测住房数据的清单。"
-
-#~ msgid "PArallel Distributed Deep LEarning"
-#~ msgstr "易学易用的分布式深度学习平台"
-
-#~ msgid "Technical Features"
-#~ msgstr "技术和服务优势"

@@ -8,10 +8,9 @@
 
 <div id="content2" class="container doc-content">
     <br/>
-    <h2>{% trans "Sorry. Page not found." %}</h2>
-    <p>{% trans "We can't find the page you are looking for. Maybe it was moved to a new location." %}</p>
-    <p>{% trans "Please try" %} <a href="/documentation/{% if LANGUAGE_CODE != 'zh' %}en{% else %}zh{% endif %}"{% if settings.ENV != 'production' and settings.ENV != 'staging' %} onclick="return showFullpageSpinnerForContentId('documentation');"{% endif %}>{% trans "Documentation" %}<span class="sr-only">(current)</span></a>
-    </p>
+    <h2>{% trans "Sorry. Page not found" %}</h2>
+    <p>{% trans "You may have enter an incorrect address, or the web page has been deleted or moved. Please return back to" %} <a href="/documentation/{% if LANGUAGE_CODE != 'zh' %}en{% else %}zh{% endif %}"{% if settings.ENV != 'production' and settings.ENV != 'staging' %} onclick="return showFullpageSpinnerForContentId('documentation');"{% endif %}>{% trans "Documentation" %}<span class="sr-only">(current)</span></a>
+</p>
 </div>
 {% endblock %}
 
