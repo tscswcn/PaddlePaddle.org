@@ -1,0 +1,17 @@
+{% extends "_base_nav.html" %}
+
+{% load i18n %}
+{% load app_tags %}
+
+{% block content %}
+<link href="/static/stylesheets/content.css?{% server_start_time %}" media="screen, projection" rel="stylesheet" type="text/css" />
+
+<div id="content2" class="container doc-content">
+    <br/>
+    <h2>{% trans "Sorry. Page not found" %}</h2>
+    <p>{% trans "You may have enter an incorrect address, or the web page has been deleted or moved. Please return back to" %} <a href="/documentation/{% if LANGUAGE_CODE != 'zh' %}en{% else %}zh{% endif %}"{% if settings.ENV != 'production' and settings.ENV != 'staging' %} onclick="return showFullpageSpinnerForContentId('documentation');"{% endif %}>{% trans "Documentation" %}<span class="sr-only">(current)</span></a>
+</p>
+</div>
+{% endblock %}
+
+{% block footer %}{% endblock %}
