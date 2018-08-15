@@ -151,6 +151,10 @@ def models(source_dir, destination_dir, version, lang):
     # Traverse through all the HTML pages of the dir, and take contents in the "markdown" section
     # and transform them using a markdown library.
     for subdir, dirs, all_files in os.walk(source_dir):
+        # Avoid parsing PaddlePaddle.org folder
+        if 'PaddlePaddle.org' in subdir:
+            continue
+
         for file in all_files:
             subpath = os.path.join(subdir, file)[len(
                 source_dir):]
@@ -169,6 +173,7 @@ def models(source_dir, destination_dir, version, lang):
             if '.md' in file:
                 # Convert the contents of the MD file.
                 with open(os.path.join(subdir, file)) as original_md_file:
+                    print("Generating file: %s" % subpath)
                     markdown_body = sanitize_markdown(original_md_file.read())
 
                     # Preserve all formula
@@ -238,6 +243,10 @@ def mobile(source_dir, destination_dir, version, lang):
     # Traverse through all the HTML pages of the dir, and take contents in the "markdown" section
     # and transform them using a markdown library.
     for subdir, dirs, all_files in os.walk(source_dir):
+        # Avoid parsing PaddlePaddle.org folder
+        if 'PaddlePaddle.org' in subdir:
+            continue
+
         for file in all_files:
             subpath = os.path.join(subdir, file)[len(
                 source_dir):]
@@ -256,6 +265,8 @@ def mobile(source_dir, destination_dir, version, lang):
             if '.md' in file:
                 # Convert the contents of the MD file.
                 with open(os.path.join(subdir, file)) as original_md_file:
+                    print("Generating file: %s" % subpath)
+
                     markdown_body = sanitize_markdown(original_md_file.read())
 
                     with codecs.open(new_path, 'w', 'utf-8') as new_html_partial:
