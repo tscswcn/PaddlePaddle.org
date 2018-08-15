@@ -328,6 +328,10 @@ def book(source_dir, destination_dir, version, lang):
 
     if os.path.exists(os.path.dirname(source_dir)):
         for subdir, dirs, all_files in os.walk(source_dir):
+            # Avoid parsing PaddlePaddle.org folder
+            if 'PaddlePaddle.org' in subdir:
+                continue
+                
             for file in all_files:
                 subpath = os.path.join(subdir, file)[len(
                     source_dir):]
@@ -347,6 +351,8 @@ def book(source_dir, destination_dir, version, lang):
                         os.makedirs(os.path.dirname(new_path))
 
                 if '.md' in file:
+                    print("Generating file: %s" % subpath)
+
                     # Convert the contents of the MD file.
                     with open(os.path.join(subdir, file)) as original_md_file:
                         markdown_body = sanitize_markdown(original_md_file.read())
