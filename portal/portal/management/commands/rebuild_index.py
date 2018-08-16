@@ -56,7 +56,7 @@ class Command(BaseCommand):
                 })
 
 
-    def build_document(self, source_dir):
+    def build_document(self, source_dir, lang):
         for subdir, dirs, all_files in os.walk(source_dir):
             for file in all_files:
                 subpath = os.path.join(subdir, file)
@@ -88,7 +88,14 @@ class Command(BaseCommand):
                             #     because it is probably a nav or index of sorts.
                             continue
 
-                        document['content'] = ', '.join(soup.stripped_strings)
+                        # Segment the Chinese sentence through jieba library
+                        if lang == 'zh':
+                            import jieba
+
+                            chinese_seg_list = [" ".join(jieba.cut_for_search(str)) for str in soup.stripped_strings]
+                            document['content'] = ", ".join(chinese_seg_list)
+                        else:
+                            document['content'] = ', '.join(soup.stripped_strings)
 
                     self.documents.append(document)
                     self.unique_paths.append(document['path'])
@@ -125,7 +132,7 @@ class Command(BaseCommand):
                     self.build_api_document(os.path.join(
                         source_dir, api_document + '.html'))
             else:
-                self.build_document(source_dir)
+                self.build_document(source_dir, options['language'][0])
 
         # Using this content, we build tfidf for all the content.
         document_contents = [tb(
