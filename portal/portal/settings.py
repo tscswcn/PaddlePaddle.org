@@ -112,6 +112,7 @@ VERSIONS = [
 ]
 
 if DEBUG:
+    VERSIONS.append({ 'name': '0.15.0', 'api': 'Fluid' })
     VERSIONS.append({ 'name': 'develop_doc', 'api': 'Fluid' })
     VERSIONS.append({ 'name': 'develop', 'api': 'Fluid' })
 

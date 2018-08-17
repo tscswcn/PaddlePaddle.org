@@ -200,7 +200,7 @@ def get_content_navigation(request, content_id, language, version):
 
     else:
         valid_navigation_items = settings.SIDE_NAVIGATION
-        if version == '0.14.0' and language == 'zh':
+        if version >= '0.14.0' and language == 'zh':
             # if the version is '0.14.0', we only show
             # 'Documentation' and 'API'. Otherwise, show all
             # ['Documentation', 'API', 'Book', 'Models', 'Mobile']
