@@ -331,8 +331,7 @@ def _get_static_content_from_template(path):
         return static_content_template.render()
 
     except TemplateDoesNotExist:
-        return 'Page not found: %s' % path
-
+        return None
 
 def home_root(request):
     return render(request, 'index.html')
@@ -400,21 +399,24 @@ def content_sub_path(request, path=None):
     is_raw = request.GET.get('raw', None)
     static_content = _get_static_content_from_template(path)
 
-    # Because this is the best metadata we have on if this is VDL or not.
-    is_visualdl = hasattr(
-        request, 'urlconf') and request.urlconf == 'visualDL.urls'
+    if static_content:
+        # Because this is the best metadata we have on if this is VDL or not.
+        is_visualdl = hasattr(
+            request, 'urlconf') and request.urlconf == 'visualDL.urls'
 
-    if is_raw and is_raw == '1':
-        response = HttpResponse(static_content, content_type="text/html")
-        return response
+        if is_raw and is_raw == '1':
+            response = HttpResponse(static_content, content_type="text/html")
+            return response
+        else:
+            response = render(request, '%scontent_panel.html' % ('visualdl/' if is_visualdl else ''), {
+                'static_content': static_content
+            })
+            return response
     else:
-        response = render(request, '%scontent_panel.html' % ('visualdl/' if is_visualdl else ''), {
-            'static_content': static_content
-        })
-        return response
+        raise Http404
 
 
-def old_content_link(request, version=None, lang=None, path=None):
+def old_content_link(request, version=None, fluid=None, lang=None, path=None):
     """
     This function handles the URL from the previous version.
     If the version is available, it will redirect to the latest RUL format and
@@ -424,7 +426,15 @@ def old_content_link(request, version=None, lang=None, path=None):
     """
     allowed_version = settings.VERSIONS
     if version not in map(lambda x: x["name"], allowed_version):
-        return redirect('/404.html')
+        raise Http404
+
     else:
+        if fluid == None and version not in ['0.10.0', '0.11.0', '0.12.0']:
+            version = '0.12.0'
+        elif fluid and version not in ['0.13.0', '0.14.0']:
+            # Version 0.13.0 and 0.14.0 are the only two versions we should support.
+            # We expect no one to bookmark/share 0.15.0 link with old URL pattern.
+            version = '0.14.0'
+
         latest_path = '/documentation/docs/%s/%s/%s' % (lang, version, path)
         return redirect(latest_path)
