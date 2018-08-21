@@ -45,15 +45,23 @@ class Command(BaseCommand):
                     with open(os.path.join(settings.BASE_DIR, subpath)) as html_file:
                         soup = BeautifulSoup(html_file, 'lxml')
 
-                        api_calls = soup.find_all(re.compile('^h'))
+                        try:
+                            # Index the H1 title
+                            title = soup.find('h1')
+                            if not title:
+                                title = soup.find('h2')
 
-                        # Append the file itself
-                        self.api_documents.append({
-                            'path': '/' + subpath,
-                            'title': name,
-                            'prefix': ""
-                        })
+                            self.api_documents.append({
+                                'path': '/' + subpath,
+                                'title': str(next(title.stripped_strings)),
+                                'prefix': ""
+                            })
+                        except Exception as e:
+                            print("Error!!!: %s" % e)
+                            print("Unable to parse the file at: %s" % subpath)
 
+                        # Index H2 and H3 items
+                        api_calls = soup.find_all(['h2', 'h3'])
                         for api_call in api_calls:
                             try:
                                 self.api_documents.append({
