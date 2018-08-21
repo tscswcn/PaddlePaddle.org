@@ -4,6 +4,8 @@ import json
 import math
 
 import nltk
+import jieba
+
 from textblob import TextBlob as tb
 from bs4 import BeautifulSoup
 from django.conf import settings
@@ -108,8 +110,6 @@ class Command(BaseCommand):
 
                         # Segment the Chinese sentence through jieba library
                         if lang == 'zh':
-                            import jieba
-
                             chinese_seg_list = [" ".join(jieba.cut_for_search(str)) for str in soup.stripped_strings]
                             document['content'] = ", ".join(chinese_seg_list)
                         else:
