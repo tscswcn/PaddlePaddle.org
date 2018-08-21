@@ -77,7 +77,7 @@ urlpatterns = [
     url(r'^documentation/?((?!/).)*$', views.content_home, name='documentation'),
     # url(r'^documentation$', views.content_home, name='documentation'),
     # Old content url format.
-    url(r'^docs/(?P<version>(?!/).*)/documentation/(?P<fluid>fluid/)?(?P<lang>zh|en)/(?P<path>.*)$', views.old_content_link,
+    url(r'^docs/(?P<version>(?!/).*)/documentation/(?P<is_fluid>fluid/)?(?P<lang>zh|en)/(?P<path>.*)$', views.old_content_link,
         name='old_content_link'),
 
     # HAS TO BE KEPT IN THE END, because it picks everything.

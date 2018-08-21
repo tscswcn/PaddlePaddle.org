@@ -412,26 +412,26 @@ def content_sub_path(request, path=None):
                 'static_content': static_content
             })
             return response
-    else:
-        raise Http404
+
+    raise Http404
 
 
-def old_content_link(request, version=None, fluid=None, lang=None, path=None):
+def old_content_link(request, version=None, is_fluid=None, lang=None, path=None):
     """
     This function handles the URL from the previous version.
-    If the version is available, it will redirect to the latest RUL format and
+    If the version is available, it will redirect to the latest URL format and
     let the current system to load the content.
 
-    If the versoin is not available, it redirect the user to 404 page
+    If the version is not available, it raises Http404 error
     """
     allowed_version = settings.VERSIONS
-    if version not in map(lambda x: x["name"], allowed_version):
+    if version not in map(lambda x: x['name'], allowed_version):
         raise Http404
 
     else:
-        if fluid == None and version not in ['0.10.0', '0.11.0', '0.12.0']:
+        if not is_fluid  and version not in ['0.10.0', '0.11.0', '0.12.0']:
             version = '0.12.0'
-        elif fluid and version not in ['0.13.0', '0.14.0']:
+        elif is_fluid and version not in ['0.13.0', '0.14.0']:
             # Version 0.13.0 and 0.14.0 are the only two versions we should support.
             # We expect no one to bookmark/share 0.15.0 link with old URL pattern.
             version = '0.14.0'
