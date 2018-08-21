@@ -88,7 +88,7 @@
               limit: 8,
               name: 'pages',
               source: function(query, sync, async){
-                  sync(idx.search('*' + query + '*').map((result) => {
+                  sync(idx.search('*' + query + '* ' + query).map((result) => {
                       item = indexPathMap[result.ref];
 
                       var apiPath = '/api/';

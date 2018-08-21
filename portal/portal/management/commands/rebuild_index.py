@@ -4,6 +4,8 @@ import json
 import math
 
 import nltk
+import jieba
+
 from textblob import TextBlob as tb
 from bs4 import BeautifulSoup
 from django.conf import settings
@@ -26,12 +28,6 @@ def tfidf(word, blob, bloblist):
 
 # The class must be named Command, and subclass BaseCommand
 class Command(BaseCommand):
-    # TODO(Varun): Do a non-hardcoded approach here.
-    API_DOCUMENTS = [
-        'evaluator', 'executor', 'initializer', 'io', 'layers',
-        'nets', 'optimizer', 'regularizer'
-    ]
-
     # Show this when the user types help
     help = "Usage: python manage.py rebuild_index <language> <version> --content_id=<e.g. documentation>"
 
@@ -42,21 +38,45 @@ class Command(BaseCommand):
             '--content_id', action='store', default=None, dest='content_id')
 
 
-    def build_api_document(self, source_file):
-        with open(os.path.join(settings.BASE_DIR, source_file)) as html_file:
-            soup = BeautifulSoup(html_file, 'lxml')
+    def build_api_document(self, source_dir):
+        for subdir, dirs, all_files in os.walk(source_dir):
+            for file in all_files:
+                subpath = os.path.join(subdir, file)
+                (name, extension) = os.path.splitext(file)
+                if extension == '.html':
+                    with open(os.path.join(settings.BASE_DIR, subpath)) as html_file:
+                        soup = BeautifulSoup(html_file, 'lxml')
 
-            api_calls = soup.find_all(re.compile('^h'))
+                        try:
+                            # Index the H1 title
+                            title = soup.find('h1')
+                            if not title:
+                                title = soup.find('h2')
 
-            for api_call in api_calls:
-                self.api_documents.append({
-                    'path': '/' + source_file + api_call.a['href'],
-                    'title': str(next(api_call.stripped_strings)),
-                    'prefix': os.path.splitext(os.path.basename(source_file))[0]
-                })
+                            self.api_documents.append({
+                                'path': '/' + subpath,
+                                'title': str(next(title.stripped_strings)),
+                                'prefix': ""
+                            })
+                        except Exception as e:
+                            print("Error!!!: %s" % e)
+                            print("Unable to parse the file at: %s" % subpath)
+
+                        # Index H2 and H3 items
+                        api_calls = soup.find_all(['h2', 'h3'])
+                        for api_call in api_calls:
+                            try:
+                                self.api_documents.append({
+                                    'path': '/' + subpath + api_call.a['href'],
+                                    'title': str(next(api_call.stripped_strings)),
+                                    'prefix': os.path.splitext(os.path.basename(name))[0]
+                                })
+                            except Exception as e:
+                                print("Error!!!: %s" % e)
+                                print("Unable to parse the file at: %s" % subpath)
 
 
-    def build_document(self, source_dir):
+    def build_document(self, source_dir, lang):
         for subdir, dirs, all_files in os.walk(source_dir):
             for file in all_files:
                 subpath = os.path.join(subdir, file)
@@ -88,7 +108,12 @@ class Command(BaseCommand):
                             #     because it is probably a nav or index of sorts.
                             continue
 
-                        document['content'] = ', '.join(soup.stripped_strings)
+                        # Segment the Chinese sentence through jieba library
+                        if lang == 'zh':
+                            chinese_seg_list = [" ".join(jieba.cut_for_search(str)) for str in soup.stripped_strings]
+                            document['content'] = ", ".join(chinese_seg_list)
+                        else:
+                            document['content'] = ', '.join(soup.stripped_strings)
 
                     self.documents.append(document)
                     self.unique_paths.append(document['path'])
@@ -120,12 +145,10 @@ class Command(BaseCommand):
             )
 
             if content_to_build == 'api' and options['version'][0] not in ['0.10.0', '0.11.0']:
-                # Get the name of all the files in the API dir.
-                for api_document in self.API_DOCUMENTS:
-                    self.build_api_document(os.path.join(
-                        source_dir, api_document + '.html'))
+                self.build_api_document(source_dir)
+
             else:
-                self.build_document(source_dir)
+                self.build_document(source_dir, options['language'][0])
 
         # Using this content, we build tfidf for all the content.
         document_contents = [tb(
