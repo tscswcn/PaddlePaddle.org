@@ -740,9 +740,9 @@ def reserve_formulas(markdown_body, formula_map, only_reserve_double_dollar=Fals
     """
     place_holder = '<span class="markdown-equation" id="equation-%s"></span>'
     if only_reserve_double_dollar:
-        m = re.findall('(\$\$[^\$]+\$\$)', markdown_body)
+        m = re.findall('(\$\$[^\$\n]+\$\$)', markdown_body)
     else:
-        m = re.findall('(\$\$?[^\$]+\$?\$)', markdown_body)
+        m = re.findall('(\$\$?[^\$\n]+\$?\$)', markdown_body)
 
     for i in xrange(len(m)):
         formula_map['equation-' + str(i)] = m[i]

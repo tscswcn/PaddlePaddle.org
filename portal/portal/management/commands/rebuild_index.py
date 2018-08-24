@@ -82,7 +82,7 @@ class Command(BaseCommand):
                 subpath = os.path.join(subdir, file)
                 (name, extension) = os.path.splitext(file)
 
-                if extension == '.html' and name not in self.API_DOCUMENTS:
+                if extension == '.html':
                     document = {
                         'path': '/' + subpath
                     }
@@ -164,7 +164,7 @@ class Command(BaseCommand):
             sorted_words = sorted(
                 scores.items(), key=lambda x: x[1], reverse=True)
             self.documents[document_index]['content'] = [word[0].encode(
-                'utf-8') for word in sorted_words[:20]]
+                'utf-8') for word in sorted_words[:40]]
 
         # And create an index JS file that we can import.
         output_index_js = os.path.join(
