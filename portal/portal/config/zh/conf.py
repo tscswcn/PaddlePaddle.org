@@ -16,8 +16,21 @@ import os, subprocess
 sys.path.insert(0, os.path.abspath('@PADDLE_BINARY_DIR@/python'))
 import shlex
 from recommonmark import parser, transform
-import paddle
-import paddle.v2
+try:
+    import paddle
+    import paddle.v2
+except:
+    print("""
+    ============================================================================
+    ===                              WARNING!                                === 
+    ===                                                                      ===
+    ===    Unable to import paddle module, will not generate API documents!  === 
+    ===    Make sure that the built Python directory (containing paddle)     === 
+    ===    is available in the PYTHONPATH of where you are                   === 
+    ===    running ./runserver from.                                         === 
+    ===                                                                      ===
+    ============================================================================
+    """)
 
 MarkdownParser = parser.CommonMarkParser
 AutoStructify = transform.AutoStructify
