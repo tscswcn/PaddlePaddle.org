@@ -59,7 +59,7 @@ class Command(BaseCommand):
 
         # fluiddoc will be the future main docs repo.
         # TODO: remove paddle support once we are done with the transition
-        if content_id == 'paddle' or content_id == 'fluiddoc':
+        if content_id in ['paddle', 'fluiddoc']:
             content_id = 'docs'
 
             if version in ['0.10.0', '0.11.0']:
