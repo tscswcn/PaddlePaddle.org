@@ -52,4 +52,3 @@ echo "6. Documentation deployed. Clean up."
 chmod 644 content_mgr.pem
 rm -rf documentation
 rm -rf /var/pages/menus
-
