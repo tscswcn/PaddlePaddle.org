@@ -87,7 +87,8 @@
 
         if (renderedResults.length > 0)
             searchResultsEl.innerHTML = renderedResults.join('\n');
-        searchResultsEl.innerHTML = '<div class="search-empty mb-4">No results found for "' + query + '". Try searching for something else.</div>'
+        else
+            searchResultsEl.innerHTML = '<div class="search-empty mb-4">No results found for "' + query + '". Try searching for something else.</div>'
     }
 </script>
 {% endblock %}
