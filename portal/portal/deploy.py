@@ -754,7 +754,7 @@ def reserve_formulas(markdown_body, formula_map, only_reserve_double_dollar=Fals
         math += m
 
     for i in xrange(len(math)):
-        formula_map['equation-' + str(i)] = math[i].strip('`')
+        formula_map['equation-' + str(i)] = math[i]
         markdown_body = markdown_body.replace(math[i], place_holder % i)
 
     return markdown_body
