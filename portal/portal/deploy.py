@@ -49,7 +49,7 @@ def transform(source_dir, destination_dir, content_id, version, lang=None):
         elif content_id == 'models':
             models(source_dir, destination_dir, version, lang)
 
-        elif content_id == 'mobile':
+        elif content_id in ['mobile', 'paddle-mobile']:
             mobile(source_dir, destination_dir, version, lang)
 
         elif content_id == 'visualdl':
