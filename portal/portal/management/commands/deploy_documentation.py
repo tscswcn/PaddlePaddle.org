@@ -72,14 +72,31 @@ class Command(BaseCommand):
 
             menus_to_save.append('api')
 
-        menus_to_save.append(content_id)
+        # Using the new Fluid doc to deploy. Deploy all modules under external
+        # Note: This should include 'docs' if possible, but 'docs' requires building Paddle.
+        # Building Paddle will most likely timeout the CI Job.
+        if content_id == 'external':
+            content_ids = ['book', 'mobile', 'models']
 
-        transform(
-            source_dir, options.get('destination_dir', None),
-            content_id, version, None
-        )
+            for content_id in content_ids:
+                transform(
+                    source_dir + '/' + content_id, options.get('destination_dir', None),
+                    content_id, version, None
+                )
 
-        if content_id not in ['models', 'mobile']:
-            for lang in ['en', 'zh']:
-                for menu_to_save_content_id in menus_to_save:
-                    self.save_menu(source_dir, menu_to_save_content_id, lang, version)
+                if content_id not in ['models', 'mobile']:
+                    for lang in ['en', 'zh']:
+                        self.save_menu(source_dir, content_id, lang, version)
+
+        else:
+            menus_to_save.append(content_id)
+
+            transform(
+                source_dir, options.get('destination_dir', None),
+                content_id, version, None
+            )
+
+            if content_id not in ['models', 'mobile']:
+                for lang in ['en', 'zh']:
+                    for menu_to_save_content_id in menus_to_save:
+                        self.save_menu(source_dir, menu_to_save_content_id, lang, version)
