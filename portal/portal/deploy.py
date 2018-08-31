@@ -745,8 +745,10 @@ def reserve_formulas(markdown_body, formula_map, only_reserve_double_dollar=Fals
 
     math = []
     for i in range(len(markdown_body_list)):
-        body = markdown_body_list[i]
-        print(body)
+        body = markdown_body_list[i].strip(' ')
+        if body.startswith('`') and body.endswith('`'):
+            continue
+
         if only_reserve_double_dollar:
             m = re.findall('(\$\$[^\$]+\$\$)', body)
         else:
