@@ -746,17 +746,22 @@ def reserve_formulas(markdown_body, formula_map, only_reserve_double_dollar=Fals
     math = []
     for i in range(len(markdown_body_list)):
         body = markdown_body_list[i].strip(' ')
-        if body.startswith('`') and body.endswith('`'):
-            continue
+#         if body.startswith('`') and body.endswith('`'):
+#             continue
 
+#         if only_reserve_double_dollar:
+#             m = re.findall('(\$\$[^\$]+\$\$)', body)
+#         else:
+#             m = re.findall('(\$\$?[^\$]+\$?\$)', body)
+            
         if only_reserve_double_dollar:
-            m = re.findall('(\$\$[^\$]+\$\$)', body)
+            m = re.findall('(\`?\$\$[^\$\n]+\$\$\`?)', body)
         else:
-            m = re.findall('(\$\$?[^\$]+\$?\$)', body)
+            m = re.findall('(\`?\$\$?[^\$\n]+\$?\$\`?)', body)
         math += m
 
     for i in xrange(len(math)):
-        formula_map['equation-' + str(i)] = math[i]
+        formula_map['equation-' + str(i)] = math[i].strip('`')
         markdown_body = markdown_body.replace(math[i], place_holder % i)
 
     return markdown_body
