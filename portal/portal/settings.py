@@ -47,7 +47,7 @@ if ENV == 'production':
 else:
     DEBUG = True
 
-DEFAULT_DOCS_VERSION = '0.14.0' if ENV in ['production', 'staging'] else 'develop'
+DEFAULT_DOCS_VERSION = '0.15.0' if ENV in ['production', 'staging'] else 'develop'
 
 SIDE_NAVIGATION = [
     {
