@@ -46,8 +46,13 @@ def change_version(request):
 
     path = urlparse(request.META.get('HTTP_REFERER')).path
 
-    if not path == '/':
-        response = _find_matching_equivalent_page_for(path, request, None, version)
+    try:
+        if not path == '/':
+            response = _find_matching_equivalent_page_for(path, request, None, version)
+    except:
+        print("Unable to switch version properly. redirect to home page")
+        lang = request.GET.get('lang_code', 'en')
+        response = redirect('/documentation/' + lang)
 
     return response
 
