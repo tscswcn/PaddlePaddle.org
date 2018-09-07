@@ -51,7 +51,10 @@ def change_version(request):
             response = _find_matching_equivalent_page_for(path, request, None, version)
     except:
         print("Unable to switch version properly. redirect to home page")
-        lang = request.GET.get('lang_code', 'en')
+        content_id, lang, version = url_helper.get_parts_from_url_path(path)
+        if lang == None:
+            lang = 'en'
+
         response = redirect('/documentation/' + lang)
 
     return response
