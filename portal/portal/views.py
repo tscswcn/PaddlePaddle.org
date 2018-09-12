@@ -446,3 +446,10 @@ def old_content_link(request, version=None, is_fluid=None, lang=None, path=None)
 
         latest_path = '/documentation/docs/%s/%s/%s' % (lang, version, path)
         return redirect(latest_path)
+
+
+def search(request):
+    """
+    Placeholder for a search results page that uses local indexes.
+    """
+    return render(request, 'search.html', {'q': request.GET.get('q', '')})
