@@ -452,4 +452,7 @@ def search(request):
     """
     Placeholder for a search results page that uses local indexes.
     """
-    return render(request, 'search.html', {'q': request.GET.get('q', '')})
+    return render(request, 'search.html', {
+        'q': request.GET.get('q', ''),
+        'CURRENT_DOCS_VERSION': request.GET.get('version', '')
+    })
