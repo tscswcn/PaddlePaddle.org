@@ -59,8 +59,7 @@
 
         <!-- Setup search -->
         <script src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.11/handlebars.min.js"></script>
-        <script src="//twitter.github.com/typeahead.js/releases/latest/typeahead.jquery.js"></script>
-
+        <script src="//twitter.github.com/typeahead.js/releases/latest/typeahead.jquery.min.js"></script>
 
         <script src="/static/js/lunr.js"></script>
         <script src="/static/indexes/{{ lang }}/{{ CURRENT_DOCS_VERSION }}/index.js.gz"></script>
@@ -75,8 +74,9 @@
               minLength: 1
             },
             {
-              limit: 8,
+              limit: 10,
               name: 'pages',
+              async: false,
               source: function(query, sync, async){
                   sync(idx.search('*' + query + '* ' + query).map((result) => {
                       item = indexPathMap[result.ref];
@@ -100,7 +100,15 @@
                         '<div class="title col-10">{{#if prefix}}<span class="prefix">{{prefix}}.</span>{{/if}}{{title}}</div>') + (
                         '<div class="type col-2 d-flex"><div class="align-self-center">{{#if isAPI}}API{{else if isModels}}Model{{else}}Doc{{/if}}</div></div>') + (
                       '</div>')
-                  )
+                  ),
+                  notFound: Handlebars.compile(
+                      '<div class="row no-results"><div class=\'title col-10\'>No results found for \'{{query}}\'</div></div>'
+                  ),
+                  footer: Handlebars.compile(
+                      '<div class="row footer"><div class=\'title col-10\'>' + (
+                          '<input type=\'submit\' value=\'Show more results for "{{query}}"\' />') + (
+                      '</div></div>')
+                  ),
                   {% endverbatim %}
               }
         }).bind('typeahead:select', function(ev, suggestion) {

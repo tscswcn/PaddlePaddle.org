@@ -14,6 +14,23 @@ from django.conf import settings
 from django.core.management import BaseCommand
 
 
+def get_section_for_api_title(title, depth=0):
+    """
+    Traverses the tree upwards from the title node upto 3 levels in search for
+    a "section" classed 'div'. If it finds it, returns it.
+    """
+    for parent in title.parents:
+        if parent and parent.has_attr('class') and 'section' in parent['class']:
+            return parent
+        else:
+            if depth == 2:
+                return None
+
+            return get_section_for_api_title(parent, depth+1)
+
+    return None
+
+
 # The class must be named Command, and subclass BaseCommand
 class Command(BaseCommand):
     # Show this when the user types help
@@ -38,12 +55,16 @@ class Command(BaseCommand):
                         soup = BeautifulSoup(html_file, 'lxml')
 
                         for api_call in soup.find_all(re.compile('^h(1|2|3)')):
+                            parent_section = get_section_for_api_title(api_call)
+
                             try:
                                 self.api_documents.append({
                                     'path': '/' + subpath + (api_call.a['href'] if (api_call.a and 'href' in api_call.a) else ''),
                                     'title': str(next(api_call.stripped_strings).encode('utf-8')),
-                                    'prefix': os.path.splitext(os.path.basename(name))[0] if '.' in name else ''
+                                    'prefix': os.path.splitext(os.path.basename(name))[0] if '.' in name else '',
+                                    'content': '. '.join(parent_section.strings).encode('utf-8') if parent_section else ''
                                 })
+
                             except Exception as e:
                                 print("Unable to parse the file at: %s" % subpath)
 
@@ -90,7 +111,7 @@ class Command(BaseCommand):
                     self.documents.append(document)
                     self.unique_paths.append(document['path'])
 
-                    print 'Found "%s"...' % document['title'].encode('utf-8')
+                    print 'Indexing "%s"...' % document['title'].encode('utf-8')
 
 
     def handle(self, *args, **options):
@@ -155,7 +176,6 @@ class Command(BaseCommand):
                     content_less_toc[doc['path']] = serialized_doc
 
             toc_file.write('var indexPathMap = ' + json.dumps(content_less_toc))
-
 
         os.remove(tmp_documents_file.name)
 
