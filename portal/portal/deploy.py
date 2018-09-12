@@ -49,7 +49,7 @@ def transform(source_dir, destination_dir, content_id, version, lang=None):
         elif content_id == 'models':
             models(source_dir, destination_dir, version, lang)
 
-        elif content_id == 'mobile':
+        elif content_id in ['mobile', 'paddle-mobile']:
             mobile(source_dir, destination_dir, version, lang)
 
         elif content_id == 'visualdl':
@@ -739,14 +739,30 @@ def reserve_formulas(markdown_body, formula_map, only_reserve_double_dollar=Fals
     Store the math formulas to formula_map before markdown conversion
     """
     place_holder = '<span class="markdown-equation" id="equation-%s"></span>'
-    if only_reserve_double_dollar:
-        m = re.findall('(\`?\$\$[^\$\n]+\$\$\`?)', markdown_body)
-    else:
-        m = re.findall('(\`?\$\$?[^\$\n]+\$?\$\`?)', markdown_body)
 
-    for i in xrange(len(m)):
-        formula_map['equation-' + str(i)] = m[i].strip('`')
-        markdown_body = markdown_body.replace(m[i], place_holder % i)
+
+    markdown_body_list = markdown_body.split('\n')
+
+    math = []
+    for i in range(len(markdown_body_list)):
+        body = markdown_body_list[i].strip(' ')
+#         if body.startswith('`') and body.endswith('`'):
+#             continue
+
+#         if only_reserve_double_dollar:
+#             m = re.findall('(\$\$[^\$]+\$\$)', body)
+#         else:
+#             m = re.findall('(\$\$?[^\$]+\$?\$)', body)
+            
+        if only_reserve_double_dollar:
+            m = re.findall('(\`?\$\$[^\$\n]+\$\$\`?)', body)
+        else:
+            m = re.findall('(\`?\$\$?[^\$\n]+\$?\$\`?)', body)
+        math += m
+
+    for i in xrange(len(math)):
+        formula_map['equation-' + str(i)] = math[i].strip('`')
+        markdown_body = markdown_body.replace(math[i], place_holder % i)
 
     return markdown_body
 

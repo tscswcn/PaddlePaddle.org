@@ -225,11 +225,12 @@ def get_content_navigation(request, content_id, language, version):
             else:
                 navigation['sections'] = transformed_menu
         except:
+            # Since we re-arrange the models, mobile folders. We now need to guard against them.
             navigation['sections'].append({
                 'title': side_navigation_item['title'],
                 'link': {
-                    'en': '/documentation' + side_navigation_item['path'],
-                    'zh': '/documentation' + side_navigation_item['path']
+                    'en': '/' + url_helper.get_page_url_prefix(content_id, language, version) + '/README.html',
+                    'zh': '/' + url_helper.get_page_url_prefix(content_id, language, version) + '/README.html'
                 }
             })
 

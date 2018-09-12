@@ -46,8 +46,16 @@ def change_version(request):
 
     path = urlparse(request.META.get('HTTP_REFERER')).path
 
-    if not path == '/':
-        response = _find_matching_equivalent_page_for(path, request, None, version)
+    try:
+        if not path == '/':
+            response = _find_matching_equivalent_page_for(path, request, None, version)
+    except:
+        print("Unable to switch version properly. redirect to home page")
+        content_id, lang, version = url_helper.get_parts_from_url_path(path)
+        if lang == None:
+            lang = 'en'
+
+        response = redirect('/documentation/' + lang)
 
     return response
 
@@ -438,3 +446,10 @@ def old_content_link(request, version=None, is_fluid=None, lang=None, path=None)
 
         latest_path = '/documentation/docs/%s/%s/%s' % (lang, version, path)
         return redirect(latest_path)
+
+
+def search(request):
+    """
+    Placeholder for a search results page that uses local indexes.
+    """
+    return render(request, 'search.html', {'q': request.GET.get('q', '')})
