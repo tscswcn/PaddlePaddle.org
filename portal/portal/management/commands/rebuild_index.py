@@ -180,5 +180,6 @@ class Command(BaseCommand):
         os.remove(tmp_documents_file.name)
 
         # Gzip the index generated.
-        check_output(['gzip', output_index_js])
-        check_output(['gzip', output_toc_js])
+        # NOTE: Will make NGINX do this on the fly.
+        # check_output(['gzip', output_index_js])
+        # check_output(['gzip', output_toc_js])
