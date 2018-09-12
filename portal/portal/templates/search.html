@@ -78,7 +78,7 @@
     }
 
     if (keyValues.hasOwnProperty('q')){
-        query = keyValues['q'];
+        query = decodeURIComponent(keyValues['q']);
 
         var renderedResults = [];
         idx.search('*' + query + '* ' + query).map((result) => {
