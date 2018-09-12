@@ -19,6 +19,7 @@
             <form action="{% url 'search' %}" class="form-inline">
                 <input class="form-control mr-sm-2 typeahead" type="search" name="q" placeholder="Search PaddlePaddle.org" />
                 <input type="hidden" name="version" value="{{ CURRENT_DOCS_VERSION }}"/>
+                <input type="hidden" name="language" value="{{ lang }}"/>
             </form>
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item{% if '/documentation' in request.path %} active{% endif %}">

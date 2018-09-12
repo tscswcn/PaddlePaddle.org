@@ -454,5 +454,6 @@ def search(request):
     """
     return render(request, 'search.html', {
         'q': request.GET.get('q', ''),
-        'CURRENT_DOCS_VERSION': request.GET.get('version', '')
+        'lang': request.GET.get('language', ''),
+        'CURRENT_DOCS_VERSION': request.GET.get('version', ''),
     })
