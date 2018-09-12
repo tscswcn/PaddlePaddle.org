@@ -2,6 +2,8 @@ import os
 import re
 import json
 import math
+from subprocess import check_output
+import tempfile
 
 import nltk
 import jieba
@@ -12,18 +14,21 @@ from django.conf import settings
 from django.core.management import BaseCommand
 
 
-# Adopted from https://stevenloria.com/tf-idf/.
-def tf(word, blob):
-    return blob.words.count(word) / len(blob.words)
+def get_section_for_api_title(title, depth=0):
+    """
+    Traverses the tree upwards from the title node upto 3 levels in search for
+    a "section" classed 'div'. If it finds it, returns it.
+    """
+    for parent in title.parents:
+        if parent and parent.has_attr('class') and 'section' in parent['class']:
+            return parent
+        else:
+            if depth == 2:
+                return None
 
-def n_containing(word, bloblist):
-    return sum(1 for blob in bloblist if word in blob.words)
+            return get_section_for_api_title(parent, depth+1)
 
-def idf(word, bloblist):
-    return math.log(len(bloblist) / (1 + n_containing(word, bloblist)))
-
-def tfidf(word, blob, bloblist):
-    return tf(word, blob) * idf(word, bloblist)
+    return None
 
 
 # The class must be named Command, and subclass BaseCommand
@@ -43,36 +48,24 @@ class Command(BaseCommand):
             for file in all_files:
                 subpath = os.path.join(subdir, file)
                 (name, extension) = os.path.splitext(file)
-                if extension == '.html':
+
+                # We explicitly only want to look at HTML files which are not indexes.
+                if extension == '.html' and 'index_' not in file:
                     with open(os.path.join(settings.BASE_DIR, subpath)) as html_file:
                         soup = BeautifulSoup(html_file, 'lxml')
 
-                        try:
-                            # Index the H1 title
-                            title = soup.find('h1')
-                            if not title:
-                                title = soup.find('h2')
+                        for api_call in soup.find_all(re.compile('^h(1|2|3)')):
+                            parent_section = get_section_for_api_title(api_call)
 
-                            self.api_documents.append({
-                                'path': '/' + subpath,
-                                'title': str(next(title.stripped_strings)),
-                                'prefix': ""
-                            })
-                        except Exception as e:
-                            print("Error!!!: %s" % e)
-                            print("Unable to parse the file at: %s" % subpath)
-
-                        # Index H2 and H3 items
-                        api_calls = soup.find_all(['h2', 'h3'])
-                        for api_call in api_calls:
                             try:
                                 self.api_documents.append({
-                                    'path': '/' + subpath + api_call.a['href'],
-                                    'title': str(next(api_call.stripped_strings)),
-                                    'prefix': os.path.splitext(os.path.basename(name))[0]
+                                    'path': '/' + subpath + (api_call.a['href'] if (api_call.a and 'href' in api_call.a) else ''),
+                                    'title': str(next(api_call.stripped_strings).encode('utf-8')),
+                                    'prefix': os.path.splitext(os.path.basename(name))[0] if '.' in name else '',
+                                    'content': '. '.join(parent_section.strings).encode('utf-8') if parent_section else ''
                                 })
+
                             except Exception as e:
-                                print("Error!!!: %s" % e)
                                 print("Unable to parse the file at: %s" % subpath)
 
 
@@ -118,7 +111,7 @@ class Command(BaseCommand):
                     self.documents.append(document)
                     self.unique_paths.append(document['path'])
 
-                    print 'Found "%s"...' % document['title'].encode('utf-8')
+                    print 'Indexing "%s"...' % document['title'].encode('utf-8')
 
 
     def handle(self, *args, **options):
@@ -150,32 +143,42 @@ class Command(BaseCommand):
             else:
                 self.build_document(source_dir, options['language'][0])
 
-        # Using this content, we build tfidf for all the content.
-        document_contents = [tb(
-            doc['content']) for doc in self.documents if 'content' in doc]
-        for document_index, document_content in enumerate(document_contents):
-            if not document_content:
-                continue
-            print 'Indexing', self.documents[document_index]['title'].encode('utf-8')
-
-            scores = { word: tfidf(
-                word, document_content, document_contents) for (
-                word) in document_content.words }
-            sorted_words = sorted(
-                scores.items(), key=lambda x: x[1], reverse=True)
-            self.documents[document_index]['content'] = [word[0].encode(
-                'utf-8') for word in sorted_words[:40]]
 
         # And create an index JS file that we can import.
-        output_index_js = os.path.join(
+        output_index_dir = os.path.join(
             settings.STATICFILES_DIRS[0],
-            'indexes', options['language'][0] ,options['version'][0], 'index.js'
+            'indexes', options['language'][0] ,options['version'][0]
         )
+        output_index_js = os.path.join(output_index_dir, 'index.js')
+        output_toc_js = os.path.join(output_index_dir, 'toc.js')
 
-        if not os.path.exists(os.path.dirname(output_index_js)):
-            # Generate the directory.
-            os.makedirs(os.path.dirname(output_index_js))
+        tmp_documents_file = tempfile.NamedTemporaryFile(delete=False)
+        tmp_documents_file.write(json.dumps(self.documents + self.api_documents))
+        tmp_documents_file.close()
 
         with open(output_index_js, 'w') as index_file:
-            index_file.write('var index = ' + json.dumps(
-                self.documents + self.api_documents))
+            index_file.write('var index = ' + check_output(['node',
+                os.path.join(settings.PROJECT_ROOT, 'management/commands/build-index.js'), tmp_documents_file.name]))
+
+        with open(output_toc_js, 'w') as toc_file:
+            content_less_toc = {}
+
+            for doc in self.documents + self.api_documents:
+                if doc['path'] not in content_less_toc:
+                    serialized_doc = {
+                        'path': doc['path'],
+                        'title': doc['title']
+                    }
+
+                    if 'prefix' in doc:
+                        serialized_doc['prefix'] = doc['prefix']
+
+                    content_less_toc[doc['path']] = serialized_doc
+
+            toc_file.write('var indexPathMap = ' + json.dumps(content_less_toc))
+
+        os.remove(tmp_documents_file.name)
+
+        # Gzip the index generated.
+        check_output(['gzip', output_index_js])
+        check_output(['gzip', output_toc_js])
