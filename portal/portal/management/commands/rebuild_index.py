@@ -59,7 +59,7 @@ class Command(BaseCommand):
 
                             try:
                                 self.api_documents.append({
-                                    'path': '/' + subpath + (api_call.a['href'] if (api_call.a and 'href' in api_call.a) else ''),
+                                    'path': '/' + subpath + (api_call.a['href'] if (api_call.a and api_call.a.has_attr('href')) else ''),
                                     'title': str(next(api_call.stripped_strings).encode('utf-8')),
                                     'prefix': os.path.splitext(os.path.basename(name))[0] if '.' in name else '',
                                     'content': '. '.join(parent_section.strings).encode('utf-8') if parent_section else ''
@@ -111,7 +111,7 @@ class Command(BaseCommand):
                     self.documents.append(document)
                     self.unique_paths.append(document['path'])
 
-                    print 'Indexing "%s"...' % document['title'].encode('utf-8')
+                    #print 'Indexing "%s"...' % document['title'].encode('utf-8')
 
 
     def handle(self, *args, **options):
