@@ -66,7 +66,50 @@
         <script src="/static/indexes/{{ lang }}/{{ CURRENT_DOCS_VERSION }}/toc.js"></script>
         <script>
 
-        var idx = lunr.Index.load(index);
+        var idx = lunr.Index.load(index),
+
+            // Based on this answer: https://stackoverflow.com/questions/1366068/whats-the-complete-range-for-chinese-characters-in-unicode/11415841.
+            chineseCutter = function(q){
+                var cutQuery = '';
+
+                var i, characterCode, isChineseCharacter;
+                for (i = 0; i < q.length; i++){
+                    // If this character is in Chinese, add a space after.
+                    // And before it as long as the preceding character is not already a space.
+                    characterCode = q.charCodeAt(i);
+
+                    isChineseCharacter = (
+                        // CJK Unified Ideographs block: http://www.fileformat.info/info/unicode/block/cjk_unified_ideographs/index.htm
+                        characterCode > 19968 && characterCode <= 40943) || (
+
+                        // CJKUI Ext A block: http://www.fileformat.info/info/unicode/block/cjk_unified_ideographs_extension_a/index.htm.
+                        characterCode > 13312 && characterCode <= 19893) || (
+
+                        // NOTE: The following ranges are not accounted for because it runs out of UTF-16 range.
+                        // Need to eventually figure out a better plan.
+                        // CJKUI Ext B block: http://www.fileformat.info/info/unicode/block/cjk_unified_ideographs_extension_b/index.htm
+                        // CJKUI Ext C block: http://www.fileformat.info/info/unicode/block/cjk_unified_ideographs_extension_c/index.htm
+                        // CJKUI Ext D block: http://www.fileformat.info/info/unicode/block/cjk_unified_ideographs_extension_d/index.htm
+                        characterCode > 55360);
+
+                    if (isChineseCharacter){
+                        if (cutQuery.substring(cutQuery.length - 1) !== ' ')
+                            cutQuery += ' ';
+
+                        cutQuery += q[i] + ' ';
+
+                    } else {
+                        cutQuery += q[i];
+                    }
+                }
+
+                return cutQuery.trim();
+            },
+
+            getSearchQuery = function(q){
+                var cutQuery = {% if lang == 'zh' %}chineseCutter(q){% else %}q{% endif %};
+                return '"' + cutQuery + '"~1' + ' *' + cutQuery + '* ' + cutQuery;
+            };
 
         $('input[type="search"]').typeahead({
               hint: false,
@@ -78,14 +121,14 @@
               name: 'pages',
               async: false,
               source: function(query, sync, async){
-                  sync(idx.search('*' + query + '* ' + query).map((result) => {
+                  sync(idx.search(getSearchQuery(query)).map((result) => {
                       item = indexPathMap[result.ref];
 
-                      var apiPath = '/api/';
+                      var apiPath = '/documentation/api/';
                       if (item.path.substring(0, apiPath.length) === apiPath)
                         item.isAPI = true;
 
-                      var modelsPath = '/models/';
+                      var modelsPath = '/documentation/models/';
                       if (item.path.substring(0, modelsPath.length) === modelsPath)
                         item.isModels = true;
 

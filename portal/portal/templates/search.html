@@ -78,10 +78,10 @@
     }
 
     if (keyValues.hasOwnProperty('q')){
-        query = decodeURIComponent(keyValues['q']);
+        query = decodeURIComponent(keyValues['q']).replace('+', ' ');
 
         var renderedResults = [];
-        idx.search('*' + query + '* ' + query).map((result) => {
+        idx.search(getSearchQuery(query)).map((result) => {
             renderedResults.push(renderSearchItem(indexPathMap[result.ref]));
         });
 

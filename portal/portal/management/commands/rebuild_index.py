@@ -31,10 +31,18 @@ def get_section_for_api_title(title, depth=0):
     return None
 
 
+def jieba_zh_string(token):
+    chinese_seg_list = [' '.join(jieba.cut_for_search(s)) for s in token]
+    return ', '.join(chinese_seg_list)
+
+
 # The class must be named Command, and subclass BaseCommand
 class Command(BaseCommand):
     # Show this when the user types help
     help = "Usage: python manage.py rebuild_index <language> <version> --content_id=<e.g. documentation>"
+
+    def get_docs_count(self):
+        return len(self.documents) + len(self.api_documents)
 
     def add_arguments(self, parser):
         parser.add_argument('language', nargs='+')
@@ -44,6 +52,8 @@ class Command(BaseCommand):
 
 
     def build_api_document(self, source_dir):
+        existing_docs_count = self.get_docs_count() + 1
+
         for subdir, dirs, all_files in os.walk(source_dir):
             for file in all_files:
                 subpath = os.path.join(subdir, file)
@@ -59,17 +69,21 @@ class Command(BaseCommand):
 
                             try:
                                 self.api_documents.append({
+                                    'id': existing_docs_count,
                                     'path': '/' + subpath + (api_call.a['href'] if (api_call.a and api_call.a.has_attr('href')) else ''),
                                     'title': str(next(api_call.stripped_strings).encode('utf-8')),
                                     'prefix': os.path.splitext(os.path.basename(name))[0] if '.' in name else '',
                                     'content': '. '.join(parent_section.strings).encode('utf-8') if parent_section else ''
                                 })
+                                existing_docs_count += 1
 
                             except Exception as e:
                                 print("Unable to parse the file at: %s" % subpath)
 
 
     def build_document(self, source_dir, lang):
+        existing_docs_count = self.get_docs_count() + 1
+
         for subdir, dirs, all_files in os.walk(source_dir):
             for file in all_files:
                 subpath = os.path.join(subdir, file)
@@ -77,6 +91,7 @@ class Command(BaseCommand):
 
                 if extension == '.html':
                     document = {
+                        'id': existing_docs_count,
                         'path': '/' + subpath
                     }
 
@@ -95,7 +110,22 @@ class Command(BaseCommand):
                             title = soup.find('h2')
 
                         if title:
-                            document['title'] = next(title.stripped_strings)
+                            raw_title = next(title.stripped_strings)
+
+                            if lang == 'zh'
+                                segments = jieba.cut_for_search(raw_title)
+                                joined_segments = ''
+
+                                for segment in segments:
+                                    if len(segment.strip()):
+                                        joined_segments += ' ' + segment
+
+                                document['title'] = joined_segments.strip()
+                                document['displayTitle'] = raw_title
+
+                            else:
+                                document['title'] = raw_title
+
                         else:
                             # No point trying to store a non-titled file
                             #     because it is probably a nav or index of sorts.
@@ -103,15 +133,16 @@ class Command(BaseCommand):
 
                         # Segment the Chinese sentence through jieba library
                         if lang == 'zh':
-                            chinese_seg_list = [" ".join(jieba.cut_for_search(str)) for str in soup.stripped_strings]
-                            document['content'] = ", ".join(chinese_seg_list)
+                            document['content'] = jieba_zh_string(soup.stripped_strings)
                         else:
                             document['content'] = ', '.join(soup.stripped_strings)
 
                     self.documents.append(document)
+                    existing_docs_count += 1
+
                     self.unique_paths.append(document['path'])
 
-                    #print 'Indexing "%s"...' % document['title'].encode('utf-8')
+                    print 'Indexing "%s"...' % document['title'].encode('utf-8')
 
 
     def handle(self, *args, **options):
@@ -166,14 +197,15 @@ class Command(BaseCommand):
             for doc in self.documents + self.api_documents:
                 if doc['path'] not in content_less_toc:
                     serialized_doc = {
+                        'id': doc['id'],
                         'path': doc['path'],
-                        'title': doc['title']
+                        'title': doc['displayTitle'] if 'displayTitle' in doc else doc['title']
                     }
 
                     if 'prefix' in doc:
                         serialized_doc['prefix'] = doc['prefix']
 
-                    content_less_toc[doc['path']] = serialized_doc
+                    content_less_toc[doc['id']] = serialized_doc
 
             toc_file.write('var indexPathMap = ' + json.dumps(content_less_toc))
 

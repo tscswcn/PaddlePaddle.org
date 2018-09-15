@@ -10,8 +10,8 @@ var filename = process.argv[2],
 var documents = JSON.parse(contents);
 
 var idx = lunr(function () {
-    this.ref('path');
-    this.field('title', { boost: 10 });
+    this.ref('id');
+    this.field('title', { boost: 20 });
     this.field('content');
 
     documents.forEach(function (doc) {
