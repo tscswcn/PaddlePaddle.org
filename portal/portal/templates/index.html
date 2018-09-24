@@ -595,6 +595,37 @@ if __name__ == "__main__":
     {% endif %}
     <!-- End of Video section -->
 
+    <section class="feedback">
+        <div id="problem_feedback" class="feedback_item">
+            <img class="icon" src="http://placehold.it/257x200.jpg" />
+            <a class="alt_txt" href="https://github.com/PaddlePaddle/Paddle/issues" target="_blank">问题反馈</a>
+        </div>
+        <div id="contact_us" class="feedback_item">
+            <img class="icon" src="" />
+            <button class="alt_txt" data-toggle="modal" data-target="#feedbackModal">
+                联系我们
+            </button>
+        </div>
+        <div id="follow_us" class="feedback_item">
+            <img class="icon" src="" />
+            <button class="alt_txt">
+                关注我们
+            </button>
+        </div>
+        <div class="qr_code">
+            <p>关注paddle paddle公众号</p>
+            <p>获取深度学习信息</p>
+            <img src="/static/images/paddlepaddle_qr_code.jpg">
+        </div>
+    </section>
+
+    <div class="modal" id="feedbackModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <p>Hello World</p>
+            </div>
+        </div>
+    </div>
 </div>
 
 {% endblock %}
@@ -761,6 +792,16 @@ if __name__ == "__main__":
             $('#resources-bubble').css('top', (-800 + (scroll - resourcesHead.position().top) / 2));
         }
     });
+
+    // Display the QR code on hover
+    $('#follow_us').hover(function () {
+        var steps = $('.qr_code');
+        steps.addClass('show');
+    },function () {
+        var steps = $('.qr_code');
+        steps.removeClass('show');
+    });
+
     hljs.initHighlightingOnLoad();
 </script>
 

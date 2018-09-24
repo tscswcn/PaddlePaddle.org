@@ -47,8 +47,6 @@
       &:hover
         background: $accent-color
 
-
-
   .banner
     height: 100vh
     min-height: 800px
@@ -608,6 +606,60 @@
           border-bottom: 10px solid transparent
           margin-left: 30px
           float: left
+
+  .feedback
+    height: 120px
+    width: 40px
+    background: #108cee
+    color: white
+    right: 0px
+    bottom: 80px
+    position: fixed
+
+    .qr_code
+      position: relative
+      right: 160px
+      top: -186px
+      width: 150px
+      padding-top: 10px
+      background: black
+      opacity: 0
+      transition: all .15s ease-in-out
+
+      p
+        font-size: 12px
+        text-align: center
+
+      img
+        height: 120px
+        width: 120px
+        margin: 15px
+
+    .show
+      opacity: 1
+
+    .feedback_item
+      position: relative
+
+    .icon
+      height: 40px
+      width: 40px
+
+    .alt_txt
+      position: absolute
+      top: 0
+      bottom: 0
+      height: 40px
+      width: 40px
+      text-align: center
+      color: #fff
+      font-size: small
+      opacity: 0
+      padding: 1px
+      background: transparent
+
+      &:hover
+        opacity: 1
 
   .modal-dialog
     max-width: 640px
