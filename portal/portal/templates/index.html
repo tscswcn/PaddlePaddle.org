@@ -580,7 +580,7 @@ if __name__ == "__main__":
 
     <!-- Video Modal -->
     <div class="modal" id="videoModal" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog" role="document">
+        <div class="modal-dialog modal-dialog-video" role="document">
             <div class="modal-content">
                 <video controls width="640px" height="360px" id="videoControl">
                     <source id="videoLink" src="https://s3-ap-southeast-1.amazonaws.com/paddlepaddle.org/videos/paddlepaddle%E5%B8%B8%E8%A7%84%E7%89%881080P.mp4"
@@ -619,10 +619,89 @@ if __name__ == "__main__":
         </div>
     </section>
 
-    <div class="modal" id="feedbackModal" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog" role="document">
+    <div class="modal" id="feedbackModal" tabindex="-2" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-form" role="document">
             <div class="modal-content">
-                <p>Hello World</p>
+                <div class="modal-header ">
+                    <h2 class="modal-title">Contact Us</h2>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p class="modal-title">Please leave your information. We will contact you shortly</p>
+
+                    <div class="row">
+                        <div class="col-lg-3">
+                            身份类型
+                        </div>
+                        <span class="col-lg-1"></span>
+                        <div class="radio col-lg-3">
+                            <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios1"
+                                   value="option1" checked>
+                            <label class="form-check-label" for="exampleRadios1">
+                                个人
+                            </label></div>
+                        <div class="radio col-lg-3">
+                            <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios2"
+                                   value="option2">
+                            <label class="form-check-label" for="exampleRadios2">
+                                企业
+                            </label>
+
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-3">
+                            企业名称
+                        </div>
+                        <div class="col-lg-9">
+                            <input type="text" class="form-control" id="company">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-3">
+                            联系人
+                        </div>
+                        <div class="col-lg-9">
+                            <input type="text" class="form-control" id="user">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-3">
+                            手机号码
+                        </div>
+                        <div class="col-lg-9">
+                            <input type="tel" class="form-control" id="tel">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-3">
+                            电子邮件
+                        </div>
+                        <div class="col-lg-9">
+                            <input type="email" class="form-control" id="email">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-3">
+                            咨询内容
+                        </div>
+                        <div class="col-lg-9">
+                            <textarea class="form-control" rows="5" id="comment" placeholder="请在此简单的描述您的问题"></textarea>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <span class="col-lg-3"></span>
+                        <button id="submit" class="btn selected col-lg-4">submit</button>
+                        <button id="cancel" class="btn col-lg-4">cancel</button>
+                    </div>
+                    <div class="row">
+                        <p class="col-lg-12">You can also contact us via:
+                            <a href="mailto:paddle-better@baidu.com" target="_top">paddle-better@baidu.com</a>
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
