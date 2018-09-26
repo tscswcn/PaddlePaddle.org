@@ -709,6 +709,25 @@ if __name__ == "__main__":
                         </div>
                     </div>
                 </div>
+                <div id="feedback-result">
+                    <div class="modal-header">
+                        <h2 class="modal-title">Contact Us</h2>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="submit-success"><i class="fas fa-check"></i></div>
+                        <h4 class="">Success</h4>
+                        <br/><br/><br/><br/><br/>
+
+                        <div class="row">
+                            <p class="col">温馨提醒</p>
+                        </div>
+                        <p>1. 如产品使用中遇到问题，欢迎你前往<a href="https://ai.baidu.com/forum/topic/list/168" target="_"> 社区 </a>交流</p>
+                        <p>2. 你可以点击<a href="http://ai.baidu.com/paddlepaddle/caselist" target="_">这里</a>，获取更多 PaddlePaddle 工业应用案例</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -947,7 +966,14 @@ if __name__ == "__main__":
 
         //var result = submitContactForm(isPersonal, company, name, phone, email, comment);
         e.preventDefault(); // avoid to execute the actual submit of the form.
+        $('#feedback-content').css('display', 'none');
+        $('#feedback-result').css('display', 'block');
     });
+
+    $('#feedbackModal').on('hidden.bs.modal', function (e) {
+        $('#feedback-content').css('display', 'block');
+        $('#feedback-result').css('display', 'none');
+    })
 
 </script>
 
