@@ -112,7 +112,7 @@ class Command(BaseCommand):
                         if title:
                             raw_title = next(title.stripped_strings)
 
-                            if lang == 'zh'
+                            if lang == 'zh':
                                 segments = jieba.cut_for_search(raw_title)
                                 joined_segments = ''
 
@@ -177,9 +177,13 @@ class Command(BaseCommand):
 
         # And create an index JS file that we can import.
         output_index_dir = os.path.join(
-            settings.STATICFILES_DIRS[0],
-            'indexes', options['language'][0] ,options['version'][0]
+            settings.INDEXES_DIR,
+            options['language'][0] ,options['version'][0]
         )
+
+        if not os.path.exists(output_index_dir):
+            os.makedirs(output_index_dir)
+
         output_index_js = os.path.join(output_index_dir, 'index.js')
         output_toc_js = os.path.join(output_index_dir, 'toc.js')
 

@@ -28,7 +28,27 @@ export ENV=production
 echo "3. Executing deploy_documentation."
 python manage.py deploy_documentation --source_dir=$SOURCE_DIR --destination_dir=documentation $GITHUB_BRANCH
 
-echo "4. Documentation generation completed."
+echo "4. Copying remote documentation here first to be ready for indexing."
+# To avoid waiting for "Are you sure you want to continue connecting" input
+if [ ! -d ~/.ssh ] ; then
+mkdir ~/.ssh
+fi
+ssh-keyscan $STAGE_DEPLOY_IP >> ~/.ssh/known_hosts
+
+# Merge the documentations, and temporarily swap spots.
+mkdir indexable-documentation
+rsync -r content_mgr@$STAGE_DEPLOY_IP:/var/pages/documentation indexable-documentation/
+cp -rf documentation/ indexable-documentation
+mv documentation new-documentation
+mv indexable-documentation documentation
+
+echo "5. Build the search index of the newly generated documentation."
+python manage.py rebuild_index en $GITHUB_BRANCH
+python manage.py rebuild_index zh $GITHUB_BRANCH
+mv documentation indexable-documentation
+mv new-documentation documentation
+
+echo "6. Documentation generation completed."
 # Display what documentation will be sync to the server
 ls documentation
 
@@ -40,13 +60,9 @@ ssh-add content_mgr.pem
 export STAGE_DEPLOY_IP=13.229.163.131
 
 echo "5. Prepare to rsync documentation."
-# To avoid waiting for "Are you sure you want to continue connecting" input
-if [ ! -d ~/.ssh ] ; then
-mkdir ~/.ssh
-fi
-ssh-keyscan $STAGE_DEPLOY_IP >> ~/.ssh/known_hosts
 rsync -r documentation/ content_mgr@$STAGE_DEPLOY_IP:/var/pages/documentation
 rsync -r /var/pages/menus/ content_mgr@$STAGE_DEPLOY_IP:/var/pages/menus
+rsync -r /var/pages/indexes/ content_mgr@$STAGE_DEPLOY_IP:/var/pages/indexes
 
 echo "6. Documentation deployed. Clean up."
 chmod 644 content_mgr.pem
