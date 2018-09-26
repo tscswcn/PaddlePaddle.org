@@ -903,20 +903,9 @@ if __name__ == "__main__":
         }
     });
 
-    // Display the QR code on hover
-    $('#follow_us').hover(function () {
-        var steps = $('.qr_code');
-        steps.addClass('show');
-    },function () {
-        var steps = $('.qr_code');
-        steps.removeClass('show');
-    });
-
     hljs.initHighlightingOnLoad();
 
-
     // Make Django (server-side) POST requests safe.
-
     function getCookie(name) {
         var cookieValue = null;
         if (document.cookie && document.cookie !== '') {
@@ -946,6 +935,15 @@ if __name__ == "__main__":
         }
     });
 
+    // Display the QR code on hover
+    $('#follow_us').hover(function () {
+        var steps = $('.qr_code');
+        steps.addClass('show');
+    },function () {
+        var steps = $('.qr_code');
+        steps.removeClass('show');
+    });
+
     // This form submits a contact form to the internal contact requests store.
     var submitContactForm = function(isPersonal, organization, name, phone, email, reason){
         // Send to server-side.
@@ -959,6 +957,16 @@ if __name__ == "__main__":
         });
     };
 
+    // Reset the feedback form
+    $('#feedbackModal').on('show.bs.modal', function (e) {
+        $("#company-form").css('display', 'none')
+        $("#company").prop('required', false);
+
+        $('#feedback-content').css('display', 'block');
+        $('#feedback-result').css('display', 'none');
+    })
+
+    // Hide the 'company' field for individual
     $('input[type=radio][name=type]').on('change', function() {
          switch($(this).val()) {
              case 'individual':
@@ -987,19 +995,15 @@ if __name__ == "__main__":
         var email = form.find('#email').val()
         var comment = form.find('#comment').val()
 
+        // Submit the result to the airtable
         var result = submitContactForm(isPersonal, company, name, phone, email, comment);
+
         e.preventDefault(); // avoid to execute the actual submit of the form.
+
+        // Hide the feedback form and show the success message
         $('#feedback-content').css('display', 'none');
         $('#feedback-result').css('display', 'block');
     });
-
-    $('#feedbackModal').on('show.bs.modal', function (e) {
-        $("#company-form").css('display', 'none')
-        $("#company").prop('required', false);
-
-        $('#feedback-content').css('display', 'block');
-        $('#feedback-result').css('display', 'none');
-    })
 
 </script>
 
