@@ -640,17 +640,27 @@
 
     .feedback_item
       position: relative
+      height: 40px
 
     .icon
-      height: 40px
-      width: 40px
+      position: absolute
+      top: 0
+      bottom: 0
+      right: 0
+      left: 0
+      text-align: center
+      display: inline-block
+      line-height: 40px
+
+      &:hover
+        opacity: 0
 
     .alt_txt
       position: absolute
       top: 0
       bottom: 0
-      height: 40px
-      width: 40px
+      right: 0
+      left: 0
       text-align: center
       color: #fff
       font-size: small
@@ -660,6 +670,7 @@
 
       &:hover
         opacity: 1
+        background: black
 
   .modal-dialog-video
     max-width: 640px
