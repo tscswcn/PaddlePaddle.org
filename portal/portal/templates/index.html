@@ -605,16 +605,12 @@ if __name__ == "__main__":
         </div>
         <div id="contact_us" class="feedback_item">
             <i class="far fa-envelope icon"></i>
-            <button class="alt_txt" data-toggle="modal" data-target="#feedbackModal">
-                联系我们
-            </button>
+            <a class="alt_txt" data-toggle="modal" data-target="#feedbackModal">联系我们</a>
         </div>
         <div id="follow_us" class="feedback_item">
 
             <i class="fas fa-qrcode icon"></i>
-            <button class="alt_txt">
-                关注我们
-            </button>
+            <a class="alt_txt">关注我们</a>
         </div>
         <div class="qr_code">
             <p>关注paddle paddle公众号</p>
@@ -628,19 +624,19 @@ if __name__ == "__main__":
             <div class="modal-content">
                 <div id="feedback-content">
                     <div class="modal-header">
-                        <h2 class="modal-title">Contact Us</h2>
+                        <h3 class="modal-title">联系我们</h3>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="modal-body">
 
-                        <p class="modal-title">Please leave your information. We will contact you shortly</p>
+                        <p>留下您的联系方式，我们将与您联系</p>
 
                         <form id="feedback_form">
                             <div class="row">
                                 <label class="col-lg-3 col-form-label">
-                                    身份类型
+                                    身份类型:
                                 </label>
                                 <span class="col-lg-1"></span>
                                 <div class="radio col-lg-3">
@@ -659,7 +655,7 @@ if __name__ == "__main__":
                             </div>
                             <div class="row" id="company-form">
                                 <label class="col-lg-3 col-form-label">
-                                    企业名称
+                                    企业名称:
                                 </label>
                                 <div class="col-lg-9 form-group">
                                     <input type="text" class="form-control" id="company" required>
@@ -667,7 +663,7 @@ if __name__ == "__main__":
                             </div>
                             <div class="row">
                                 <label class="col-lg-3 col-form-label">
-                                    联系人
+                                    联系人:
                                 </label>
                                 <div class="col-lg-9 form-group">
                                     <input type="text" class="form-control" id="name" required>
@@ -675,7 +671,7 @@ if __name__ == "__main__":
                             </div>
                             <div class="row">
                                 <label class="col-lg-3 col-form-label">
-                                    手机号码
+                                    手机号码:
                                 </label>
                                 <div class="col-lg-9 form-group">
                                     <input type="tel" class="form-control" id="phone" required>
@@ -683,7 +679,7 @@ if __name__ == "__main__":
                             </div>
                             <div class="row">
                                 <label class="col-lg-3 col-form-label">
-                                    电子邮件
+                                    电子邮件:
                                 </label>
                                 <div class="col-lg-9 form-group">
                                     <input type="email" class="form-control" id="email" required>
@@ -691,7 +687,7 @@ if __name__ == "__main__":
                             </div>
                             <div class="row">
                                 <label class="col-lg-3 col-form-label">
-                                    咨询内容
+                                    咨询内容:
                                 </label>
                                 <div class="col-lg-9 form-group">
                                     <textarea class="form-control" rows="5" id="comment"
@@ -700,25 +696,23 @@ if __name__ == "__main__":
                             </div>
                             <div class="row">
                                 <span class="col-lg-3"></span>
-                                <button id="submit" class="btn selected col-lg-4" type="submit">submit</button>
-                                <button id="cancel" class="btn col-lg-4" data-dismiss="modal">cancel</button>
+                                <button id="submit" class="btn selected col-lg-4" type="submit">提交</button>
+                                <button id="cancel" class="btn col-lg-4 cancel-btn" data-dismiss="modal">取消</button>
                             </div>
                         </form>
                         <div class="row">
-                            <p class="col-lg-12">You can also contact us via:
+                            <p class="col-lg-12">您也可以通过邮箱联系我们:
                                 <a href="mailto:paddle-better@baidu.com" target="_top">paddle-better@baidu.com</a>
                             </p>
                         </div>
                     </div>
                 </div>
                 <div id="feedback-result">
-                    <div class="modal-header">
-                        <h2 class="modal-title">Contact Us</h2>
+                    <div class="modal-body">
+                        <h2 class="modal-title"></h2>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
-                    </div>
-                    <div class="modal-body">
                         <div class="submit-success"><i class="fas fa-check"></i></div>
                         <h4 class="">Success</h4>
                         <br/><br/><br/><br/><br/>
@@ -726,8 +720,10 @@ if __name__ == "__main__":
                         <div class="row">
                             <p class="col">温馨提醒</p>
                         </div>
-                        <p>1. 如产品使用中遇到问题，欢迎你前往<a href="https://ai.baidu.com/forum/topic/list/168" target="_"> 社区 </a>交流</p>
-                        <p>2. 你可以点击<a href="http://ai.baidu.com/paddlepaddle/caselist" target="_">这里</a>，获取更多 PaddlePaddle 工业应用案例</p>
+                        <p>1. 如产品使用中遇到问题，欢迎你前往<a href="https://ai.baidu.com/forum/topic/list/168" target="_"> 社区 </a>交流
+                        </p>
+                        <p>2. 你可以点击<a href="http://ai.baidu.com/paddlepaddle/caselist" target="_">这里</a>，获取更多
+                            PaddlePaddle 工业应用案例</p>
                     </div>
                 </div>
             </div>
