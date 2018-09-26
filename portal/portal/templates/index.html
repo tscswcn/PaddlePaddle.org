@@ -595,6 +595,9 @@ if __name__ == "__main__":
     {% endif %}
     <!-- End of Video section -->
 
+    <!-- Feedback section: Only in Chinese -->
+    {% if LANGUAGE_CODE == 'zh' %}
+
     <section class="feedback">
         <div id="problem_feedback" class="feedback_item">
             <i class="far fa-edit icon"></i>
@@ -652,15 +655,14 @@ if __name__ == "__main__":
                                     <label class="form-check-label" for="enterprise">
                                         企业
                                     </label>
-
                                 </div>
                             </div>
-                            <div class="row">
+                            <div class="row" id="company-form">
                                 <label class="col-lg-3 col-form-label">
                                     企业名称
                                 </label>
                                 <div class="col-lg-9 form-group">
-                                    <input type="text" class="form-control" id="company">
+                                    <input type="text" class="form-control" id="company" required>
                                 </div>
                             </div>
                             <div class="row">
@@ -668,7 +670,7 @@ if __name__ == "__main__":
                                     联系人
                                 </label>
                                 <div class="col-lg-9 form-group">
-                                    <input type="text" class="form-control" id="name">
+                                    <input type="text" class="form-control" id="name" required>
                                 </div>
                             </div>
                             <div class="row">
@@ -676,7 +678,7 @@ if __name__ == "__main__":
                                     手机号码
                                 </label>
                                 <div class="col-lg-9 form-group">
-                                    <input type="tel" class="form-control" id="phone">
+                                    <input type="tel" class="form-control" id="phone" required>
                                 </div>
                             </div>
                             <div class="row">
@@ -684,7 +686,7 @@ if __name__ == "__main__":
                                     电子邮件
                                 </label>
                                 <div class="col-lg-9 form-group">
-                                    <input type="email" class="form-control" id="email">
+                                    <input type="email" class="form-control" id="email" required>
                                 </div>
                             </div>
                             <div class="row">
@@ -693,7 +695,7 @@ if __name__ == "__main__":
                                 </label>
                                 <div class="col-lg-9 form-group">
                                     <textarea class="form-control" rows="5" id="comment"
-                                              placeholder="请在此简单的描述您的问题"></textarea>
+                                              placeholder="请在此简单的描述您的问题" required></textarea>
                                 </div>
                             </div>
                             <div class="row">
@@ -731,6 +733,9 @@ if __name__ == "__main__":
             </div>
         </div>
     </div>
+    {% endif %}
+    <!-- End of Feedback section -->
+
 </div>
 
 {% endblock %}
@@ -954,23 +959,44 @@ if __name__ == "__main__":
         });
     };
 
+    $('input[type=radio][name=type]').on('change', function() {
+         switch($(this).val()) {
+             case 'individual':
+                $("#company-form").css('display', 'none')
+                $("#company").prop('required', false);
+
+                break;
+             case 'enterprise':
+                $("#company-form").css('display', 'flex')
+                $("#company").prop('required', true);
+
+                break;
+         }
+    });
+
     $("#feedback_form").submit(function(e) {
         var form = $(this);
 
         var isPersonal = form.find('#individual').is(':checked')
         var company = form.find('#company').val()
+        if (isPersonal) {
+            company = '-'
+        }
         var name = form.find('#name').val()
         var phone = form.find('#phone').val()
         var email = form.find('#email').val()
         var comment = form.find('#comment').val()
 
-        //var result = submitContactForm(isPersonal, company, name, phone, email, comment);
+        var result = submitContactForm(isPersonal, company, name, phone, email, comment);
         e.preventDefault(); // avoid to execute the actual submit of the form.
         $('#feedback-content').css('display', 'none');
         $('#feedback-result').css('display', 'block');
     });
 
-    $('#feedbackModal').on('hidden.bs.modal', function (e) {
+    $('#feedbackModal').on('show.bs.modal', function (e) {
+        $("#company-form").css('display', 'none')
+        $("#company").prop('required', false);
+
         $('#feedback-content').css('display', 'block');
         $('#feedback-result').css('display', 'none');
     })
