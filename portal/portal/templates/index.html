@@ -632,22 +632,22 @@ if __name__ == "__main__":
 
                     <p class="modal-title">Please leave your information. We will contact you shortly</p>
 
-                    <form>
+                    <form id="feedback_form">
                     <div class="row">
                         <label class="col-lg-3 col-form-label">
                             身份类型
                         </label>
                         <span class="col-lg-1"></span>
                         <div class="radio col-lg-3">
-                            <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios1"
-                                   value="option1" checked>
-                            <label class="form-check-label" for="exampleRadios1">
+                            <input class="form-check-input" type="radio" name="type" id="individual"
+                                   value="individual" checked>
+                            <label class="form-check-label" for="individual">
                                 个人
                             </label></div>
                         <div class="radio col-lg-3">
-                            <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios2"
-                                   value="option2">
-                            <label class="form-check-label" for="exampleRadios2">
+                            <input class="form-check-input" type="radio" name="type" id="enterprise"
+                                   value="enterprise">
+                            <label class="form-check-label" for="enterprise">
                                 企业
                             </label>
 
@@ -666,7 +666,7 @@ if __name__ == "__main__":
                             联系人
                         </label>
                         <div class="col-lg-9 form-group">
-                            <input type="text" class="form-control" id="user">
+                            <input type="text" class="form-control" id="name">
                         </div>
                     </div>
                     <div class="row">
@@ -674,7 +674,7 @@ if __name__ == "__main__":
                             手机号码
                         </label>
                         <div class="col-lg-9 form-group">
-                            <input type="tel" class="form-control" id="tel">
+                            <input type="tel" class="form-control" id="phone">
                         </div>
                     </div>
                     <div class="row">
@@ -696,7 +696,7 @@ if __name__ == "__main__":
                     <div class="row">
                         <span class="col-lg-3"></span>
                         <button id="submit" class="btn selected col-lg-4" type="submit" >submit</button>
-                        <button id="cancel" class="btn col-lg-4">cancel</button>
+                        <button id="cancel" class="btn col-lg-4" data-dismiss="modal">cancel</button>
                     </div>
                     </form>
                     <div class="row">
@@ -930,6 +930,21 @@ if __name__ == "__main__":
             reason: reason
         });
     };
+
+    $("#feedback_form").submit(function(e) {
+        var form = $(this);
+
+        var isPersonal = form.find('#individual').is(':checked')
+        var company = form.find('#company').val()
+        var name = form.find('#name').val()
+        var phone = form.find('#phone').val()
+        var email = form.find('#email').val()
+        var comment = form.find('#comment').val()
+
+        //var result = submitContactForm(isPersonal, company, name, phone, email, comment);
+        e.preventDefault(); // avoid to execute the actual submit of the form.
+    });
+
 </script>
 
 {% endblock %}
