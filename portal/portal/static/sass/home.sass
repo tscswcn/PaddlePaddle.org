@@ -45,7 +45,7 @@
       color: white
 
       &:hover
-        background: $accent-color
+        background: linear-gradient(to left, $accent-color, $accent-color)
 
   .banner
     height: 100vh
@@ -610,10 +610,10 @@
   .feedback
     height: 120px
     width: 40px
-    background: #108cee
+    background: black
     color: white
     right: 0px
-    bottom: 80px
+    top: 45%
     position: fixed
 
     .qr_code
@@ -702,13 +702,19 @@
       width: 100%
 
     .btn
-      border-radius: 0px
+      border-radius: 25px
       height: 50px
       margin: 10px
+      cursor: pointer
 
     .cancel-btn
       color: #999
       border-color: #999
+
+      &:hover
+        color: $primary-text-color
+        border: 1px solid $primary-text-color
+        background-color: transparent
 
     #feedback-result
       display: none
