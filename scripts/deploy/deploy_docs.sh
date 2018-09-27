@@ -29,6 +29,13 @@ echo "3. Executing deploy_documentation."
 python manage.py deploy_documentation --source_dir=$SOURCE_DIR --destination_dir=documentation $GITHUB_BRANCH
 
 echo "4. Copying remote documentation here first to be ready for indexing."
+# Deploy to remote server by SSH'ing into it.
+openssl aes-256-cbc -d -a -in ../scripts/deploy/content_mgr.pem.enc -out content_mgr.pem -k $DEC_PASSWD
+eval "$(ssh-agent -s)"
+chmod 400 content_mgr.pem
+ssh-add content_mgr.pem
+export STAGE_DEPLOY_IP=13.229.163.131
+
 # To avoid waiting for "Are you sure you want to continue connecting" input
 if [ ! -d ~/.ssh ] ; then
 mkdir ~/.ssh
@@ -52,13 +59,6 @@ echo "6. Documentation generation completed."
 # Display what documentation will be sync to the server
 ls documentation
 
-# Deploy to remote server by SSH'ing into it.
-openssl aes-256-cbc -d -a -in ../scripts/deploy/content_mgr.pem.enc -out content_mgr.pem -k $DEC_PASSWD
-eval "$(ssh-agent -s)"
-chmod 400 content_mgr.pem
-ssh-add content_mgr.pem
-export STAGE_DEPLOY_IP=13.229.163.131
-
 echo "5. Prepare to rsync documentation."
 rsync -r documentation/ content_mgr@$STAGE_DEPLOY_IP:/var/pages/documentation
 rsync -r /var/pages/menus/ content_mgr@$STAGE_DEPLOY_IP:/var/pages/menus
@@ -68,3 +68,4 @@ echo "6. Documentation deployed. Clean up."
 chmod 644 content_mgr.pem
 rm -rf documentation
 rm -rf /var/pages/menus
+rm -rf /var/pages/indexes
