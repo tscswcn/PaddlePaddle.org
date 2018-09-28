@@ -243,7 +243,7 @@ def _get_menu_path(menu_filename, content_id):
     """
     repo_path = find_in_top_level_navigation('/' + content_id)
 
-    if os.path.basename(repo_path['dir']).lower() == 'paddle':
+    if os.path.basename(repo_path['dir']).lower() in ['paddle', 'fluiddoc']:
         # HACK: To support multiple API versions.
         repo_path['dir'] = os.path.join(repo_path['dir'], 'doc', 'fluid')
 
