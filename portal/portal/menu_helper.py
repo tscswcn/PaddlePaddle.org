@@ -243,12 +243,12 @@ def _get_menu_path(menu_filename, content_id):
     """
     repo_path = find_in_top_level_navigation('/' + content_id)
 
-    if os.path.basename(repo_path['dir']).lower() == 'paddle' or os.path.basename(repo_path['dir']).lower() == 'fluiddoc':
+    if os.path.basename(repo_path['dir']).lower() in ['paddle', 'fluiddoc']:
         # HACK: To support multiple API versions.
         repo_path['dir'] = os.path.join(repo_path['dir'], 'doc', 'fluid')
 
-    if content_id == 'api' and os.path.basename(repo_path['dir']).lower() != 'api':
-        repo_path['dir'] = os.path.join(repo_path['dir'], 'api')
+        if content_id == 'api':
+            repo_path['dir'] = os.path.join(repo_path['dir'], 'api')
 
     if os.path.exists(repo_path['dir']):
         found_menu_path = _find_menu_in_repo(repo_path['dir'], menu_filename)
