@@ -43,13 +43,17 @@ fi
 ssh-keyscan $STAGE_DEPLOY_IP >> ~/.ssh/known_hosts
 
 # Merge the documentations, and temporarily swap spots.
-mkdir indexable-documentation
-rsync -r content_mgr@$STAGE_DEPLOY_IP:/var/pages/documentation indexable-documentation/
-cp -rf documentation/ indexable-documentation
+VERSION=$(python -c "from portal.management.commands.utils import sanitize_version; print sanitize_version('$GITHUB_BRANCH')")
+mkdir -p indexable-documentation/$VERSION
+rsync -r content_mgr@$STAGE_DEPLOY_IP:/var/pages/documentation/$VERSION indexable-documentation/$VERSION
+cp -rf documentation/$VERSION/ indexable-documentation/$VERSION
 mv documentation new-documentation
 mv indexable-documentation documentation
 
 echo "5. Build the search index of the newly generated documentation."
+# Need to do this because on Ubuntu node installs as nodejs.
+ln -s /usr/bin/nodejs /usr/bin/node
+
 python manage.py rebuild_index en $GITHUB_BRANCH
 python manage.py rebuild_index zh $GITHUB_BRANCH
 mv documentation indexable-documentation
@@ -67,5 +71,6 @@ rsync -r /var/pages/indexes/ content_mgr@$STAGE_DEPLOY_IP:/var/pages/indexes
 echo "6. Documentation deployed. Clean up."
 chmod 644 content_mgr.pem
 rm -rf documentation
+rm -rf indexable-documentation
 rm -rf /var/pages/menus
 rm -rf /var/pages/indexes
