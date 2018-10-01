@@ -7,16 +7,18 @@ The tutorials here guide you to setup the website locally, so you can see exactl
 
 ## Installation
 
-1. **Download / clone ONLY the relevant repos with content and code that you want to update and test (if you don't already have them):**
+If you are working on improving code documentation (i.e. APIs) and are within a Docker container with PaddlePaddle, perform these steps within the container. You need to do this because the documentation generator for APIs has a dependency on PaddlePaddle.
 
-    (since this repo does not hold the content rendered on website)
+On the other hand, if you are only improving the text/media content (since you don't need an installed or built PaddlePaddle) OR are building PaddlePaddle on your (host) machine, continue on your host machine.
 
-   - [PaddlePaddle](https://github.com/PaddlePaddle/Paddle) (contains all articles AND codebase to render the API documentation)
-   - [Book](https://github.com/PaddlePaddle/book) (contains chapter pages)
-   - [Models](https://github.com/PaddlePaddle/models) (contains the code to build models for different applications, including a few articles)
-   - [Mobile](https://github.com/PaddlePaddle/mobile) (contains articles for building for mobile)
 
-   You can place these anywhere on the computer; at a later step we will tell PaddlePaddle.org where they are.
+1. **Download / clone the documentation repo (the PaddlePaddle.org repo does not contain the content):**
+
+    ```
+    git clone --recurse-submodules https://github.com/PaddlePaddle/FluidDoc
+    ```
+
+   You can place this anywhere on the computer; at a later step we will tell PaddlePaddle.org where it is.
 
 
 2. **Pull PaddlePaddle.org into a new directory and install its dependencies.**
@@ -40,17 +42,17 @@ The tutorials here guide you to setup the website locally, so you can see exactl
     *Optional: If you plan on translating website content between English and Chinese for improving PaddlePaddle.org, install [GNU gettext](https://www.gnu.org/software/gettext/) too.*
 
 
-3. **Run PaddlePaddle.org locally.**
+3. **Run PaddlePaddle.org (locally or through the Docker container).**
 
-    Pass the list of directories you wish to load and build content from (options include `--paddle`, `--book`, `--models`, and `--mobile`)
+    Pass the list of directories (within the cloned FluidDoc directory) you wish to load and build content from (options include `--paddle`, `--book`, `--models`, and `--mobile`)
     ```
     ./runserver --paddle <path_to_paddle_dir> --book <path_to_book_dir>
     ```
 
-    *NOTE: In case of the --paddle directory, you may point to the specific API version directory (e.g. `<path to Paddle>/doc/fluid` or `<path to Paddle>v2`).*
-
     Open up your browser and navigate to [http://localhost:8000](http://localhost:8000).
     **NOTE**: *Links may take a few seconds to load the first time around since they are probably being built.*
+
+    **ANOTHER NOTE**: *If you are doing this step through a Docker environment, make sure to map the port 8000 to your host machine*
 
 
 ## Writing new content
