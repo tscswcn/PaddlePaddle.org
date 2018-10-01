@@ -29,7 +29,18 @@ echo "3. Executing deploy_documentation."
 python manage.py deploy_documentation --source_dir=$SOURCE_DIR --destination_dir=documentation $GITHUB_BRANCH
 python manage.py deploy_documentation --source_dir=$SOURCE_DIR/external --destination_dir=documentation $GITHUB_BRANCH
 
-echo "4. Copying remote documentation here first to be ready for indexing."
+echo "4. Build the search index of the newly generated documentation."
+# Need to do this because on Ubuntu node installs as nodejs.
+ln -s /usr/bin/nodejs /usr/bin/node
+
+python manage.py rebuild_index en $GITHUB_BRANCH
+python manage.py rebuild_index zh $GITHUB_BRANCH
+
+echo "5. Documentation generation completed."
+# Display what documentation will be sync to the server
+ls documentation
+
+echo "6. Prepare to rsync documentation."
 # Deploy to remote server by SSH'ing into it.
 openssl aes-256-cbc -d -a -in ../scripts/deploy/content_mgr.pem.enc -out content_mgr.pem -k $DEC_PASSWD
 eval "$(ssh-agent -s)"
@@ -43,35 +54,12 @@ mkdir ~/.ssh
 fi
 ssh-keyscan $STAGE_DEPLOY_IP >> ~/.ssh/known_hosts
 
-# Merge the documentations, and temporarily swap spots.
-VERSION=$(python -c "from portal.management.commands.utils import sanitize_version; print sanitize_version('$GITHUB_BRANCH')")
-mkdir -p indexable-documentation/$VERSION
-rsync -r content_mgr@$STAGE_DEPLOY_IP:/var/pages/documentation/$VERSION indexable-documentation/$VERSION
-cp -rf documentation/$VERSION/ indexable-documentation/$VERSION
-mv documentation new-documentation
-mv indexable-documentation documentation
-
-echo "5. Build the search index of the newly generated documentation."
-# Need to do this because on Ubuntu node installs as nodejs.
-ln -s /usr/bin/nodejs /usr/bin/node
-
-python manage.py rebuild_index en $GITHUB_BRANCH
-python manage.py rebuild_index zh $GITHUB_BRANCH
-mv documentation indexable-documentation
-mv new-documentation documentation
-
-echo "6. Documentation generation completed."
-# Display what documentation will be sync to the server
-ls documentation
-
-echo "5. Prepare to rsync documentation."
 rsync -r documentation/ content_mgr@$STAGE_DEPLOY_IP:/var/pages/documentation
 rsync -r /var/pages/menus/ content_mgr@$STAGE_DEPLOY_IP:/var/pages/menus
 rsync -r /var/pages/indexes/ content_mgr@$STAGE_DEPLOY_IP:/var/pages/indexes
 
-echo "6. Documentation deployed. Clean up."
+echo "7. Documentation deployed. Clean up."
 chmod 644 content_mgr.pem
 rm -rf documentation
-rm -rf indexable-documentation
 rm -rf /var/pages/menus
 rm -rf /var/pages/indexes
