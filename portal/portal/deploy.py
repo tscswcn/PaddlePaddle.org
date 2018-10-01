@@ -777,7 +777,7 @@ def reserve_formulas(markdown_body, formula_map, only_reserve_double_dollar=Fals
             # corresponding to the subpattern it matched from the regex pattern.
 
             # On our example from above, we get the following matches:
-            # [(`echo $PWD; echo $VAR`, ''), ('', '$ equation $'), (`printenv`, '')]
+            # [('`echo $PWD; echo $VAR`', ''), ('', '$ equation $'), ('`printenv`', '')]
 
             # Thus we ignore all matches of the code blocks, and preserve all
             # math found outside it.
