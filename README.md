@@ -57,7 +57,7 @@ On the other hand, if you are only improving the text/media content (since you d
 
 ## Writing new content
 
-All repositories support content contribution formatted as [Markdown](https://guides.github.com/features/mastering-markdown/) (the GitHub flavor). The Paddle repo, where majority of the documentation lies, also supports the [reStructured Text](http://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html) format.
+All content should be written in [Markdown](https://guides.github.com/features/mastering-markdown/) (the GitHub flavor) (even though there are some legacy pieces of content in `docs`).
 
 After you have gone through the installation steps above, here are the steps you need to take:
 
