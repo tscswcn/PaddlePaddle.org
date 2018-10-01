@@ -737,6 +737,8 @@ def markdown_file(source_markdown_file, version, tmp_dir, new_path=None):
 def reserve_formulas(markdown_body, formula_map, only_reserve_double_dollar=False):
     """
     Store the math formulas to formula_map before markdown conversion
+    Sometimes, there will be markdown-like syntax in math functions and MathJax will get confused,
+    System will preserver them first so it can be converted properly later.
     """
     place_holder = '<span class="markdown-equation" id="equation-%s"></span>'
 
@@ -757,7 +759,9 @@ def reserve_formulas(markdown_body, formula_map, only_reserve_double_dollar=Fals
         if only_reserve_double_dollar:
             m = re.findall('(\`?\$\$[^\$\n]+\$\$\`?)', body)
         else:
-            m = re.findall('(\`?\$\$?[^\$\n]+\$?\$\`?)', body)
+            m = re.findall('(\`[^\n\`]+\`)|(\$\$?[^\$\n]+\$?\$)', body)
+            m = [s[1] for s in m if s[0] == '' and s[1]]
+
         math += m
 
     for i in xrange(len(math)):
