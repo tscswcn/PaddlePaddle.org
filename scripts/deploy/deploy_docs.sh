@@ -27,6 +27,7 @@ export ENV=production
 
 echo "3. Executing deploy_documentation."
 python manage.py deploy_documentation --source_dir=$SOURCE_DIR --destination_dir=documentation $GITHUB_BRANCH
+python manage.py deploy_documentation --source_dir=$SOURCE_DIR/external --destination_dir=documentation $GITHUB_BRANCH
 
 echo "4. Copying remote documentation here first to be ready for indexing."
 # Deploy to remote server by SSH'ing into it.
