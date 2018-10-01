@@ -759,6 +759,11 @@ def reserve_formulas(markdown_body, formula_map, only_reserve_double_dollar=Fals
         if only_reserve_double_dollar:
             m = re.findall('(\`?\$\$[^\$\n]+\$\$\`?)', body)
         else:
+            # Try to find everything wrapped by `` (code block) first and discard them later.
+            # Doing this guarantee that a matched math function is not wrapped by a code block
+
+            # EX: `echo $PWD; echo $PYTHONPATH` then display $ math $ , then display a `code block`
+            # The above example will only ignore the two code blocks and preserve $ math $ block
             m = re.findall('(\`[^\n\`]+\`)|(\$\$?[^\$\n]+\$?\$)', body)
             m = [s[1] for s in m if s[0] == '' and s[1]]
 
