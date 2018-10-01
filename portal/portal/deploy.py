@@ -737,8 +737,8 @@ def markdown_file(source_markdown_file, version, tmp_dir, new_path=None):
 def reserve_formulas(markdown_body, formula_map, only_reserve_double_dollar=False):
     """
     Store the math formulas to formula_map before markdown conversion
-    Sometimes, there will be markdown-like syntax in math functions and MathJax will get confused,
-    System will preserver them first so it can be converted properly later.
+    Sometimes, there will be markdown-like syntax in math functions and MathJax will get confused.
+    Therefore, System will preserve math functions first so they can be converted properly later.
     """
     place_holder = '<span class="markdown-equation" id="equation-%s"></span>'
 
