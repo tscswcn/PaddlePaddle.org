@@ -31,6 +31,7 @@ python manage.py deploy_documentation --source_dir=$SOURCE_DIR/external --destin
 
 echo "4. Build the search index of the newly generated documentation."
 # Need to do this because on Ubuntu node installs as nodejs.
+apt-get -y install nodejs
 ln -s /usr/bin/nodejs /usr/bin/node
 
 python manage.py rebuild_index en $GITHUB_BRANCH
