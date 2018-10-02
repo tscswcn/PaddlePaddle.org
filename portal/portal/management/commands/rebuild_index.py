@@ -7,11 +7,12 @@ import tempfile
 
 import nltk
 import jieba
-
-from textblob import TextBlob as tb
 from bs4 import BeautifulSoup
+from textblob import TextBlob as tb
 from django.conf import settings
 from django.core.management import BaseCommand
+
+from .utils import sanitize_version
 
 
 def get_section_for_api_title(title, depth=0):
@@ -112,7 +113,7 @@ class Command(BaseCommand):
                         if title:
                             raw_title = next(title.stripped_strings)
 
-                            if lang == 'zh'
+                            if lang == 'zh':
                                 segments = jieba.cut_for_search(raw_title)
                                 joined_segments = ''
 
@@ -162,13 +163,15 @@ class Command(BaseCommand):
                     contents_to_build.append(maybe_dir)
 
         # First we need to go through all the generated HTML documents.
+        version = sanitize_version(options['version'][0])
+
         for content_to_build in contents_to_build:
             source_dir = os.path.join(
                 settings.WORKSPACE_DIR, content_to_build,
-                options['language'][0], options['version'][0]
+                options['language'][0], version
             )
 
-            if content_to_build == 'api' and options['version'][0] not in ['0.10.0', '0.11.0']:
+            if content_to_build == 'api' and version not in ['0.10.0', '0.11.0']:
                 self.build_api_document(source_dir)
 
             else:
@@ -177,9 +180,13 @@ class Command(BaseCommand):
 
         # And create an index JS file that we can import.
         output_index_dir = os.path.join(
-            settings.STATICFILES_DIRS[0],
-            'indexes', options['language'][0] ,options['version'][0]
+            settings.INDEXES_DIR, 'indexes',
+            options['language'][0], version
         )
+
+        if not os.path.exists(output_index_dir):
+            os.makedirs(output_index_dir)
+
         output_index_js = os.path.join(output_index_dir, 'index.js')
         output_toc_js = os.path.join(output_index_dir, 'toc.js')
 

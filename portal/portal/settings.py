@@ -207,9 +207,12 @@ USE_TZ = True
 
 APPEND_SLASH = True
 
+INDEXES_DIR = os.path.join(PAGES_DIR, 'indexes')
+
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'portal/static/'),
     os.path.join(BASE_DIR, 'visualDL/static/'),
+    INDEXES_DIR,
 )
 
 STATIC_ROOT = 'static/'
