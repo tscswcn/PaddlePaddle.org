@@ -180,7 +180,7 @@ class Command(BaseCommand):
 
         # And create an index JS file that we can import.
         output_index_dir = os.path.join(
-            settings.INDEXES_DIR,
+            settings.INDEXES_DIR, 'indexes',
             options['language'][0], version
         )
 
