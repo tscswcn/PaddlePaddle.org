@@ -71,7 +71,7 @@ After you have gone through the installation steps above, here are the steps you
 - Create a new `.md` file OR edit an existing article's file within the appropriate directory of the repo you are contributing to.
 
 
-###If you have updated the API comments and want to preview the updates:
+### If you have updated the API comments and want to preview the updates:
 
 Inside the Docker or host machine where Paddle is to be rebuilt, either:
 -  Run the the script `paddle/scripts/paddle_build.sh` (from the main Paddle repository / codebase).
