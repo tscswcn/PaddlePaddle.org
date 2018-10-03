@@ -115,6 +115,7 @@ VERSIONS = [
 if DEBUG:
     VERSIONS.append({ 'name': 'develop_doc', 'api': 'Fluid' })
     VERSIONS.append({ 'name': 'develop', 'api': 'Fluid' })
+    VERSIONS.append({ 'name': '1.0.0', 'api': 'Fluid' })
 
 if DEBUG:
     ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.paddlepaddle.localhost']
