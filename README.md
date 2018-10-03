@@ -111,9 +111,6 @@ On the other hand, if you have pure documentation updates:
     - Go into the `book` dir.
     - Checkout the commit on the `book` repo you wish to update to.
     - And now commit the new changes to the `FluidDoc` repo.
-  ```
-
-  ```
 
   - Submit a PR on the `FluidDoc` repo with this change.
 
