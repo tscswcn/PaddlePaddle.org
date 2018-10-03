@@ -55,45 +55,43 @@ On the other hand, if you are only improving the text/media content (since you d
     **ANOTHER NOTE**: *If you are doing this step through a Docker environment, make sure to map the port 8000 to your host machine*
 
 
-## Writing new content
+## Writing new documentation or updating APIs
 
 All content should be written in [Markdown](https://guides.github.com/features/mastering-markdown/) (the GitHub flavor) (even though there are some legacy pieces of content in `docs`).
 
 After you have gone through the installation steps above, here are the steps you need to take:
 
-- Before you start writing, we recommend reviewing these [guidelines on contributing content]().
-- Create a new `.md` (or `.rst`, only in the case of Paddle) file OR edit an existing article's file within the appropriate directory of the repo you are contributing to.
+- Before you start writing, we recommend reviewing these [guidelines on contributing content](https://github.com/PaddlePaddle/PaddlePaddle.org/wiki/Markdown-syntax-guideline).
+
+---
+
+
+If you are writing new content:
+- Create a new `.md` file OR edit an existing article's file within the appropriate directory of the repo you are contributing to.
+
+
+If you have updated the API comments and want to preview the updates, inside the Docker or host machine where Paddle is to be rebuilt, either:
+-  Run the the script `paddle/scripts/paddle_build.sh` (from the main Paddle repository / codebase).
+
+-  OR (if you want control / understanding over the process):
+   - Create a new directory in the `Paddle` repo to build Paddle into. Let's call it `build`, for example.
+   - Within this new directory, run the following `cmake` and `make` commands to build a new PaddlePaddle:
+
+     bash```
+     cmake .. -DCMAKE_BUILD_TYPE=Release -DWITH_DOC=ON -DWITH_GPU=OFF -DWITH_MKL=OFF -DWITH_FLUID_ONLY=ON
+
+     # You may replace `nproc` with the number of processor cores your system can offer for the build.
+     make -j `nproc` gen_proto_py framework_py_proto copy_paddle_pybind paddle_python
+     ```
+
+   - Export the environment variable `PYTHONPATH` to include the this new `build` directory (or whatever you named it)
+
+
+Note that if you are using Docker, `paddle_docker_build.sh` rebuilds a new Docker container. This destroys the PaddlePaddle.org installation on that Docker instance, so it is not the suggested way to rebuild your code if you wish to preview documentation.
+
+---
+
 - To view the changes in your browser, click **Refresh Content** on the top-righthand side corner.
-- To add it to a menu or change its position on the menu, click on the **Edit menu** button at the top of the left-handside menu on the page, to open the menu editor.
-
-
-## Writing or modifying the Python API
-
-After you have built your new `pybind` targets, and have tested your new Python API, you can continue with testing how your documentation strings and comments show up:
-
-- We recommend reviewing these [guidelines on contributing API documentation]().
-- Make sure that the built Python directory (containing `paddle`) is available in the `PYTHONPATH` of where you are running `./runserver` from.
-- On the specific "API" page you wish to update, click **Refresh Content** on the top-righthand side corner.
-- To add it to a menu or change its position on the menu, click on the **Edit menu** button at the top of the left-handside menu on the page, to open the menu editor.
-
-
-
-<!---
-## Writing or modifying APIs
-
-There are two kinds of API updates you can make: the Python API for users, and the list of available operators. Before you are ready to test how your documentation strings and comments show, we recommend reviewing these [guidelines on contributing API documentation]().
-
-
-### Python API updates
-
-- On the specific "API" page you wish to update, click **Regenerate** on the top-righthand side corner.
-- To add it to a menu or change its position on the menu, click on the **Edit menu** button at the top of the left-handside menu on the page, to open the menu editor.
-
-
-### Operators updates
-
-If you have added or removed operators, or made changes to their "RDOC", after you build your new `pybind` targets, also build the `operators`
---->
 
 
 ## Contributing to improve the tools
