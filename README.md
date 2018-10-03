@@ -44,13 +44,23 @@ On the other hand, if you are only improving the text/media content (since you d
 
 3. **Run PaddlePaddle.org (locally or through the Docker container).**
 
-    Pass the list of directories (within the cloned FluidDoc directory) you wish to load and build content from (options include `--paddle`, `--book`, `--models`, and `--mobile`)
+    Pass the cloned FluidDoc directory:
 
     ```bash
-    ./runserver --paddle <path_to_paddle_dir> --book <path_to_book_dir>
+    ./runserver --paddle <path_to_fluiddoc_dir> --book <path_to_book_dir>
     ```
 
     Open up your browser and navigate to [http://localhost:8000](http://localhost:8000).
+
+    In the case you were working on the English documentation that depends on content within the `book`, `models`, or `mobile` repositories, you may also pass one or more of the following options:
+
+    ```bash
+    ./runserver --paddle <path_to_fluiddoc_dir> \
+        --book <path_to_fluiddoc_dir>/external/book \
+        --models <path_to_fluiddoc_dir>/external/models \
+        --mobile <path_to_fluiddoc_dir>/external/mobile
+    ```
+
     **NOTE**: *Links may take a few seconds to load the first time around since they are probably being built.*
 
     **ANOTHER NOTE**: *If you are doing this step through a Docker environment, make sure to map the port 8000 to your host machine*
@@ -58,7 +68,7 @@ On the other hand, if you are only improving the text/media content (since you d
 
 ## Previewing new documentation or updating APIs
 
-All content should be written in [Markdown](https://guides.github.com/features/mastering-markdown/) (the GitHub flavor) (even though there are some legacy pieces of content in `docs`).
+All content should be written in [Markdown](https://guides.github.com/features/mastering-markdown/) (the GitHub flavor) (even though there are some legacy pieces of content in `docs` using the `.rst` format).
 
 After you have gone through the installation steps above, here are the steps you need to take:
 
