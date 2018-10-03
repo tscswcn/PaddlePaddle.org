@@ -56,7 +56,7 @@ On the other hand, if you are only improving the text/media content (since you d
     **ANOTHER NOTE**: *If you are doing this step through a Docker environment, make sure to map the port 8000 to your host machine*
 
 
-## Writing new documentation or updating APIs
+## Previewing new documentation or updating APIs
 
 All content should be written in [Markdown](https://guides.github.com/features/mastering-markdown/) (the GitHub flavor) (even though there are some legacy pieces of content in `docs`).
 
@@ -95,6 +95,27 @@ Note that if you are using Docker, `paddle_docker_build.sh` rebuilds a new Docke
 ---
 
 - To view the changes in your browser, click **Refresh Content** on the top-righthand side corner.
+
+
+## Submitting your documentation changes
+
+If you have made changes to the code, you need to follow the contribution guidelines on the `paddle` repo.
+
+On the other hand, if you have pure documentation updates:
+
+- If you changed contents in the `doc` folder, you only need to submit a PR to the `FluidDoc` repo.
+
+- On the other hand, if you changed anything in the external folder:
+  - Submit a PR on the repo whose content you have changed. The `FluidDoc` repo is simply a wrapper that houses links (or in git terminology, "sub-modules") to other repos.
+  - After it is approved, change the git sub-module pointer to the new commit from the source repo. For example, say you updated contents of the `book` repo.
+    - Go into the `book` dir.
+    - Checkout the commit on the `book` repo you wish to update to.
+    - And now commit the new changes to the `FluidDoc` repo.
+  ```
+
+  ```
+
+  - Submit a PR on the `FluidDoc` repo with this change.
 
 
 ## Contributing to improve the tools
