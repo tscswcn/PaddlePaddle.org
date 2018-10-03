@@ -14,7 +14,7 @@ On the other hand, if you are only improving the text/media content (since you d
 
 1. **Download / clone the documentation repo (the PaddlePaddle.org repo does not contain the content):**
 
-    ```
+    ```bash
     git clone --recurse-submodules https://github.com/PaddlePaddle/FluidDoc
     ```
 
@@ -24,12 +24,12 @@ On the other hand, if you are only improving the text/media content (since you d
 2. **Pull PaddlePaddle.org into a new directory and install its dependencies.**
 
     But before that, make sure you have Python dependencies installed on your OS. For example, on an Ubuntu, run:
-    ```
+    ```bash
     sudo apt-get update && apt-get install -y python-dev build-essential
     ```
 
     Then,
-    ```
+    ```bash
     git clone https://github.com/PaddlePaddle/PaddlePaddle.org.git
     cd PaddlePaddle.org/portal
 
@@ -45,7 +45,8 @@ On the other hand, if you are only improving the text/media content (since you d
 3. **Run PaddlePaddle.org (locally or through the Docker container).**
 
     Pass the list of directories (within the cloned FluidDoc directory) you wish to load and build content from (options include `--paddle`, `--book`, `--models`, and `--mobile`)
-    ```
+
+    ```bash
     ./runserver --paddle <path_to_paddle_dir> --book <path_to_book_dir>
     ```
 
@@ -66,18 +67,20 @@ After you have gone through the installation steps above, here are the steps you
 ---
 
 
-If you are writing new content:
+### If you are writing new content:
 - Create a new `.md` file OR edit an existing article's file within the appropriate directory of the repo you are contributing to.
 
 
-If you have updated the API comments and want to preview the updates, inside the Docker or host machine where Paddle is to be rebuilt, either:
+###If you have updated the API comments and want to preview the updates:
+
+Inside the Docker or host machine where Paddle is to be rebuilt, either:
 -  Run the the script `paddle/scripts/paddle_build.sh` (from the main Paddle repository / codebase).
 
--  OR (if you want control / understanding over the process):
+-  **OR** (if you want control / understanding over the process):
    - Create a new directory in the `Paddle` repo to build Paddle into. Let's call it `build`, for example.
    - Within this new directory, run the following `cmake` and `make` commands to build a new PaddlePaddle:
 
-     bash```
+     ```bash
      cmake .. -DCMAKE_BUILD_TYPE=Release -DWITH_DOC=ON -DWITH_GPU=OFF -DWITH_MKL=OFF -DWITH_FLUID_ONLY=ON
 
      # You may replace `nproc` with the number of processor cores your system can offer for the build.
