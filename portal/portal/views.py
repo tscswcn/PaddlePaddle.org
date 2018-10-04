@@ -357,6 +357,8 @@ def zh_home_root(request):
     portal_helper.set_preferred_language(request, None, 'zh')
     return render(request, 'index.html')
 
+def pps_root(request):
+    return render(request, 'pps.html')
 
 def about_en(request):
     portal_helper.set_preferred_language(request, None, 'en')

@@ -1,0 +1,176 @@
+{% extends "_base_nav.html" %}
+
+{% load i18n %}
+
+{% block post_content %}
+{% load app_tags %}
+
+<link href="/static/stylesheets/pps.css?{% server_start_time %}" media="screen, projection" rel="stylesheet" type="text/css" />
+
+{% endblock %}
+
+{% get_current_language as LANGUAGE_CODE %}
+
+{% block content %}
+
+<div class="pps-home">
+    <!-- PPS heros banner -->
+    <section class="installation-guide">
+        <div class="container">
+            <h1>Title</h1>
+            <h2>Sub Title</h2>
+            <button>Contact US </button>
+        </div>
+    </section>
+
+    <!-- section selector -->
+    <section class="quick-links">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-2">link 1</div>
+                <div class="col-lg-2">link 2</div>
+                <div class="col-lg-2">link 3</div>
+                <div class="col-lg-2">link 4</div>
+                <div class="col-lg-2">link 5</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Structure illustration section -->
+
+    <section class="illustration">
+        <div class="container">
+            <h2>Structure illustration</h2>
+            <p>Nullam eget metus magna. Etiam egestas est vel est cursus elementum. Cras eget dapibus ex. Proin
+                consectetur eu est nec vestibulum. Ut tempus tortor vitae turpis ultricies laoreet. Donec id ante ut
+                ligula dignissim ultricies. </p>
+            <img href=""/>
+        </div>
+    </section>
+
+    <!-- Core frameworks -->
+    <section class="core-framework">
+        <div class="container">
+            <h2>Core Framework</h2>
+            <p>Nullam eget metus magna. Etiam egestas est vel est cursus elementum. Cras eget dapibus ex. Proin
+                consectetur eu est nec vestibulum. Ut tempus tortor vitae turpis ultricies laoreet. Donec id ante ut
+                ligula dignissim ultricies. </p>
+
+
+            <div class="row">
+                <div class="col-lg-4">
+                    <div class="framework-desc">
+                        <h3>Framework 1</h3>
+                        <p>desc 1</p>
+
+                        <button>Learn More</button>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="framework-desc">
+                        <h3>Framework 2</h3>
+                        <p>desc 2</p>
+
+                        <button>Learn More</button>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="framework-desc">
+                        <h3>Framework 3</h3>
+                        <p>desc 3</p>
+
+                        <button>Learn More</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Toolsets -->
+    <section class="toolsets">
+        <div class="container">
+            <h2>Toolsets</h2>
+            <p>Nullam eget metus magna. Etiam egestas est vel est cursus elementum. Cras eget dapibus ex. Proin
+                consectetur eu est nec vestibulum. Ut tempus tortor vitae turpis ultricies laoreet. Donec id ante ut
+                ligula dignissim ultricies. </p>
+
+            <div class="row">
+                <div class="col-lg-4">
+                    <div class="tool-desc">
+                        <img href="">
+
+                        <h3>tool 1</h3>
+                        <p>tool desc 1</p>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="tool-desc">
+                        <img href="">
+                        <h3>tool 2</h3>
+                        <p>tool desc 1</p>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="tool-desc">
+                        <img href="">
+                        <h3>tool 3</h3>
+                        <p>tool desc 1</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- General technical solutions -->
+    <section class="applications">
+        <div class="container">
+            <h2>Applications</h2>
+            <p>Nullam eget metus magna. Etiam egestas est vel est cursus elementum. Cras eget dapibus ex. Proin
+                consectetur eu est nec vestibulum. Ut tempus tortor vitae turpis ultricies laoreet. Donec id ante ut
+                ligula dignissim ultricies. </p>
+        </div>
+    </section>
+
+    <!-- Service platforms -->
+    <section class="services">
+        <div class="container">
+            <h2>Services</h2>
+            <p>Nullam eget metus magna. Etiam egestas est vel est cursus elementum. Cras eget dapibus ex. Proin
+                consectetur eu est nec vestibulum. Ut tempus tortor vitae turpis ultricies laoreet. Donec id ante ut
+                ligula dignissim ultricies. </p>
+
+            <div class="row">
+                <div class="col-lg-4">
+                    <div class="service-desc">
+                        <h3>Service 1</h3>
+                        <p>Service desc 1</p>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="service-desc">
+                        <h3>Service 2</h3>
+                        <p>Service desc 2</p>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="service-desc">
+                        <h3>Service 3</h3>
+                        <p>Service desc 3</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+{% endblock %}
+{% block scripts %}
+{{ block.super }}
+
+{% endblock %}
