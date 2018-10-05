@@ -29,11 +29,21 @@
                 <li>
                     <a class="nav-link" href="/about_{% if LANGUAGE_CODE != 'zh' %}en{% else %}cn{% endif %}.html">{% trans "About" %}</a>
                 </li>
-
+                <li class="dropdown">
+                    <a class="nav-link" data-toggle="dropdown" class="dropdown-toggle">企业应用1</a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a href="#">One</a>
+                            <p>test</p>
+                        </li>
+                        <li><a href="#">Two</a><p>test</p></li>
+                        <li><a href="#">Three</a></a><p>test</p></li>
+                    </ul>
+                </li>
             </ul>
             <ul class="navbar-nav">
                 <li class="expandable-menu" id="applications">
-                    <a class="nav-link">企业应用</a>
+                    <a class="nav-link">企业应用2</a>
                     <ul class="sub-menu">
                         <li><a href="#">One</a></li>
                         <li><a href="#">Two</a></li>
