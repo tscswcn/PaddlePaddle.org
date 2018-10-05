@@ -57,16 +57,16 @@
         position: relative
 
     .sub-menu
-        visibility: hidden
+        display: none
         position: absolute
-        background: black
         width: 150px
-        left: -20px
         padding: 10px
         color: white
+        left: -20px
+        background: black
 
     .show
-        visibility: visible
+        display: unset
 
 
 body
@@ -609,3 +609,12 @@ span.twitter-typeahead
         display: block !important
         .input-group span.twitter-typeahead .tt-menu
             top: 2.375rem !important
+
+@media (max-width: 991px)
+    .navbar
+
+        .sub-menu
+            position: relative
+            left: 10px
+            display: unset
+            padding: 0px
