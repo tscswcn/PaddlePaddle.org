@@ -30,6 +30,14 @@
                     <a class="nav-link" href="/about_{% if LANGUAGE_CODE != 'zh' %}en{% else %}cn{% endif %}.html">{% trans "About" %}</a>
                 </li>
             </ul>
+            <div class="expandable-menu" id="applications">
+                <a class="nav-link">企业应用</a>
+                <ul class="sub-menu">
+                    <li><a href="#">One</a></li>
+                    <li><a href="#">Two</a></li>
+                    <li><a href="#">Three</a></a></li>
+                </ul>
+            </div>
             <ul class="navbar-nav">
                 <li>
                     <a class="nav-link" href="{{ community_link }}" target="_blank">{% trans "Community" %}</a>
@@ -51,3 +59,15 @@
         </div>
     </div>
 </nav>
+
+{% block scripts %}
+<script>
+    $('#applications').hover(function () {
+        var submenu = $('.sub-menu');
+        submenu.addClass('show');
+    },function () {
+        var submenu = $('.sub-menu');
+        submenu.removeClass('show');
+    });
+</script>
+{% endblock %}
