@@ -145,12 +145,26 @@
                         <h2>Paddle NLP</h2>
                     </div>
                 </div>
-                <div class="col-lg-9">
+                <div class="col-lg-9" id="rec-des">
                     <h2>title one</h2>
                     <h2>title two</h2>
                     <h2>title two</h2>
                     <h2>title two</h2>
                     <h2>title two</h2>
+                </div>
+                <div class="col-lg-9 hide" id="cv-des">
+                    <h2>title 3</h2>
+                    <h2>title 3</h2>
+                    <h2>title 3</h2>
+                    <h2>title 3</h2>
+                    <h2>title 3</h2>
+                </div>
+                <div class="col-lg-9 hide" id="nlp-des">
+                    <h2>title 7</h2>
+                    <h2>title 7</h2>
+                    <h2>title 7</h2>
+                    <h2>title 7</h2>
+                    <h2>title 7</h2>
                 </div>
             </div>
         </div>
@@ -191,16 +205,26 @@
 </div>
 
 {% endblock %}
-<!--{% block scripts %}-->
-<!--{{ block.super }}-->
+{% block scripts %}
+{{ block.super }}
 
-<!--<script>-->
-    <!--$('#applications').hover(function () {-->
-        <!--var submenu = $('.sub-menu');-->
-        <!--submenu.addClass('show');-->
-    <!--},function () {-->
-        <!--var submenu = $('.sub-menu');-->
-        <!--submenu.removeClass('show');-->
-    <!--});-->
-<!--</script>-->
-<!--{% endblock %}-->
+<script>
+    $('#rec').hover(function () {
+        $('#rec-des').removeClass('hide')
+        $('#cv-des').addClass('hide')
+        $('#nlp-des').addClass('hide')
+    });
+
+    $('#cv').hover(function () {
+        $('#rec-des').addClass('hide')
+        $('#cv-des').removeClass('hide')
+        $('#nlp-des').addClass('hide')
+    });
+
+    $('#nlp').hover(function () {
+        $('#rec-des').addClass('hide')
+        $('#cv-des').addClass('hide')
+        $('#nlp-des').removeClass('hide')
+    });
+</script>
+{% endblock %}
