@@ -950,12 +950,12 @@ if __name__ == "__main__":
     // Reset the feedback form
     $('#feedbackModal').on('show.bs.modal', function (e) {
 
-        if ($("input[name='type']:checked").val() === "individual"){
-            $("#company-form").css('display', 'none')
-            $("#company").prop('required', false);
+        if ($('input[name="type"]:checked').val() === 'individual'){
+            $('#company-form').css('display', 'none');
+            $('#company").prop('required', false);
         } else {
-            $("#company-form").css('display', 'flex')
-            $("#company").prop('required', true);
+            $('#company-form').css('display', 'flex');
+            $('#company').prop('required', true);
         }
 
         $('#feedback-content').css('display', 'block');
@@ -966,30 +966,30 @@ if __name__ == "__main__":
     $('input[type=radio][name=type]').on('change', function() {
          switch($(this).val()) {
              case 'individual':
-                $("#company-form").css('display', 'none')
-                $("#company").prop('required', false);
+                $('#company-form').css('display', 'none');
+                $('#company').prop('required', false);
 
                 break;
              case 'enterprise':
-                $("#company-form").css('display', 'flex')
-                $("#company").prop('required', true);
+                $('#company-form').css('display', 'flex');
+                $('#company').prop('required', true);
 
                 break;
          }
     });
 
-    $("#feedback_form").submit(function(e) {
+    $('#feedback_form').submit(function(e) {
         var form = $(this);
 
-        var isPersonal = form.find('#individual').is(':checked')
-        var company = form.find('#company').val()
+        var isPersonal = form.find('#individual').is(':checked');
+        var company = form.find('#company').val();
         if (isPersonal) {
             company = '-'
         }
-        var name = form.find('#name').val()
-        var phone = form.find('#phone').val()
-        var email = form.find('#email').val()
-        var comment = form.find('#comment').val()
+        var name = form.find('#name').val();
+        var phone = form.find('#phone').val();
+        var email = form.find('#email').val();
+        var comment = form.find('#comment').val();
 
         // Submit the result to the airtable
         var result = submitContactForm(isPersonal, company, name, phone, email, comment);
