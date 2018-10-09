@@ -47,7 +47,7 @@ if ENV == 'production':
 else:
     DEBUG = True
 
-DEFAULT_DOCS_VERSION = '0.15.0' if ENV in ['production', 'staging'] else 'develop'
+DEFAULT_DOCS_VERSION = '1.0.0' if ENV in ['production', 'staging'] else 'develop'
 
 SIDE_NAVIGATION = [
     {
@@ -110,6 +110,7 @@ VERSIONS = [
     { 'name': '0.13.0', 'api': 'Fluid' },
     { 'name': '0.14.0', 'api': 'Fluid' },
     { 'name': '0.15.0', 'api': 'Fluid' },
+    { 'name': '1.0.0', 'api': 'Fluid'},
 ]
 
 if DEBUG:
