@@ -648,7 +648,7 @@ if __name__ == "__main__":
                                     <label class="form-check-label" for="enterprise">企业</label>
                                 </div>
                             </div>
-                            <div class="row" id="company-form">
+                            <div class="row" id="company-input">
                                 <label class="col-lg-3 col-form-label">
                                     <span class="required-label">*</span>企业名称:
                                 </label>
@@ -669,7 +669,7 @@ if __name__ == "__main__":
                                     <span class="required-label">*</span>手机号码:
                                 </label>
                                 <div class="col-lg-9 form-group">
-                                    <input type="tel" class="form-control" id="phone" required>
+                                    <input type="number" class="form-control" id="phone" required>
                                 </div>
                             </div>
                             <div class="row">
@@ -701,7 +701,7 @@ if __name__ == "__main__":
                         </div>
                     </div>
                 </div>
-                <div id="feedback-result">
+                <div id="feedback-result" class="hide">
                     <div class="modal-body">
                         <h2 class="modal-title"></h2>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -949,41 +949,47 @@ if __name__ == "__main__":
 
     // Reset the feedback form
     $('#feedbackModal').on('show.bs.modal', function (e) {
-        $("#company-form").css('display', 'none')
-        $("#company").prop('required', false);
 
-        $('#feedback-content').css('display', 'block');
-        $('#feedback-result').css('display', 'none');
+        if ($('input[name="type"]:checked').val() === 'individual'){
+            $('#company-input').addClass('hide');
+            $('#company').prop('required', false);
+        } else {
+            $('#company-input').removeClass('hide');
+            $('#company').prop('required', true);
+        }
+
+        $('#feedback-content').removeClass('hide');
+        $('#feedback-result').addClass('hide');
     })
 
     // Hide the 'company' field for individual
     $('input[type=radio][name=type]').on('change', function() {
          switch($(this).val()) {
              case 'individual':
-                $("#company-form").css('display', 'none')
-                $("#company").prop('required', false);
+                $('#company-input').addClass('hide');
+                $('#company').prop('required', false);
 
                 break;
              case 'enterprise':
-                $("#company-form").css('display', 'flex')
-                $("#company").prop('required', true);
+                $('#company-input').removeClass('hide');
+                $('#company').prop('required', true);
 
                 break;
          }
     });
 
-    $("#feedback_form").submit(function(e) {
+    $('#feedback_form').submit(function(e) {
         var form = $(this);
 
-        var isPersonal = form.find('#individual').is(':checked')
-        var company = form.find('#company').val()
+        var isPersonal = form.find('#individual').is(':checked');
+        var company = form.find('#company').val();
         if (isPersonal) {
             company = '-'
         }
-        var name = form.find('#name').val()
-        var phone = form.find('#phone').val()
-        var email = form.find('#email').val()
-        var comment = form.find('#comment').val()
+        var name = form.find('#name').val();
+        var phone = form.find('#phone').val();
+        var email = form.find('#email').val();
+        var comment = form.find('#comment').val();
 
         // Submit the result to the airtable
         var result = submitContactForm(isPersonal, company, name, phone, email, comment);
@@ -991,8 +997,8 @@ if __name__ == "__main__":
         e.preventDefault(); // avoid to execute the actual submit of the form.
 
         // Hide the feedback form and show the success message
-        $('#feedback-content').css('display', 'none');
-        $('#feedback-result').css('display', 'block');
+        $('#feedback-content').addClass('hide');
+        $('#feedback-result').removeClass('hide');
     });
 
 </script>
