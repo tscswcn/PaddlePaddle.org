@@ -701,7 +701,7 @@ if __name__ == "__main__":
                         </div>
                     </div>
                 </div>
-                <div id="feedback-result">
+                <div id="feedback-result" class="hide">
                     <div class="modal-body">
                         <h2 class="modal-title"></h2>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -951,27 +951,27 @@ if __name__ == "__main__":
     $('#feedbackModal').on('show.bs.modal', function (e) {
 
         if ($('input[name="type"]:checked').val() === 'individual'){
-            $('#company-form').css('display', 'none');
+            $('#company-form').addClass('hide');
             $('#company').prop('required', false);
         } else {
-            $('#company-form').css('display', 'flex');
+            $('#company-form').removeClass('hide');
             $('#company').prop('required', true);
         }
 
-        $('#feedback-content').css('display', 'block');
-        $('#feedback-result').css('display', 'none');
+        $('#feedback-content').removeClass('hide');
+        $('#feedback-result').addClass('hide');
     })
 
     // Hide the 'company' field for individual
     $('input[type=radio][name=type]').on('change', function() {
          switch($(this).val()) {
              case 'individual':
-                $('#company-form').css('display', 'none');
+                $('#company-form').addClass('hide');
                 $('#company').prop('required', false);
 
                 break;
              case 'enterprise':
-                $('#company-form').css('display', 'flex');
+                $('#company-form').removeClass('hide');
                 $('#company').prop('required', true);
 
                 break;
@@ -997,8 +997,8 @@ if __name__ == "__main__":
         e.preventDefault(); // avoid to execute the actual submit of the form.
 
         // Hide the feedback form and show the success message
-        $('#feedback-content').css('display', 'none');
-        $('#feedback-result').css('display', 'block');
+        $('#feedback-content').addClass('hide');
+        $('#feedback-result').removeClass('hide');
     });
 
 </script>
