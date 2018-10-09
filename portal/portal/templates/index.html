@@ -669,7 +669,7 @@ if __name__ == "__main__":
                                     <span class="required-label">*</span>手机号码:
                                 </label>
                                 <div class="col-lg-9 form-group">
-                                    <input type="tel" class="form-control" id="phone" required>
+                                    <input type="number" class="form-control" id="phone" required>
                                 </div>
                             </div>
                             <div class="row">
@@ -949,8 +949,14 @@ if __name__ == "__main__":
 
     // Reset the feedback form
     $('#feedbackModal').on('show.bs.modal', function (e) {
-        $("#company-form").css('display', 'none')
-        $("#company").prop('required', false);
+
+        if ($("input[name='type']:checked").val() == "individual"){
+            $("#company-form").css('display', 'none')
+            $("#company").prop('required', false);
+        } else {
+            $("#company-form").css('display', 'flex')
+            $("#company").prop('required', true);
+        }
 
         $('#feedback-content').css('display', 'block');
         $('#feedback-result').css('display', 'none');
