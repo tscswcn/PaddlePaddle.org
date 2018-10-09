@@ -648,7 +648,7 @@ if __name__ == "__main__":
                                     <label class="form-check-label" for="enterprise">企业</label>
                                 </div>
                             </div>
-                            <div class="row" id="company-form">
+                            <div class="row" id="company-input">
                                 <label class="col-lg-3 col-form-label">
                                     <span class="required-label">*</span>企业名称:
                                 </label>
@@ -951,10 +951,10 @@ if __name__ == "__main__":
     $('#feedbackModal').on('show.bs.modal', function (e) {
 
         if ($('input[name="type"]:checked').val() === 'individual'){
-            $('#company-form').addClass('hide');
+            $('#company-input').addClass('hide');
             $('#company').prop('required', false);
         } else {
-            $('#company-form').removeClass('hide');
+            $('#company-input').removeClass('hide');
             $('#company').prop('required', true);
         }
 
@@ -966,12 +966,12 @@ if __name__ == "__main__":
     $('input[type=radio][name=type]').on('change', function() {
          switch($(this).val()) {
              case 'individual':
-                $('#company-form').addClass('hide');
+                $('#company-input').addClass('hide');
                 $('#company').prop('required', false);
 
                 break;
              case 'enterprise':
-                $('#company-form').removeClass('hide');
+                $('#company-input').removeClass('hide');
                 $('#company').prop('required', true);
 
                 break;
