@@ -58,6 +58,7 @@ def transform(source_dir, destination_dir, content_id, version, lang=None):
     except Exception as e:
         print 'Unable to process documentation: %s' % e
         traceback.print_exc(source_dir)
+        raise 
 
 
 ########### Individual content convertors ################
