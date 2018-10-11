@@ -29,6 +29,13 @@
                 <li>
                     <a class="nav-link" href="/about_{% if LANGUAGE_CODE != 'zh' %}en{% else %}cn{% endif %}.html">{% trans "About" %}</a>
                 </li>
+
+                <!-- Contact us for Chinese version only -->
+                {% if LANGUAGE_CODE == 'zh' %}
+                <li>
+                    <a class="nav-link" data-toggle="modal" data-target="#feedbackModal">联系我们</a>
+                </li>
+                {% endif %}
             </ul>
             <ul class="navbar-nav">
                 <li>
