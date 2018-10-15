@@ -44,31 +44,78 @@ $description-color: #999999
     text-align: center
 
   .quick-links
-    background: red
+    background: #f7f7f7
+
+    a
+      text-align: center
+      color: $title-color
 
   .illustration
-    background: orange
+    background: #f7f7f7
 
     p
       text-align: center
 
+    img
+      width: 100%
+
 
   .core-framework
-    background: yellow
+    background: #f7f7f7
 
     .framework-desc
       background: gray
+      padding: 40px
+      height: 100%
+
+      &:hover
+        background-color: blue
+
+      h3, h4, p
+        text-align: left
+        margin: 0px
+
+      button
+        bottom: 10px
+        position: absolute
+
+
 
   .toolsets
-    background: green
-    color: white
+    background: #f7f7f7
+    color: #333
 
     .tool-desc
-      background: gray
 
   .applications
-    background: blue
-    color: white
+    background: #f7f7f7
+    color: #333
+
+    .app-table
+      border: 1px solid #498ffa
+
+    .row
+      height: 33.3333%!important
+
+    .application-type
+      color: black
+      background: white
+      width: 100%
+      border-bottom: 1px solid #498ffa
+      border-right: 1px solid #498ffa
+
+      &.last
+        border-bottom: 0px
+
+      &.selected
+        background: $accent-color
+
+        p
+          color: white
+
+      p
+        text-align: left
+        font-size: 18px
 
   .services
     background: #f7f7f7

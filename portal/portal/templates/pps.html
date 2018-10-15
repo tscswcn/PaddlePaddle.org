@@ -5,7 +5,8 @@
 {% block post_content %}
 {% load app_tags %}
 
-<link href="/static/stylesheets/pps.css?{% server_start_time %}" media="screen, projection" rel="stylesheet" type="text/css" />
+<link href="/static/stylesheets/pps.css?{% server_start_time %}" media="screen, projection" rel="stylesheet"
+      type="text/css"/>
 
 {% endblock %}
 
@@ -17,9 +18,9 @@
     <!-- PPS heros banner -->
     <section class="installation-guide">
         <div class="container">
-            <h1>Title</h1>
-            <h2>Sub Title</h2>
-            <button>Contact US </button>
+            <h1>PaddlePaddle PPS</h1>
+            <h2>PPS是面向工业应用的国际领先的深度学习</h2>
+            <button>Contact US</button>
         </div>
     </section>
 
@@ -27,29 +28,31 @@
     <section class="quick-links">
         <div class="container">
             <div class="row">
-                <div class="col-lg-2">架构流程</div>
-                <div class="col-lg-2">link 2</div>
-                <div class="col-lg-2">link 3</div>
-                <div class="col-lg-2">link 4</div>
-                <div class="col-lg-2">link 5</div>
+                <span class="col-1"></span>
+                <a class="col-2" href="#illustration">架构流程</a>
+                <a class="col-2" href="#core-framework">核心框架</a>
+                <a class="col-2" href="#toolsets">辅助工具</a>
+                <a class="col-2" href="#applications-sec">通用技术方案</a>
+                <a class="col-2" href="#services">服务平台</a>
+                <span class="col-1"></span>
             </div>
         </div>
     </section>
 
     <!-- Structure illustration section -->
 
-    <section class="illustration">
+    <section class="illustration" id="illustration">
         <div class="container">
-            <h2>Structure illustration</h2>
-            <p>Nullam eget metus magna. Etiam egestas est vel est cursus elementum. Cras eget dapibus ex. Proin
-                consectetur eu est nec vestibulum. Ut tempus tortor vitae turpis ultricies laoreet. Donec id ante ut
-                ligula dignissim ultricies. </p>
-            <img href=""/>
+            <h2>架构流程</h2>
+            <p>核心框架为最底层基础，工具是基于核心框架，通用解决方案是基于框架和工具并把特并技术场景所需的多种能力的打包，服务平台是应用层，基于框架各种技术进行的产品化。
+
+            </p>
+            <img src="/static/images/structure.png"/>
         </div>
     </section>
 
     <!-- Core frameworks -->
-    <section class="core-framework">
+    <section class="core-framework" id="core-framework">
         <div class="container">
             <h2>核心框架</h2>
             <p>PPS提供完善的基础框架服务，能够让企业开发者高效完成训练、预测以及不同平台的部署</p>
@@ -58,6 +61,7 @@
             <div class="row">
                 <div class="col-lg-4">
                     <div class="framework-desc">
+                        <h4>PaddlePaddle</h4>
                         <h3>PaddlePaddle 训练框架</h3>
                         <p>PaddlePaddle Fluid提高了框架对各类机器学习任务的描述能力，能够描述潜在可能出现的任意深度学习模型</p>
 
@@ -67,6 +71,7 @@
 
                 <div class="col-lg-4">
                     <div class="framework-desc">
+                        <h4>PaddlePaddle</h4>
                         <h3>PaddlePaddle Serving</h3>
                         <p>PaddlePaddle Serving可灵活适配多种预测引擎，具有引擎原生、快速可用的特点，并能兼容业内主流预测引擎TensorRT</p>
 
@@ -76,6 +81,7 @@
 
                 <div class="col-lg-4">
                     <div class="framework-desc">
+                        <h4>PaddlePaddle</h4>
                         <h3>PaddlePaddle Mobile</h3>
                         <p>Paddle Paddle Mobile 1.0 支持在多种移动平台上的深度学习开发、对移动端GPU实现全覆盖</p>
 
@@ -87,7 +93,7 @@
     </section>
 
     <!-- Toolsets -->
-    <section class="toolsets">
+    <section class="toolsets" id="toolsets">
         <div class="container">
             <h2>辅助工具集</h2>
             <p>PPS提供了强大的深度学习辅助工具，帮助您大幅提高深度学习任务效率</p>
@@ -122,24 +128,30 @@
     </section>
 
     <!-- General technical solutions -->
-    <section class="applications">
+    <section class="applications" id="applications-sec">
         <div class="container">
             <h2>通用技术方案</h2>
             <p>PPS在推荐、视觉和文本处理三大领域提供了智能技术方案</p>
 
-            <div class="row">
+            <div class="row app-table">
                 <div class="col-lg-3">
-                    <div class="row" id="rec">
-                        <h2>PaddleRec</h2>
-                        <p>智能推荐技术方案</p>
+                    <div class="row">
+                        <div class="application-type selected" id="rec">
+                            <p>PaddleRec</p>
+                            <p>智能推荐技术方案</p>
+                        </div>
                     </div>
-                    <div class="row" id="cv">
-                        <h2>PaddleCV</h2>
-                        <p>智能视觉技术方案</p>
+                    <div class="row">
+                        <div class="application-type" id="cv">
+                            <p>PaddleCV</p>
+                            <p>智能视觉技术方案</p>
+                        </div>
                     </div>
-                    <div class="row" id="nlp">
-                        <h2>Paddle NLP</h2>
-                        <p>智能文本处理技术方案</p>
+                    <div class="row">
+                        <div class="application-type last" id="nlp">
+                            <p>Paddle NLP</p>
+                            <p>智能文本处理技术方案</p>
+                        </div>
                     </div>
                 </div>
                 <div class="col-lg-9" id="rec-des">
@@ -168,7 +180,7 @@
     </section>
 
     <!-- Service platforms -->
-    <section class="services">
+    <section class="services" id="services">
         <div class="container">
             <h2>服务平台</h2>
             <p>PPS搭建了功能强大的服务平台，提供深度学习一站式服务</p>
@@ -205,21 +217,34 @@
 
 <script>
     $('#rec').hover(function () {
+        $('#rec').addClass('selected')
+        $('#cv').removeClass('selected')
+        $('#nlp').removeClass('selected')
+
         $('#rec-des').removeClass('hide')
         $('#cv-des').addClass('hide')
         $('#nlp-des').addClass('hide')
     });
 
     $('#cv').hover(function () {
+        $('#rec').removeClass('selected')
+        $('#cv').addClass('selected')
+        $('#nlp').removeClass('selected')
+
         $('#rec-des').addClass('hide')
         $('#cv-des').removeClass('hide')
         $('#nlp-des').addClass('hide')
     });
 
     $('#nlp').hover(function () {
+        $('#rec').removeClass('selected')
+        $('#cv').removeClass('selected')
+        $('#nlp').addClass('selected')
+
         $('#rec-des').addClass('hide')
         $('#cv-des').addClass('hide')
         $('#nlp-des').removeClass('hide')
     });
+
 </script>
 {% endblock %}
