@@ -1,5 +1,13 @@
 @import "_variables.sass"
 
+
+$section-title-size: 32px
+$section-description-size: 14px
+
+
+$title-color: #333333
+$description-color: #999999
+
 .pps-home
   font-family: $primary-font-family
 
@@ -7,15 +15,15 @@
     font-size: $font-xxlarge
 
   h2
-    font-size: $font-xlarge
+    font-size: $section-title-size
+    margin: 30px
 
   h3
-    font-size: $font-medium
+    font-size: 20
 
 
   h2, h3
     text-align: center
-
 
   hr
     display: block
@@ -24,12 +32,16 @@
     .hide
       display: none
 
-  p
-    font-size: $font-small
-    font-weight: 100
-    color: #666
-    margin: 0px
+  .container
+    padding-top: 30px
+    padding-bottom: 30px
 
+  p
+    font-size: $section-description-size
+    font-weight: 100
+    color: $description-color
+    margin: 10px
+    text-align: center
 
   .quick-links
     background: red
@@ -59,8 +71,20 @@
     color: white
 
   .services
-    background: purple
-    color: white
+    background: #f7f7f7
+    color: $title-color
+    padding-top: 90px
+    padding-bottom: 60px
 
     .service-desc
-      background: gray
+      margin-top: 60px
+
+      h3
+        font-size: 20px
+        text-align: left
+        margin-bottom: 14px
+        color: $title-color
+
+      p
+        text-align: left
+        margin: 0px
