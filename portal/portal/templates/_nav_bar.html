@@ -31,27 +31,36 @@
                 </li>
 
                 <li class="dropdown">
-                    <a class="nav-link" data-toggle="dropdown" class="dropdown-toggle">企业应用1</a>
-                    <ul class="dropdown-menu">
+                    <a class="nav-link" data-toggle="dropdown" class="dropdown-toggle">企业应用</a>
+                    <ul class="dropdown-menu sub-menu">
                         <li>
-                            <a href="#">One</a>
-                            <p>test</p>
+                            <a href="#">
+                                <p class="title">PaddlePaddle Solution</p>
+                                <p class="sub-title">面向工业应用的深度学习全功能套件</p>
+                            </a>
                         </li>
-                        <li><a href="#">Two</a><p>test</p></li>
-                        <li><a href="#">Three</a></a><p>test</p></li>
+                        <li>
+                            <a href="#">
+                                <p class="title">Easy DL</p>
+                                <p class="sub-title">零算法基础训练业务定制模型</p>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#">
+                                <p class="title">应用案例</p>
+                                <p class="sub-title">通过PaddlePaddle实现的工业案例</p>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#">
+                                <p class="title">企业扶持（待定）</p>
+                                <p class="sub-title">面向工业应用的深度学习全功能套件</p>
+                            </a>
+                        </li>
                     </ul>
                 </li>
             </ul>
             <ul class="navbar-nav">
-                <li class="expandable-menu" id="applications">
-                    <a class="nav-link">企业应用2</a>
-                    <ul class="sub-menu">
-                        <li><a href="#">One</a></li>
-                        <li><a href="#">Two</a></li>
-                        <li><a href="#">Three</a></a></li>
-                    </ul>
-                </li>
-
                 <!-- Contact us for Chinese version only -->
                 {% if LANGUAGE_CODE == 'zh' %}
                 <li>
@@ -80,15 +89,3 @@
         </div>
     </div>
 </nav>
-
-{% block scripts %}
-<script>
-    $('#applications').hover(function () {
-        var submenu = $('.sub-menu');
-        submenu.addClass('show');
-    },function () {
-        var submenu = $('.sub-menu');
-        submenu.removeClass('show');
-    });
-</script>
-{% endblock %}
