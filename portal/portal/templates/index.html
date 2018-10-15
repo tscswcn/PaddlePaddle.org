@@ -165,13 +165,13 @@
                             </button>
                         </div>
                         <div class="col-4">
-                            <button id="-gpu==0.15.0.post87" class="install-option cuda">
+                            <button id="-gpu==1.0.1.post87" class="install-option cuda">
                                 <div class="cuda-title">CUDA 8</div>
                                 <div class="cuda-caption">cuDNN 7.0</div>
                             </button>
                         </div>
                         <div class="col-4">
-                            <button id="-gpu==0.15.0.post85" class="install-option cuda">
+                            <button id="-gpu==1.0.1.post85" class="install-option cuda">
                                 <div class="cuda-title">CUDA 8</div>
                                 <div class="cuda-caption">cuDNN 5.0</div>
                             </button>
@@ -194,7 +194,7 @@
                 </div>
                 <!-- Link to docker installation -->
                 <div class="col-lg-6">
-                    <a class="other-install" href="/documentation/docs/{% if LANGUAGE_CODE == 'zh' %}zh/0.15.0/new_docs/beginners_guide/install/install_doc.html#permalink-3--windows-paddlepaddle{% else %}en/0.15.0/build_and_install/index_en.html{% endif %}">
+                    <a class="other-install" href="/documentation/docs/{% if LANGUAGE_CODE == 'zh' %}zh/1.0/beginners_guide/install/install_Windows.html{% else %}en/1.0/build_and_install/index_en.html{% endif %}">
                         {% blocktrans %}Install on Windows, MacOS, or other options{% endblocktrans %}</a>
                 </div>
             </div>
@@ -613,116 +613,12 @@ if __name__ == "__main__":
             <a class="alt_txt">关注我们</a>
         </div>
         <div class="qr_code">
-            <p>关注paddle paddle公众号</p>
+            <p>关注PaddlePaddle公众号</p>
             <p>获取深度学习信息</p>
             <img src="/static/images/paddlepaddle_qr_code.jpg">
         </div>
     </section>
 
-    <div class="modal" id="feedbackModal" tabindex="-2" role="dialog" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-form" role="document">
-            <div class="modal-content">
-                <div id="feedback-content">
-                    <div class="modal-header">
-                        <h3 class="modal-title">联系我们</h3>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-
-                        <p>留下您的联系方式，我们将与您联系</p>
-
-                        <form id="feedback_form">
-                            <div class="row">
-                                <label class="col-lg-3 col-form-label">
-                                    <span class="required-label">*</span>身份类型:
-                                </label>
-                                <div class="radio col-lg-3">
-                                    <input class="form-check-input" type="radio" name="type" id="individual"
-                                           value="individual" checked>
-                                    <label class="form-check-label" for="individual">个人</label></div>
-                                <div class="radio col-lg-3">
-                                    <input class="form-check-input" type="radio" name="type" id="enterprise"
-                                           value="enterprise">
-                                    <label class="form-check-label" for="enterprise">企业</label>
-                                </div>
-                            </div>
-                            <div class="row" id="company-form">
-                                <label class="col-lg-3 col-form-label">
-                                    <span class="required-label">*</span>企业名称:
-                                </label>
-                                <div class="col-lg-9 form-group">
-                                    <input type="text" class="form-control" id="company" required>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <label class="col-lg-3 col-form-label">
-                                    <span class="required-label">*</span>联系人:
-                                </label>
-                                <div class="col-lg-9 form-group">
-                                    <input type="text" class="form-control" id="name" required>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <label class="col-lg-3 col-form-label">
-                                    <span class="required-label">*</span>手机号码:
-                                </label>
-                                <div class="col-lg-9 form-group">
-                                    <input type="tel" class="form-control" id="phone" required>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <label class="col-lg-3 col-form-label">
-                                    <span class="required-label">*</span>电子邮件:
-                                </label>
-                                <div class="col-lg-9 form-group">
-                                    <input type="email" class="form-control" id="email" required>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <label class="col-lg-3 col-form-label">
-                                    <span class="required-label">*</span>咨询内容:
-                                </label>
-                                <div class="col-lg-9 form-group">
-                                    <textarea class="form-control" rows="5" id="comment"
-                                              placeholder="请在此简单描述您的问题" required></textarea>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <span class="col-lg-3"></span>
-                                <div class="col-lg-9"><button id="submit" class="btn selected" type="submit">提交</button><button id="cancel" class="btn cancel-btn" data-dismiss="modal">取消</button></div>
-                            </div>
-                        </form>
-                        <div class="row">
-                            <p class="col-lg-12">您也可以通过邮箱联系我们:
-                                <a href="mailto:paddle-better@baidu.com" target="_top">paddle-better@baidu.com</a>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                <div id="feedback-result">
-                    <div class="modal-body">
-                        <h2 class="modal-title"></h2>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                        <div class="submit-success"><i class="fas fa-check"></i></div>
-                        <h4 class="">Success</h4>
-                        <br/><br/><br/><br/><br/>
-
-                        <div class="row">
-                            <p class="col">温馨提醒</p>
-                        </div>
-                        <p>1. 如产品使用中遇到问题，欢迎你前往<a href="https://ai.baidu.com/forum/topic/list/168" target="_"> 社区 </a>交流
-                        </p>
-                        <p>2. 你可以点击<a href="http://ai.baidu.com/paddlepaddle/caselist" target="_">这里</a>，获取更多
-                            PaddlePaddle 工业应用案例</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
     {% endif %}
     <!-- End of Feedback section -->
 
@@ -932,67 +828,6 @@ if __name__ == "__main__":
     },function () {
         var steps = $('.qr_code');
         steps.removeClass('show');
-    });
-
-    // This form submits a contact form to the internal contact requests store.
-    var submitContactForm = function(isPersonal, organization, name, phone, email, reason){
-        // Send to server-side.
-        return $.post('/contact', {
-            isPersonal: isPersonal,
-            organization: organization,
-            name: name,
-            phone: phone,
-            email: email,
-            reason: reason
-        });
-    };
-
-    // Reset the feedback form
-    $('#feedbackModal').on('show.bs.modal', function (e) {
-        $("#company-form").css('display', 'none')
-        $("#company").prop('required', false);
-
-        $('#feedback-content').css('display', 'block');
-        $('#feedback-result').css('display', 'none');
-    })
-
-    // Hide the 'company' field for individual
-    $('input[type=radio][name=type]').on('change', function() {
-         switch($(this).val()) {
-             case 'individual':
-                $("#company-form").css('display', 'none')
-                $("#company").prop('required', false);
-
-                break;
-             case 'enterprise':
-                $("#company-form").css('display', 'flex')
-                $("#company").prop('required', true);
-
-                break;
-         }
-    });
-
-    $("#feedback_form").submit(function(e) {
-        var form = $(this);
-
-        var isPersonal = form.find('#individual').is(':checked')
-        var company = form.find('#company').val()
-        if (isPersonal) {
-            company = '-'
-        }
-        var name = form.find('#name').val()
-        var phone = form.find('#phone').val()
-        var email = form.find('#email').val()
-        var comment = form.find('#comment').val()
-
-        // Submit the result to the airtable
-        var result = submitContactForm(isPersonal, company, name, phone, email, comment);
-
-        e.preventDefault(); // avoid to execute the actual submit of the form.
-
-        // Hide the feedback form and show the success message
-        $('#feedback-content').css('display', 'none');
-        $('#feedback-result').css('display', 'block');
     });
 
 </script>
