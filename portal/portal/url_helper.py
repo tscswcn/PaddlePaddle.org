@@ -57,10 +57,14 @@ def get_page_url_prefix(content_id, lang, version):
 def get_parts_from_url_path(url_path):
     url_path_pieces = url_path.strip('/').split('/')
 
-    if len(url_path_pieces) > 4:
-        return url_path_pieces[1], url_path_pieces[2], url_path_pieces[3]
+    if url_path_pieces[0] == 'documentation':
+        if len(url_path_pieces) > 4:
+            return url_path_pieces[1], url_path_pieces[2], url_path_pieces[3]
 
-    return url_path_pieces[0], None, None
+        elif len(url_path_pieces) > 1:
+            return url_path_pieces[1], None, None
+
+    return None, None, None
 
 
 def get_full_content_path(content_id, lang, version):
