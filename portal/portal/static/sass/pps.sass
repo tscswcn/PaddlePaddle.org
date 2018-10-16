@@ -98,15 +98,18 @@ $description-color: #999999
         .app-table
             border: 1px solid #498ffa
 
-        .row
-            height: 33.3333%!important
+        .type-row
+            color: white
 
         .application-type
             color: black
             background: white
             width: 100%
+            height: 126px
             border-bottom: 1px solid #498ffa
             border-right: 1px solid #498ffa
+            display:block
+            padding-top: 1em
 
             &.last
                 border-bottom: 0px
@@ -123,24 +126,21 @@ $description-color: #999999
 
         .application-body
             display: none
+            padding: 3em 3em 2em 3em
 
             &.selected
                 display: unset
 
+            p
+                color: #666
+                margin-bottom: 2em
+
     .services
         color: $title-color
-        padding-top: 90px
         padding-bottom: 60px
 
         .service-desc
-            margin-top: 60px
-
-            h3
-                font-size: 20px
-                text-align: left
-                margin-bottom: 14px
+            h4
                 color: $title-color
-
             p
-                text-align: left
-                margin: 0px
+                color: #999

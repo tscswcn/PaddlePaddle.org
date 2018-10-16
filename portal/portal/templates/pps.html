@@ -72,7 +72,7 @@
                 <div class="col-lg-4 framework-col">
                     <div class="framework-desc">
                         <h4>PaddlePaddle</h4>
-                        <h2>PaddlePaddle 训练框架</h2>
+                        <h2>训练框架</h2>
                         <p>PaddlePaddle Fluid提高了框架对各类机器学习任务的描述能力，能够描述潜在可能出现的任意深度学习模型</p>
 
                         <button>Learn More</button>
@@ -82,7 +82,7 @@
                 <div class="col-lg-4 framework-col">
                     <div class="framework-desc">
                         <h4>PaddlePaddle</h4>
-                        <h2>PaddlePaddle Serving</h2>
+                        <h2>Serving</h2>
                         <p>PaddlePaddle Serving可灵活适配多种预测引擎，具有引擎原生、快速可用的特点，并能兼容业内主流预测引擎TensorRT</p>
 
                         <button>Learn More</button>
@@ -92,7 +92,7 @@
                 <div class="col-lg-4 framework-col">
                     <div class="framework-desc">
                         <h4>PaddlePaddle</h4>
-                        <h2>PaddlePaddle Mobile</h2>
+                        <h2>Mobile</h2>
                         <p>Paddle Paddle Mobile 1.0 支持在多种移动平台上的深度学习开发、对移动端GPU实现全覆盖</p>
 
                         <button>Learn More</button>
@@ -147,45 +147,135 @@
 
             <div class="row app-table">
                 <div class="col-lg-3">
-                    <div class="row">
-                        <div class="application-type selected" id="rec">
-                            <p>PaddleRec</p>
-                            <p>智能推荐技术方案</p>
+                    <div class="row type-row">
+                        <div class="application-type selected px-5 d-flex align-items-center" id="rec">
+                            <div>
+                                <p>PaddleRec</p>
+                                <p>智能推荐技术方案</p>
+                            </div>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="application-type" id="cv">
-                            <p>PaddleCV</p>
-                            <p>智能视觉技术方案</p>
+                    <div class="row type-row">
+                        <div class="application-type d-flex align-items-center px-5" id="cv">
+                            <div>
+                                <p>PaddleCV</p>
+                                <p>智能视觉技术方案</p>
+                            </div>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="application-type last" id="nlp">
-                            <p>Paddle NLP</p>
-                            <p>智能文本处理技术方案</p>
+                    <div class="row type-row">
+                        <div class="application-type last px-5 d-flex align-items-center" id="nlp">
+                            <div>
+                                <p>Paddle NLP</p>
+                                <p>智能文本处理技术方案</p>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="col-lg-9 application-body selected" id="rec-des">
-                    <h2>title one</h2>
-                    <h2>title two</h2>
-                    <h2>title two</h2>
-                    <h2>title two</h2>
-                    <h2>title two</h2>
+                    <div class="row">
+                            <p>适用场景</p>
+                        <div class="col-lg-10">
+                            <p>新闻库构建：新闻资源自动标注
+新闻召回：基于标签的显示召回，基于深度学习模型的隐式召回
+个性化新闻排序：基于深度学习的点击率预估</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                            <p>方案构成</p>
+                        <div class="col-lg-10">
+                            <p>丰富的模型
+支持可复现效果的公开数据集：RecSys Challenge 2015/CIKM Cup 2016
+高效稳定的分布式训练框架：小时级数据流大规模分布式数据并行训练，支撑千亿特征的大规模稀疏参数服务器训练方案</p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                            <p>经典模型</p>
+                        <div class="col-lg-10">
+                            <p>DeepCTR，GRU4Rec，Multi-view Simnet，序列语义召回，文本标签模型</p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                            <p>应用案例</p>
+                        <div class="col-lg-10">
+                            <p>百度Feed流新闻资源召回、排序</p>
+                        </div>
+                    </div>
                 </div>
                 <div class="col-lg-9 application-body" id="cv-des">
-                    <h2>title 3</h2>
-                    <h2>title 3</h2>
-                    <h2>title 3</h2>
-                    <h2>title 3</h2>
-                    <h2>title 3</h2>
+                    <div class="row">
+                            <p>适用场景</p>
+                        <div class="col-lg-10">
+                            <p>图像识别和检索
+医学领域图像识别
+交通场景识别
+车道定位
+光学文字识别
+图像风格迁移
+智能视频分析等领域</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                            <p>方案构成</p>
+                        <div class="col-lg-10">
+                            <p>包含一系列图像分类、物体检测、
+图像语义分割、OCR识别、度量学习、
+图像生成、视频分类模型
+高效的服务器和端上预测引擎</p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                            <p>经典模型</p>
+                        <div class="col-lg-10">
+                            <p>ResNet, SE-ResNet, MobileNet-SSD, Faster-RCNN, PyramidBox, DeepLab v3+, ICNet,OCR CTC/Attention,
+Vedio Classification: TSN, Metric Learning</p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                            <p>应用案例</p>
+                        <div class="col-lg-10">
+                            <p>百度地图导航
+百度OCR特征垂类识别
+手机百度Feed视频分析
+糯米菜品识别等</p>
+                        </div>
+                    </div>
                 </div>
                 <div class="col-lg-9 application-body" id="nlp-des">
-                    <h2>title 7</h2>
-                    <h2>title 7</h2>
-                    <h2>title 7</h2>
-                    <h2>title 7</h2>
-                    <h2>title 7</h2>
+                    <div class="row">
+                        <p>适用场景</p>
+                        <div class="col-lg-10">
+                            <p>舆情分析、广告搜索、机器翻译、智能对话、内容摘要等</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                            <p>方案构成</p>
+                        <div class="col-lg-10">
+                            <p>开放一系列领先的语义匹配模型和数据集
+开放当前机器翻译领域内效果最好的模型Transformer
+开放阅读理解经典BiDAF模型和最大的中文开放数据集DuReader</p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                            <p>经典模型</p>
+                        <div class="col-lg-10">
+                            <p>词法分析、情感分析、语义匹配、机器翻译、阅读理解、文本摘要</p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                            <p>应用案例</p>
+                        <div class="col-lg-10">
+                            <p>百度搜索语义匹配任务
+百度搜索结果中的精确答案匹配
+百度机器翻译</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -200,22 +290,22 @@
             <div class="row">
                 <a class="col-lg-4" href="http://ai.baidu.com/easydl/" target="_blank">
                     <div class="service-desc">
-                        <h3>EasyDL</h3>
-                        <p>支持零算法基础训练业务定制模型，操作可视化，无需懂深度学习，即便是零AI基础也可以在10分钟内训练出深度学习模型</p>
+                        <h4>EasyDL</h4>
+                        <p class="my-3">支持零算法基础训练业务定制模型，操作可视化，无需懂深度学习，即便是零AI基础也可以在10分钟内训练出深度学习模型</p>
                     </div>
                 </a>
 
                 <a class="col-lg-4" href="http://aistudio.baidu.com/#/projectoverview" target="_blank">
                     <div class="service-desc">
-                        <h3>AIStudio</h3>
-                        <p>集成“数据、算法、算力”的PaddlePaddle实训平台，具有云端集成、简单易用、运行高效和资源免费的特点</p>
+                        <h4>AIStudio</h4>
+                        <p class="my-3">集成“数据、算法、算力”的PaddlePaddle实训平台，具有云端集成、简单易用、运行高效和资源免费的特点</p>
                     </div>
                 </a>
 
                 <a class="col-lg-4" href="https://cloud.baidu.com/product/infinite.html" target="_blank">
                     <div class="service-desc">
-                        <h3>Infinite</h3>
-                        <p>世界先进的分布式并行计算深度学习平台，为您提供强大的、先进的弹性计算资源</p>
+                        <h4>Infinite</h4>
+                        <p class="my-3">世界先进的分布式并行计算深度学习平台，为您提供强大的、先进的弹性计算资源</p>
                     </div>
                 </a>
             </div>
