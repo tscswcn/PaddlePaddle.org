@@ -1,77 +1,51 @@
-@import "_variables.sass"
-
-
-$section-title-size: 32px
-$section-description-size: 14px
-
+@import "common-home.sass"
 
 $title-color: #333333
 $description-color: #999999
 
 .pps-home
     font-family: $primary-font-family
-
-    h1
-        font-size: $font-xxxlarge
-
-    h2
-        font-size: $section-title-size
-        margin: 30px
-
-    h3
-        font-size: 20
-
-
-    h2, h3
-        text-align: center
-
-    hr
-        display: block
-
-    .row
-        .hide
-            display: none
+    background: #f7f7f7
 
     .container
         padding-top: 30px
         padding-bottom: 30px
 
-    p
-        font-size: $section-description-size
-        font-weight: 100
+    .section-title
+        text-align: center
+        margin: 30px
+
+    .section-caption
         color: $description-color
-        margin: 10px
+        margin-bottom: 60px
         text-align: center
 
     .hero-banner
         background: blue
+        color: white
 
-        h1
-            color: white
-            margin-top: 112px
+        .hero-container
+            padding: 112px 0 112px 0
 
         .sub-title
             font-size: $font-medium
             text-align: left
             color: white
-            margin: 30px 0 30px 0
+            margin-left: 0
 
         .btn
             color: white
             background: $accent-color
-            margin-bottom: 112px
 
 
     .quick-links
-        background: #f7f7f7
-
-        a
+        .link-body
             text-align: center
-            color: $title-color
+
+            .scrolllink
+                color: $title-color
 
     .illustration
-        background: #f7f7f7
-
         p
             text-align: center
 
@@ -80,32 +54,45 @@ $description-color: #999999
 
 
     .core-framework
-        background: #f7f7f7
+        .framework-col
+            padding-left: 0px
+            padding-right: 0px
 
         .framework-desc
+            position: relative
             background: gray
-            padding: 40px
+            padding: 40px 40px 80px 40px
             height: 100%
 
             &:hover
                 background-color: blue
 
-            h3, h4, p
+            h2, h4, p
                 text-align: left
-                margin: 0px
+                color: white
+
+            h4
+                margin-bottom: 16px
+
+            h2
+                margin-bottom: 52px
+
+            p
+                margin-bottom: 30px
+
 
             button
-                bottom: 10px
+                bottom: 40px
                 position: absolute
 
 
-
     .toolsets
-        background: #f7f7f7
         color: #333
 
+        p
+            color: #999
+
     .applications
-        background: #f7f7f7
         color: #333
 
         .app-table
@@ -134,8 +121,13 @@ $description-color: #999999
                 text-align: left
                 font-size: 18px
 
+        .application-body
+            display: none
+
+            &.selected
+                display: unset
+
     .services
-        background: #f7f7f7
         color: $title-color
         padding-top: 90px
         padding-bottom: 60px
