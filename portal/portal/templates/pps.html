@@ -30,23 +30,25 @@
             <div class="row">
                 <span class="col-1"></span>
                 <div class="col-2 link-body">
-                    <a class="scrolllink" href="#illustration"><h4>架构流程</h4></a>
+                    <a class="scroll-link selected" href="#illustration"><h4>架构流程</h4></a>
                 </div>
                 <div class="col-2 link-body">
-                    <a class="scrolllink" href="#core-framework"><h4>核心框架</h4></a>
+                    <a class="scroll-link" href="#core-framework"><h4>核心框架</h4></a>
                 </div>
                 <div class="col-2 link-body">
-                    <a class="scrolllink" href="#toolsets"><h4>辅助工具</h4></a>
+                    <a class="scroll-link" href="#toolsets"><h4>辅助工具</h4></a>
+                </div>
+                <div class="col-2 link-body four">
+                    <a class="scroll-link" href="#applications-sec"><h4>通用技术方案</h4></a>
                 </div>
                 <div class="col-2 link-body">
-                    <a class="scrolllink" href="#applications-sec"><h4>通用技术方案</h4></a>
-                </div>
-                <div class="col-2 link-body">
-                    <a class="scrolllink" href="#services"><h4>服务平台</h4></a>
+                    <a class="scroll-link" href="#services"><h4>服务平台</h4></a>
                 </div>
                 <span class="col-1"></span>
             </div>
         </div>
+        <hr id="indicator"/>
+
     </section>
 
     <!-- Structure illustration section -->
@@ -332,11 +334,34 @@ Vedio Classification: TSN, Metric Learning</p>
         $('#' + id + '-des').addClass('selected');
     });
 
+    // Update the location of the quick link indicator
+    function updateIndicator() {
+        var selectedItem = $('.scroll-link.selected');
+
+        $('#indicator').css('margin-left', selectedItem.offset().left);
+        $('#indicator').css('width', selectedItem.parent('.link-body').width());
+        $('#indicator').css('transition', '.3s ease-in-out');
+        $('#indicator').css('display', 'block');
+    }
+
     // Scroll to the section
-    $( "a.scrolllink" ).click(function( event ) {
+    var quickLinks = $('.scroll-link');
+    $( "a.scroll-link" ).click(function( event ) {
         event.preventDefault();
         $("html, body").animate({ scrollTop: $($(this).attr("href")).offset().top }, 500);
+
+        quickLinks.removeClass('selected');
+
+        $(this).addClass('selected');
+        updateIndicator();
     });
+
+    $( window ).resize(function() {
+        updateIndicator();
+    });
+
+    // Bring the indicator to the right place
+    updateIndicator();
 
 </script>
 {% endblock %}
