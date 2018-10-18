@@ -16,9 +16,9 @@
 
 <div class="pps-home">
     <!-- PPS heros banner -->
-    <section class="hero-banner">
-        <div class="container hero-container">
-            <h1>PaddlePaddle PPS</h1>
+    <section class="hero">
+        <div class="container hero-container py-6">
+            <div class="tag-line">PaddlePaddle PPS</div>
             <p class="sub-title py-4">PPS是面向工业应用的国际领先的深度学习</p>
             <button class="btn" data-toggle="modal" data-target="#feedbackModal">联系我们</button>
         </div>
@@ -30,49 +30,45 @@
             <div class="row">
                 <span class="col-1"></span>
                 <div class="col-2 link-body">
-                    <a class="scroll-link selected" href="#illustration"><h4>架构流程</h4></a>
+                    <a class="scroll-link selected" href="#illustration"><h3>架构流程</h3></a>
                 </div>
                 <div class="col-2 link-body">
-                    <a class="scroll-link" href="#core-framework"><h4>核心框架</h4></a>
+                    <a class="scroll-link" href="#core-framework"><h3>核心框架</h3></a>
                 </div>
                 <div class="col-2 link-body">
-                    <a class="scroll-link" href="#toolsets"><h4>辅助工具</h4></a>
+                    <a class="scroll-link" href="#toolsets"><h3>辅助工具</h3></a>
                 </div>
                 <div class="col-2 link-body four">
-                    <a class="scroll-link" href="#applications-sec"><h4>通用技术方案</h4></a>
+                    <a class="scroll-link" href="#applications"><h3>通用技术方案</h3></a>
                 </div>
                 <div class="col-2 link-body">
-                    <a class="scroll-link" href="#services"><h4>服务平台</h4></a>
+                    <a class="scroll-link" href="#services"><h3>服务平台</h3></a>
                 </div>
                 <span class="col-1"></span>
             </div>
         </div>
-        <hr id="indicator"/>
-
+        <div id="indicator"></div>
     </section>
 
     <!-- Structure illustration section -->
 
-    <section class="illustration" id="illustration">
-        <div class="container">
-            <h2 class="section-title">架构流程</h2>
-            <p class="section-caption">核心框架为最底层基础，工具是基于核心框架，通用解决方案是基于框架和工具并把特并技术场景所需的多种能力的打包，服务平台是应用层，基于框架各种技术进行的产品化。
-
-            </p>
+    <section id="illustration">
+        <div class="container py-5">
+            <h1 class="my-4">架构流程</h1>
+            <div class="caption mb-6">核心框架为最底层基础，工具是基于核心框架，通用解决方案是基于框架和工具并把特并技术场景所需的多种能力的打包，服务平台是应用层，基于框架各种技术进行的产品化。</div>
             <img src="/static/images/structure.png"/>
         </div>
     </section>
 
     <!-- Core frameworks -->
-    <section class="core-framework" id="core-framework">
-        <div class="container">
-            <h2 class="section-title">核心框架</h2>
-            <p class="section-caption">PPS提供完善的基础框架服务，能够让企业开发者高效完成训练、预测以及不同平台的部署</p>
-
+    <section id="core-framework">
+        <div class="container py-5">
+            <h1 class="my-4">核心框架</h1>
+            <div class="caption mb-6">PPS提供完善的基础框架服务，能够让企业开发者高效完成训练、预测以及不同平台的部署</div>
 
             <div class="row">
-                <div class="col-lg-4 framework-col">
-                    <div class="framework-desc">
+                <div class="col-lg-4 px-0">
+                    <div class="core-framework-description">
                         <h4>PaddlePaddle</h4>
                         <h2>训练框架</h2>
                         <p>PaddlePaddle Fluid提高了框架对各类机器学习任务的描述能力，能够描述潜在可能出现的任意深度学习模型</p>
@@ -81,8 +77,8 @@
                     </div>
                 </div>
 
-                <div class="col-lg-4 framework-col">
-                    <div class="framework-desc">
+                <div class="col-lg-4 px-0">
+                    <div class="core-framework-description">
                         <h4>PaddlePaddle</h4>
                         <h2>Serving</h2>
                         <p>PaddlePaddle Serving可灵活适配多种预测引擎，具有引擎原生、快速可用的特点，并能兼容业内主流预测引擎TensorRT</p>
@@ -91,8 +87,8 @@
                     </div>
                 </div>
 
-                <div class="col-lg-4 framework-col">
-                    <div class="framework-desc">
+                <div class="col-lg-4 px-0">
+                    <div class="core-framework-description">
                         <h4>PaddlePaddle</h4>
                         <h2>Mobile</h2>
                         <p>Paddle Paddle Mobile 1.0 支持在多种移动平台上的深度学习开发、对移动端GPU实现全覆盖</p>
@@ -105,10 +101,10 @@
     </section>
 
     <!-- Toolsets -->
-    <section class="toolsets" id="toolsets">
-        <div class="container">
-            <h2 class="section-title">辅助工具集</h2>
-            <p class="section-caption">PPS提供了强大的深度学习辅助工具，帮助您大幅提高深度学习任务效率</p>
+    <section id="toolsets">
+        <div class="container py-5">
+            <h1 class="my-4">辅助工具集</h1>
+            <div class="caption mb-6">PPS提供了强大的深度学习辅助工具，帮助您大幅提高深度学习任务效率</div>
 
             <div class="row">
                 <div class="col-lg-4">
@@ -142,15 +138,15 @@
     </section>
 
     <!-- General technical solutions -->
-    <section class="applications" id="applications-sec">
-        <div class="container">
-            <h2 class="section-title">通用技术方案</h2>
-            <p class="section-caption">PPS在推荐、视觉和文本处理三大领域提供了智能技术方案</p>
+    <section id="applications">
+        <div class="container py-5">
+            <h1 class="my-4">通用技术方案</h1>
+            <div class="caption mb-6">PPS在推荐、视觉和文本处理三大领域提供了智能技术方案</div>
 
             <div class="row app-table">
                 <div class="col-lg-3">
                     <div class="row type-row">
-                        <div class="application-type selected px-5 d-flex align-items-center" id="rec">
+                        <div class="application-type px-5 d-flex align-items-center selected" id="rec">
                             <div>
                                 <p>PaddleRec</p>
                                 <p>智能推荐技术方案</p>
@@ -174,108 +170,115 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-9 application-body selected" id="rec-des">
-                    <div class="row">
-                            <p>适用场景</p>
-                        <div class="col-lg-10">
-                            <p>新闻库构建：新闻资源自动标注
-新闻召回：基于标签的显示召回，基于深度学习模型的隐式召回
-个性化新闻排序：基于深度学习的点击率预估</p>
+                <div class="col-lg-9 application-body" id="rec-description">
+                    <div class="application-body-contents p-4">
+                        <div class="row mb-3">
+                                <p>适用场景</p>
+                            <div class="col-lg-10">
+                                <p>新闻库构建：新闻资源自动标注
+    新闻召回：基于标签的显示召回，基于深度学习模型的隐式召回
+    个性化新闻排序：基于深度学习的点击率预估</p>
+                            </div>
                         </div>
-                    </div>
-                    <div class="row">
-                            <p>方案构成</p>
-                        <div class="col-lg-10">
-                            <p>丰富的模型
-支持可复现效果的公开数据集：RecSys Challenge 2015/CIKM Cup 2016
-高效稳定的分布式训练框架：小时级数据流大规模分布式数据并行训练，支撑千亿特征的大规模稀疏参数服务器训练方案</p>
+                        <div class="row mb-3">
+                                <p>方案构成</p>
+                            <div class="col-lg-10">
+                                <p>丰富的模型
+    支持可复现效果的公开数据集：RecSys Challenge 2015/CIKM Cup 2016
+    高效稳定的分布式训练框架：小时级数据流大规模分布式数据并行训练，支撑千亿特征的大规模稀疏参数服务器训练方案</p>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="row">
-                            <p>经典模型</p>
-                        <div class="col-lg-10">
-                            <p>DeepCTR，GRU4Rec，Multi-view Simnet，序列语义召回，文本标签模型</p>
+                        <div class="row mb-3">
+                                <p>经典模型</p>
+                            <div class="col-lg-10">
+                                <p>DeepCTR，GRU4Rec，Multi-view Simnet，序列语义召回，文本标签模型</p>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="row">
-                            <p>应用案例</p>
-                        <div class="col-lg-10">
-                            <p>百度Feed流新闻资源召回、排序</p>
+                        <div class="row mb-3">
+                                <p>应用案例</p>
+                            <div class="col-lg-10">
+                                <p>百度Feed流新闻资源召回、排序</p>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-9 application-body" id="cv-des">
-                    <div class="row">
-                            <p>适用场景</p>
-                        <div class="col-lg-10">
-                            <p>图像识别和检索
-医学领域图像识别
-交通场景识别
-车道定位
-光学文字识别
-图像风格迁移
-智能视频分析等领域</p>
-                        </div>
-                    </div>
-                    <div class="row">
-                            <p>方案构成</p>
-                        <div class="col-lg-10">
-                            <p>包含一系列图像分类、物体检测、
-图像语义分割、OCR识别、度量学习、
-图像生成、视频分类模型
-高效的服务器和端上预测引擎</p>
-                        </div>
-                    </div>
+                <div class="col-lg-9 application-body hide" id="cv-description">
+                    <div class="application-body-contents p-4">
 
-                    <div class="row">
-                            <p>经典模型</p>
-                        <div class="col-lg-10">
-                            <p>ResNet, SE-ResNet, MobileNet-SSD, Faster-RCNN, PyramidBox, DeepLab v3+, ICNet,OCR CTC/Attention,
-Vedio Classification: TSN, Metric Learning</p>
+                        <div class="row mb-3">
+                                <p>适用场景</p>
+                            <div class="col-lg-10">
+                                <p>图像识别和检索
+    医学领域图像识别
+    交通场景识别
+    车道定位
+    光学文字识别
+    图像风格迁移
+    智能视频分析等领域</p>
+                            </div>
                         </div>
-                    </div>
+                        <div class="row mb-3">
+                                <p>方案构成</p>
+                            <div class="col-lg-10">
+                                <p>包含一系列图像分类、物体检测、
+    图像语义分割、OCR识别、度量学习、
+    图像生成、视频分类模型
+    高效的服务器和端上预测引擎</p>
+                            </div>
+                        </div>
 
-                    <div class="row">
-                            <p>应用案例</p>
-                        <div class="col-lg-10">
-                            <p>百度地图导航
-百度OCR特征垂类识别
-手机百度Feed视频分析
-糯米菜品识别等</p>
+                        <div class="row mb-3">
+                                <p>经典模型</p>
+                            <div class="col-lg-10">
+                                <p>ResNet, SE-ResNet, MobileNet-SSD, Faster-RCNN, PyramidBox, DeepLab v3+, ICNet,OCR CTC/Attention,
+    Vedio Classification: TSN, Metric Learning</p>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                                <p>应用案例</p>
+                            <div class="col-lg-10">
+                                <p>百度地图导航
+    百度OCR特征垂类识别
+    手机百度Feed视频分析
+    糯米菜品识别等</p>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-9 application-body" id="nlp-des">
-                    <div class="row">
-                        <p>适用场景</p>
-                        <div class="col-lg-10">
-                            <p>舆情分析、广告搜索、机器翻译、智能对话、内容摘要等</p>
+                <div class="col-lg-9 application-body hide" id="nlp-description">
+                    <div class="application-body-contents p-4">
+                        <div class="row mb-3">
+                            <p>适用场景</p>
+                            <div class="col-lg-10">
+                                <p>舆情分析、广告搜索、机器翻译、智能对话、内容摘要等</p>
+                            </div>
                         </div>
-                    </div>
-                    <div class="row">
-                            <p>方案构成</p>
-                        <div class="col-lg-10">
-                            <p>开放一系列领先的语义匹配模型和数据集
-开放当前机器翻译领域内效果最好的模型Transformer
-开放阅读理解经典BiDAF模型和最大的中文开放数据集DuReader</p>
+                        <div class="row mb-3">
+                                <p>方案构成</p>
+                            <div class="col-lg-10">
+                                <p>开放一系列领先的语义匹配模型和数据集
+    开放当前机器翻译领域内效果最好的模型Transformer
+    开放阅读理解经典BiDAF模型和最大的中文开放数据集DuReader</p>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="row">
-                            <p>经典模型</p>
-                        <div class="col-lg-10">
-                            <p>词法分析、情感分析、语义匹配、机器翻译、阅读理解、文本摘要</p>
+                        <div class="row mb-3">
+                                <p>经典模型</p>
+                            <div class="col-lg-10">
+                                <p>词法分析、情感分析、语义匹配、机器翻译、阅读理解、文本摘要</p>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="row">
-                            <p>应用案例</p>
-                        <div class="col-lg-10">
-                            <p>百度搜索语义匹配任务
-百度搜索结果中的精确答案匹配
-百度机器翻译</p>
+                        <div class="row mb-3">
+                                <p>应用案例</p>
+                            <div class="col-lg-10">
+                                <p>百度搜索语义匹配任务
+    百度搜索结果中的精确答案匹配
+    百度机器翻译</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -284,29 +287,29 @@ Vedio Classification: TSN, Metric Learning</p>
     </section>
 
     <!-- Service platforms -->
-    <section class="services" id="services">
-        <div class="container">
-            <h2 class="section-title">服务平台</h2>
-            <p class="section-caption">PPS搭建了功能强大的服务平台，提供深度学习一站式服务</p>
+    <section id="services" class="pb-6">
+        <div class="container py-5">
+            <h1 class="my-4">服务平台</h1>
+            <div class="caption mb-6">PPS搭建了功能强大的服务平台，提供深度学习一站式服务</div>
 
             <div class="row">
                 <a class="col-lg-4" href="http://ai.baidu.com/easydl/" target="_blank">
                     <div class="service-desc">
-                        <h4>EasyDL</h4>
+                        <h3>EasyDL</h3>
                         <p class="my-3">支持零算法基础训练业务定制模型，操作可视化，无需懂深度学习，即便是零AI基础也可以在10分钟内训练出深度学习模型</p>
                     </div>
                 </a>
 
                 <a class="col-lg-4" href="http://aistudio.baidu.com/#/projectoverview" target="_blank">
                     <div class="service-desc">
-                        <h4>AIStudio</h4>
+                        <h3>AIStudio</h3>
                         <p class="my-3">集成“数据、算法、算力”的PaddlePaddle实训平台，具有云端集成、简单易用、运行高效和资源免费的特点</p>
                     </div>
                 </a>
 
                 <a class="col-lg-4" href="https://cloud.baidu.com/product/infinite.html" target="_blank">
                     <div class="service-desc">
-                        <h4>Infinite</h4>
+                        <h3>Infinite</h3>
                         <p class="my-3">世界先进的分布式并行计算深度学习平台，为您提供强大的、先进的弹性计算资源</p>
                     </div>
                 </a>
@@ -327,11 +330,11 @@ Vedio Classification: TSN, Metric Learning</p>
         var el = $(event.target).closest('.application-type'),
             id = el.attr('id');
 
-        applicationBodies.removeClass('selected');
+        applicationBodies.addClass('hide');
         applicationTypes.removeClass('selected');
 
         el.addClass('selected');
-        $('#' + id + '-des').addClass('selected');
+        $('#' + id + '-description').removeClass('hide');
     });
 
     // Update the location of the quick link indicator
