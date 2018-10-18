@@ -26,25 +26,27 @@
 
     <!-- section selector -->
     <section class="quick-links">
-        <div class="container py-4">
+        <div class="container pt-4 pb-1">
             <div class="row">
-                <span class="col-1"></span>
-                <div class="col-2 link-body">
-                    <a class="scroll-link selected" href="#illustration"><h3>架构流程</h3></a>
-                </div>
-                <div class="col-2 link-body">
-                    <a class="scroll-link" href="#core-framework"><h3>核心框架</h3></a>
-                </div>
-                <div class="col-2 link-body">
-                    <a class="scroll-link" href="#toolsets"><h3>辅助工具</h3></a>
-                </div>
-                <div class="col-2 link-body four">
-                    <a class="scroll-link" href="#applications"><h3>通用技术方案</h3></a>
-                </div>
-                <div class="col-2 link-body">
-                    <a class="scroll-link" href="#services"><h3>服务平台</h3></a>
-                </div>
-                <span class="col-1"></span>
+                <ul class="quick-links-list">
+                    <li class="col-1"></li>
+                    <li class="col-2 link-body">
+                        <a class="scroll-link selected" href="#illustration"><h3>架构流程</h3></a>
+                    </li>
+                    <li class="col-2 link-body">
+                        <a class="scroll-link" href="#core-framework"><h3>核心框架</h3></a>
+                    </li>
+                    <li class="col-2 link-body">
+                        <a class="scroll-link" href="#toolsets"><h3>辅助工具</h3></a>
+                    </li>
+                    <li class="col-2 link-body">
+                        <a class="scroll-link" href="#applications"><h3>通用技术方案</h3></a>
+                    </li>
+                    <li class="col-2 link-body">
+                        <a class="scroll-link" href="#services"><h3>服务平台</h3></a>
+                    </li>
+                    <li class="col-1"></li>
+                </ul>
             </div>
         </div>
         <div id="indicator"></div>
@@ -341,10 +343,12 @@
     function updateIndicator() {
         var selectedItem = $('.scroll-link.selected');
 
-        $('#indicator').css('margin-left', selectedItem.offset().left);
-        $('#indicator').css('width', selectedItem.parent('.link-body').width());
-        $('#indicator').css('transition', '.3s ease-in-out');
-        $('#indicator').css('display', 'block');
+        var style = {'margin-left': selectedItem.offset().left,
+                     'width': selectedItem.parent('.link-body').width(),
+                     'transition': '.3s ease-in-out',
+                     'display': 'block'};
+
+        $('#indicator').css(style);
     }
 
     // Scroll to the section
